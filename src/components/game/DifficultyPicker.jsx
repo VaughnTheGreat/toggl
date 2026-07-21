@@ -8,7 +8,7 @@ export default function DifficultyPicker() {
   const play = (tier) => navigate(`/play?custom=${tier}&seed=${Math.floor(Math.random() * 100000) + 1}`);
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm p-4 mb-8">
+    <div className="bg-white rounded-3xl shadow-sm p-4 mb-4">
       <div className="flex items-center gap-4 mb-3">
         <div className="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center">
           <SlidersHorizontal className="w-6 h-6 text-sky-500" />

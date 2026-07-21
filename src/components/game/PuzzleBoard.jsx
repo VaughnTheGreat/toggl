@@ -10,7 +10,8 @@ import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { LEVELS } from '@/lib/game/levels';
-import { getSettings, recordResult, recordEndless } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
+import { evaluateBadges } from '@/lib/game/ranks';
 import { playClick, vibrate } from '@/lib/game/feedback';
 
 function calcStars(moves, level, hintLevel) {
@@ -32,6 +33,7 @@ export default function PuzzleBoard({ level }) {
   const [highlightId, setHighlightId] = useState(null);
   const [completed, setCompleted] = useState(null);
   const startRef = useRef(Date.now());
+  const deniedRef = useRef(0);
 
   const { states, locks, moves, history, undosUsed } = game;
   const won = moves > 0 && level.buttons.every((b) => !!states[b.id] === !!level.target[b.id]);
@@ -40,9 +42,13 @@ export default function PuzzleBoard({ level }) {
     if (!won || completed) return;
     const t = setTimeout(() => {
       const stars = calcStars(moves, level, hintLevel);
+      const streak = level.daily ? recordDaily().streak : null;
       if (level.endless) recordEndless(level.endless);
-      else if (!level.custom) recordResult(level.id, stars);
-      setCompleted({ stars, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed });
+      else if (!level.custom && !level.daily) recordResult(level.id, stars);
+      const result = { stars, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
+      const newBadges = evaluateBadges(result, level, getBadges());
+      addBadges(newBadges);
+      setCompleted({ ...result, newBadges });
     }, 550);
     return () => clearTimeout(t);
   }, [won]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -52,6 +58,7 @@ export default function PuzzleBoard({ level }) {
     if (!canPress(states, locks, button)) {
       playClick(settings.sound, true);
       vibrate(settings.haptics, [25, 40, 25]);
+      deniedRef.current += 1;
       setDeniedId(button.id);
       setTimeout(() => setDeniedId(null), 300);
       return;
@@ -98,20 +105,21 @@ export default function PuzzleBoard({ level }) {
     setHint(null);
     setHighlightId(null);
     startRef.current = Date.now();
+    deniedRef.current = 0;
   };
 
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate(level.endless || level.custom ? '/' : '/levels')} aria-label="Back" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+        <button onClick={() => navigate(level.daily || level.endless || level.custom ? '/' : '/levels')} aria-label="Back" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <div className="text-base font-extrabold">{level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
+          <div className="text-base font-extrabold">{level.daily ? '◆' : level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5]">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
         </div>
         <div className="bg-white rounded-full shadow-sm px-4 py-2 text-right">
-          <span className="text-sm font-extrabold tabular-nums">{moves} / {level.moveLimit}</span>
+          <span className="text-sm font-extrabold tabular-nums">{moves} / {settings.zen ? '∞' : level.moveLimit}</span>
           <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A91A5] ml-1.5">moves</span>
         </div>
       </div>
@@ -140,14 +148,14 @@ export default function PuzzleBoard({ level }) {
       {completed && (
         <CompletionOverlay
           result={completed} level={level}
-          hasNext={level.endless || level.custom ? true : LEVELS.some((l) => l.id === level.id + 1)}
+          hasNext={level.daily ? false : level.endless || level.custom ? true : LEVELS.some((l) => l.id === level.id + 1)}
           onNext={() => navigate(
             level.endless ? `/play?endless=${level.endless + 1}`
             : level.custom ? `/play?custom=${level.custom.tier}&seed=${level.custom.seed + 1}`
             : `/play?level=${level.id + 1}`
           )}
           onRetry={retry}
-          onMenu={() => navigate(level.endless || level.custom ? '/' : '/levels')}
+          onMenu={() => navigate(level.daily || level.endless || level.custom ? '/' : '/levels')}
         />
       )}
     </Screen>

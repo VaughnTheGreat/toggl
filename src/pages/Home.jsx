@@ -6,6 +6,8 @@ import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getStars, getUnlocked, getEndlessLevel } from '@/lib/game/storage';
 import DifficultyPicker from '@/components/game/DifficultyPicker';
+import DailyCard from '@/components/game/DailyCard';
+import RankCard from '@/components/game/RankCard';
 
 export default function Home() {
   useEffect(() => { validateAllLevels(LEVELS); }, []);
@@ -32,6 +34,8 @@ export default function Home() {
       <div className="bg-white rounded-3xl shadow-sm p-5 mb-4 text-sm font-medium italic text-[#8A91A5] leading-relaxed">
         Every switch is part of a system. Flipping one may flip others, unlock conditions, or seal options forever. Change the state — reach the target.
       </div>
+
+      <DailyCard />
 
       <Link to={`/play?level=${current}`} className="flex items-center gap-4 bg-white rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
         <div className="w-12 h-12 rounded-2xl bg-[#00C2A8]/10 flex items-center justify-center">
@@ -69,6 +73,8 @@ export default function Home() {
       </Link>
 
       <DifficultyPicker />
+
+      <RankCard totalStars={totalStars} />
 
       <Link
         to={`/play?level=${current}`}

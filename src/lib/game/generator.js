@@ -123,9 +123,33 @@ function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }
 }
 
 export function generateLevel(n) {
+  // Every 10th endless level is a milestone "boss" puzzle: bigger and deeper.
+  if (n % 10 === 0) {
+    const d = difficultyFor(n);
+    return generateFrom(n * 7919, {
+      ...d,
+      buttonCount: Math.min(d.buttonCount + 2, 8),
+      targetMoves: Math.min(d.targetMoves + 2, 11),
+    }, {
+      id: `E${n}`, name: `Milestone ${String(n).padStart(3, '0')}`, tier: 'Milestone', endless: n, milestone: true,
+    }, false);
+  }
   return generateFrom(n * 7919, difficultyFor(n), {
     id: `E${n}`, name: `Sequence ${String(n).padStart(3, '0')}`, tier: 'Endless', endless: n,
   }, n < 10);
+}
+
+// Same puzzle for every player on a given date.
+export function generateDailyLevel(dateKey) {
+  const seed = parseInt(dateKey.replace(/-/g, ''), 10);
+  return generateFrom(seed, {
+    buttonCount: 6,
+    types: ['toggle', 'linked', 'conditional', 'lock', 'copy'],
+    targetMoves: 6,
+    undoAllowed: true,
+  }, {
+    id: `D${dateKey}`, name: 'Daily Challenge', tier: 'Daily', daily: dateKey,
+  }, true);
 }
 
 export function generateCustomLevel(tierKey, seed) {

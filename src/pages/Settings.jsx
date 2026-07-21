@@ -11,6 +11,7 @@ const ROWS = [
   { key: 'haptics', label: 'Haptics', desc: 'vibration on press' },
   { key: 'reducedMotion', label: 'Reduced motion', desc: 'instant state changes' },
   { key: 'colorblind', label: 'Colorblind mode', desc: 'pattern fill on ON state' },
+  { key: 'zen', label: 'Zen mode', desc: 'relaxed play, no move limits shown' },
 ];
 
 export default function Settings() {

@@ -1,13 +1,15 @@
 import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LEVELS } from '@/lib/game/levels';
-import { generateLevel, generateCustomLevel } from '@/lib/game/generator';
+import { generateLevel, generateCustomLevel, generateDailyLevel } from '@/lib/game/generator';
+import { todayKey } from '@/lib/game/storage';
 import PuzzleBoard from '@/components/game/PuzzleBoard';
 
 export default function Puzzle() {
   const location = useLocation();
   const level = useMemo(() => {
     const params = new URLSearchParams(location.search);
+    if (params.get('daily')) return generateDailyLevel(todayKey());
     const endless = params.get('endless');
     if (endless) return generateLevel(Math.max(1, parseInt(endless, 10) || 1));
     const custom = params.get('custom');

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, Flame } from 'lucide-react';
+import { BADGES } from '@/lib/game/ranks';
 
 export default function CompletionOverlay({ result, level, hasNext, onNext, onRetry, onMenu }) {
   return (
@@ -22,6 +23,20 @@ export default function CompletionOverlay({ result, level, hasNext, onNext, onRe
           <div className="flex justify-between"><span>Hints used</span><span className="text-[#1B2340]">{result.hints}</span></div>
           <div className="flex justify-between"><span>Undos</span><span className="text-[#1B2340]">{result.undos}</span></div>
         </div>
+        {result.streak != null && (
+          <div className="flex items-center justify-center gap-1.5 bg-orange-50 rounded-2xl px-4 py-3 mb-4 text-sm font-extrabold text-orange-600">
+            <Flame className="w-4 h-4" /> {result.streak}-day streak
+          </div>
+        )}
+        {result.newBadges?.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-1.5 mb-6">
+            {result.newBadges.map((id) => (
+              <span key={id} className="px-2.5 py-1 rounded-full bg-[#00C2A8]/10 text-[10px] font-bold uppercase tracking-wider text-[#00806E]">
+                +{BADGES[id].label}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="flex flex-col gap-2.5">
           {hasNext && (
             <button onClick={onNext} className="w-full py-4 rounded-full bg-gradient-to-b from-[#00CDAF] to-[#00A88F] text-white font-extrabold text-sm tracking-widest uppercase shadow-[0_4px_14px_rgba(0,194,168,0.4)] active:scale-[0.98] transition-transform">
