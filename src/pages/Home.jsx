@@ -27,7 +27,7 @@ export default function Home() {
 
       <div className="text-center mb-8">
         <h1 className="text-4xl font-extrabold tracking-tight mb-2">
-          Logic<span className="text-[#00A38C]">Grid</span>
+          Togg<span className="text-[#00A38C]">l</span>
         </h1>
         <p className="text-sm font-semibold text-muted-foreground">Observe. Predict. Commit.</p>
       </div>
