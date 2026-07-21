@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import SwitchRow from '@/components/game/SwitchRow';
 import { canPress } from '@/lib/game/ruleEngine';
 
-export default function SystemPanel({ buttons, states, locks, onPress, lastEffect, highlightId, deniedId, settings }) {
+export default function SystemPanel({ buttons, states, locks, onPress, onPreview, onPreviewEnd, lastEffect, highlightId, deniedId, settings }) {
   const rowRefs = useRef({});
   const containerRef = useRef(null);
   const [lines, setLines] = useState([]);
@@ -53,6 +53,8 @@ export default function SystemPanel({ buttons, states, locks, onPress, lastEffec
             flash={flashIds.includes(b.id)}
             denied={deniedId === b.id}
             onPress={onPress}
+            onPreview={onPreview}
+            onPreviewEnd={onPreviewEnd}
             colorblind={settings.colorblind}
             reducedMotion={settings.reducedMotion}
           />

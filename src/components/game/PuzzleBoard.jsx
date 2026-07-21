@@ -6,9 +6,12 @@ import TargetPanel from '@/components/game/TargetPanel';
 import SystemPanel from '@/components/game/SystemPanel';
 import CompletionOverlay from '@/components/game/CompletionOverlay';
 import HintPanel from '@/components/game/HintPanel';
+import PreviewPanel from '@/components/game/PreviewPanel';
+import DeadEndBanner from '@/components/game/DeadEndBanner';
 import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
+import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { LEVELS } from '@/lib/game/levels';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
@@ -32,8 +35,11 @@ export default function PuzzleBoard({ level }) {
   const [hint, setHint] = useState(null);
   const [highlightId, setHighlightId] = useState(null);
   const [completed, setCompleted] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [deadEnd, setDeadEnd] = useState(null);
   const startRef = useRef(Date.now());
   const deniedRef = useRef(0);
+  const resetsRef = useRef(0);
 
   const { states, locks, moves, history, undosUsed } = game;
   const won = moves > 0 && level.buttons.every((b) => !!states[b.id] === !!level.target[b.id]);
@@ -45,13 +51,20 @@ export default function PuzzleBoard({ level }) {
       const streak = level.daily ? recordDaily().streak : null;
       if (level.endless) recordEndless(level.endless);
       else if (!level.custom && !level.daily) recordResult(level.id, stars);
-      const result = { stars, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
+      const rank = solveRank({ moves, undos: undosUsed, hints: hintLevel, resets: resetsRef.current }, level);
+      const result = { stars, rank, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);
       setCompleted({ ...result, newBadges });
     }, 550);
     return () => clearTimeout(t);
   }, [won]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (moves === 0 || won) { setDeadEnd(null); return; }
+    const sol = solveFrom(states, locks, level);
+    setDeadEnd(sol.solvable ? null : deadEndReason(states, locks, level));
+  }, [states, locks]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePress = (button) => {
     if (animating || won || completed) return;
@@ -69,11 +82,18 @@ export default function PuzzleBoard({ level }) {
     setLastEffect({ source: button.id, targets: res.changed, ts: Date.now() });
     setHighlightId(null);
     setHint(null);
+    setPreview(null);
     dispatch({ type: 'PRESS', button });
     if (!settings.reducedMotion) {
       setAnimating(true);
       setTimeout(() => setAnimating(false), 420);
     }
+  };
+
+  const previewAllowed = !!level.undoAllowed;
+  const handlePreview = (button) => {
+    if (!previewAllowed || won || completed || !canPress(states, locks, button)) return;
+    setPreview({ id: button.id, lines: previewPress(states, locks, button) });
   };
 
   const requestHint = () => {
@@ -99,8 +119,11 @@ export default function PuzzleBoard({ level }) {
   };
 
   const retry = () => {
+    resetsRef.current = completed ? 0 : resetsRef.current + 1;
     dispatch({ type: 'RESET', level });
     setCompleted(null);
+    setPreview(null);
+    setDeadEnd(null);
     setHintLevel(0);
     setHint(null);
     setHighlightId(null);
@@ -129,8 +152,12 @@ export default function PuzzleBoard({ level }) {
       <SystemPanel
         buttons={level.buttons} states={states} locks={locks}
         onPress={handlePress} lastEffect={lastEffect}
+        onPreview={previewAllowed ? handlePreview : undefined}
+        onPreviewEnd={() => setPreview(null)}
         highlightId={highlightId} deniedId={deniedId} settings={settings}
       />
+
+      {deadEnd && !completed && <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} />}
 
       <div className="flex items-center gap-2.5 mt-5">
         {level.undoAllowed && (
@@ -144,6 +171,7 @@ export default function PuzzleBoard({ level }) {
         </button>
       </div>
       <HintPanel hint={hint} hintLevel={hintLevel} onRequest={requestHint} />
+      <PreviewPanel preview={preview} />
 
       {completed && (
         <CompletionOverlay

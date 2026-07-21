@@ -2,6 +2,13 @@ import React from 'react';
 import { Star, Flame } from 'lucide-react';
 import { BADGES } from '@/lib/game/ranks';
 
+const RANK_STYLES = {
+  'Perfect Prediction': 'bg-[#00C2A8]/15 text-[#00806E] dark:text-[#2BD9BF]',
+  Optimal: 'bg-[#F5B21B]/15 text-[#A97A08] dark:text-[#F5B21B]',
+  Efficient: 'bg-sky-100 dark:bg-sky-500/15 text-sky-600 dark:text-sky-300',
+  Solved: 'bg-muted text-muted-foreground',
+};
+
 export default function CompletionOverlay({ result, level, hasNext, onNext, onRetry, onMenu }) {
   return (
     <div className="fixed inset-0 z-50 bg-[#1B2340]/50 backdrop-blur-sm flex items-center justify-center px-6" role="dialog" aria-label="Level complete">
@@ -17,6 +24,13 @@ export default function CompletionOverlay({ result, level, hasNext, onNext, onRe
             />
           ))}
         </div>
+        {result.rank && (
+          <div className="flex justify-center mb-5">
+            <span className={`px-3.5 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-[0.2em] ${RANK_STYLES[result.rank]}`}>
+              {result.rank}
+            </span>
+          </div>
+        )}
         <div className="bg-muted rounded-2xl px-4 py-3 text-xs font-semibold text-muted-foreground space-y-2 mb-6">
           <div className="flex justify-between"><span>Moves</span><span className="text-foreground">{result.moves} / {level.optimalMoves} optimal</span></div>
           <div className="flex justify-between"><span>Time</span><span className="text-foreground">{result.time}s</span></div>
