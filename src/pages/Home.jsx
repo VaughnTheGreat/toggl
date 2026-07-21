@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Infinity, GraduationCap, ChevronRight, LayoutGrid, Settings as SettingsIcon, Home as HomeIcon } from 'lucide-react';
+import { Star, Infinity, GraduationCap, ChevronRight, LayoutGrid } from 'lucide-react';
+import BottomNav from '@/components/game/BottomNav';
 import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
@@ -83,19 +84,7 @@ export default function Home() {
         Play
       </Link>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#ECEFF5]">
-        <div className="max-w-md mx-auto flex items-center justify-around py-2.5 pb-4">
-          <span className="flex flex-col items-center gap-0.5 text-[#00A38C]">
-            <HomeIcon className="w-5 h-5" /><span className="text-[10px] font-bold">Home</span>
-          </span>
-          <Link to="/levels" className="flex flex-col items-center gap-0.5 text-[#8A91A5]">
-            <LayoutGrid className="w-5 h-5" /><span className="text-[10px] font-bold">Levels</span>
-          </Link>
-          <Link to="/settings" className="flex flex-col items-center gap-0.5 text-[#8A91A5]">
-            <SettingsIcon className="w-5 h-5" /><span className="text-[10px] font-bold">Settings</span>
-          </Link>
-        </div>
-      </nav>
+      <BottomNav active="home" />
     </Screen>
   );
 }
