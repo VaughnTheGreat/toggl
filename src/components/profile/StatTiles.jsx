@@ -12,9 +12,9 @@ export default function StatTiles() {
   return (
     <div className="grid grid-cols-3 gap-2.5 mb-4">
       {tiles.map((t) => (
-        <div key={t.label} className="bg-white rounded-3xl shadow-sm p-4">
+        <div key={t.label} className="bg-card rounded-3xl shadow-sm p-4">
           <div className={`text-2xl font-extrabold tabular-nums ${t.color}`}>{t.value}</div>
-          <div className="text-[11px] font-semibold text-[#8A91A5] leading-tight">{t.label}</div>
+          <div className="text-[11px] font-semibold text-muted-foreground leading-tight">{t.label}</div>
         </div>
       ))}
     </div>

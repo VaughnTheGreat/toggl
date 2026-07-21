@@ -6,6 +6,7 @@ import BottomNav from '@/components/game/BottomNav';
 import StreakCard from '@/components/profile/StreakCard';
 import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
+import AppearanceToggle from '@/components/profile/AppearanceToggle';
 import SettingsRows from '@/components/profile/SettingsRows';
 import { getStars } from '@/lib/game/storage';
 
@@ -18,7 +19,7 @@ export default function Profile() {
         <h1 className="text-2xl font-extrabold">Profile</h1>
         <button
           onClick={() => base44.auth.logout()}
-          className="flex items-center gap-1.5 bg-white rounded-full shadow-sm px-4 py-2 text-sm font-bold text-[#8A91A5] active:scale-95 transition-transform"
+          className="flex items-center gap-1.5 bg-card rounded-full shadow-sm px-4 py-2 text-sm font-bold text-muted-foreground active:scale-95 transition-transform"
         >
           <LogOut className="w-4 h-4" /> Sign out
         </button>
@@ -27,6 +28,7 @@ export default function Profile() {
       <StreakCard />
       <RankProgress totalStars={totalStars} />
       <StatTiles />
+      <AppearanceToggle />
       <SettingsRows />
 
       <BottomNav active="profile" />

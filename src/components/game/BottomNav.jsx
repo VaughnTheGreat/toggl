@@ -10,7 +10,7 @@ const ITEMS = [
 
 export default function BottomNav({ active }) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#ECEFF5] z-40">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40">
       <div className="max-w-md mx-auto flex items-center justify-around py-2.5 pb-4">
         {ITEMS.map(({ key, to, label, Icon }) =>
           key === active ? (
@@ -18,7 +18,7 @@ export default function BottomNav({ active }) {
               <Icon className="w-5 h-5" /><span className="text-[10px] font-bold">{label}</span>
             </span>
           ) : (
-            <Link key={key} to={to} className="flex flex-col items-center gap-0.5 text-[#8A91A5]">
+            <Link key={key} to={to} className="flex flex-col items-center gap-0.5 text-muted-foreground">
               <Icon className="w-5 h-5" /><span className="text-[10px] font-bold">{label}</span>
             </Link>
           )

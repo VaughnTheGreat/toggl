@@ -8,13 +8,13 @@ export default function DifficultyPicker() {
   const play = (tier) => navigate(`/play?custom=${tier}&seed=${Math.floor(Math.random() * 100000) + 1}`);
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm p-4 mb-4">
+    <div className="bg-card rounded-3xl shadow-sm p-4 mb-4">
       <div className="flex items-center gap-4 mb-3">
-        <div className="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl bg-sky-100 dark:bg-sky-500/15 flex items-center justify-center">
           <SlidersHorizontal className="w-6 h-6 text-sky-500" />
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5]">Custom Play</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Custom Play</div>
           <div className="text-base font-extrabold">Choose your difficulty</div>
         </div>
       </div>
@@ -23,10 +23,10 @@ export default function DifficultyPicker() {
           <button
             key={key}
             onClick={() => play(key)}
-            className="px-3 py-2.5 rounded-2xl bg-[#F2F4F8] text-left active:scale-[0.97] transition-transform"
+            className="px-3 py-2.5 rounded-2xl bg-muted text-left active:scale-[0.97] transition-transform"
           >
             <div className="text-sm font-extrabold">{d.label}</div>
-            <div className="text-[10px] font-semibold text-[#8A91A5] leading-tight">{d.desc}</div>
+            <div className="text-[10px] font-semibold text-muted-foreground leading-tight">{d.desc}</div>
           </button>
         ))}
       </div>

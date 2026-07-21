@@ -81,7 +81,7 @@ export function addBadges(ids) {
   writeSave({ badges: b });
 }
 
-const DEFAULT_SETTINGS = { sound: true, haptics: true, reducedMotion: false, colorblind: false, zen: false };
+const DEFAULT_SETTINGS = { sound: true, haptics: true, reducedMotion: false, colorblind: false, zen: false, theme: 'light' };
 
 export function getSettings() {
   return { ...DEFAULT_SETTINGS, ...(loadSave().settings || {}) };

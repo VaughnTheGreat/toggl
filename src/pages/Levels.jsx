@@ -13,7 +13,7 @@ export default function Levels() {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-8">
-        <Link to="/" aria-label="Back to menu" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
+        <Link to="/" aria-label="Back to menu" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <h1 className="text-xl font-extrabold">All Levels</h1>
@@ -31,11 +31,11 @@ export default function Levels() {
                   disabled={isLocked}
                   onClick={() => navigate(`/play?level=${level.id}`)}
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left transition-transform ${
-                    isLocked ? 'bg-white/50 text-[#B4BACA]' : 'bg-white shadow-sm active:scale-[0.98]'
+                    isLocked ? 'bg-card/50 text-[#B4BACA]' : 'bg-card shadow-sm active:scale-[0.98]'
                   }`}
                 >
                   <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-mono font-extrabold ${
-                    isLocked ? 'bg-[#F2F4F8]' : s > 0 ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-[#F2F4F8] text-[#8A91A5]'
+                    isLocked ? 'bg-muted' : s > 0 ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-muted text-muted-foreground'
                   }`}>{String(level.id).padStart(2, '0')}</span>
                   <span className="flex-1 text-sm font-bold">{level.name}</span>
                   {isLocked ? (
@@ -43,7 +43,7 @@ export default function Levels() {
                   ) : (
                     <span className="flex gap-0.5">
                       {[1, 2, 3].map((n) => (
-                        <Star key={n} className={`w-4 h-4 ${n <= s ? 'text-[#F5B21B] fill-[#F5B21B]' : 'text-[#E3E7EF] fill-[#E3E7EF]'}`} />
+                        <Star key={n} className={`w-4 h-4 ${n <= s ? 'text-[#F5B21B] fill-[#F5B21B]' : 'text-muted fill-muted'}`} />
                       ))}
                     </span>
                   )}

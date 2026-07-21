@@ -111,16 +111,16 @@ export default function PuzzleBoard({ level }) {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate(level.daily || level.endless || level.custom ? '/' : '/levels')} aria-label="Back" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+        <button onClick={() => navigate(level.daily || level.endless || level.custom ? '/' : '/levels')} aria-label="Back" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
           <div className="text-base font-extrabold">{level.daily ? '◆' : level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5]">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
         </div>
-        <div className="bg-white rounded-full shadow-sm px-4 py-2 text-right">
+        <div className="bg-card rounded-full shadow-sm px-4 py-2 text-right">
           <span className="text-sm font-extrabold tabular-nums">{moves} / {settings.zen ? '∞' : level.moveLimit}</span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-[#8A91A5] ml-1.5">moves</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1.5">moves</span>
         </div>
       </div>
 
@@ -135,11 +135,11 @@ export default function PuzzleBoard({ level }) {
       <div className="flex items-center gap-2.5 mt-5">
         {level.undoAllowed && (
           <button onClick={() => history.length && dispatch({ type: 'UNDO' })} disabled={!history.length || !!completed}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white shadow-sm text-[11px] font-bold uppercase tracking-widest text-[#8A91A5] disabled:opacity-40 active:scale-95 transition-transform">
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card shadow-sm text-[11px] font-bold uppercase tracking-widest text-muted-foreground disabled:opacity-40 active:scale-95 transition-transform">
             <Undo2 className="w-3.5 h-3.5" /> Undo
           </button>
         )}
-        <button onClick={retry} className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-white shadow-sm text-[11px] font-bold uppercase tracking-widest text-[#8A91A5] active:scale-95 transition-transform">
+        <button onClick={retry} className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card shadow-sm text-[11px] font-bold uppercase tracking-widest text-muted-foreground active:scale-95 transition-transform">
           <RotateCcw className="w-3.5 h-3.5" /> Reset
         </button>
       </div>

@@ -28,7 +28,7 @@ export default function SystemPanel({ buttons, states, locks, onPress, lastEffec
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5] mb-2.5">System</div>
+      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-2.5">System</div>
       {lines.length > 0 && (
         <svg className="absolute inset-0 pointer-events-none z-10 w-full h-full" aria-hidden="true">
           {lines.map((l, i) => (
