@@ -97,7 +97,7 @@ export const DIFFICULTIES = {
   expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy'], targetMoves: 9, undoAllowed: false },
 };
 
-function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit) {
+function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit, mysteryCount = 0) {
   const ids = IDS.slice(0, buttonCount);
   const base = { ...meta, undoAllowed };
   for (let attempt = 0; attempt < 80; attempt++) {
@@ -106,6 +106,13 @@ function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }
     const start = Object.fromEntries(ids.map((id) => [id, rng() < 0.35]));
     const found = findTarget(buttons, ids, start, targetMoves, rng);
     if (found) {
+      // Mystery switches: hide the rule of a non-trivial button until first pressed.
+      if (mysteryCount > 0 && rng() < 0.6) {
+        const cands = buttons.filter((b) => b.rule.type !== 'toggle');
+        for (let i = 0; i < mysteryCount && cands.length; i++) {
+          cands.splice(Math.floor(rng() * cands.length), 1)[0].mystery = true;
+        }
+      }
       return {
         ...base, buttons, start, target: found.target,
         optimalMoves: found.depth, moveLimit: found.depth + (generousLimit ? 2 : 1),
@@ -132,7 +139,7 @@ export function generateLevel(n) {
       targetMoves: Math.min(d.targetMoves + 2, 11),
     }, {
       id: `E${n}`, name: `Milestone ${String(n).padStart(3, '0')}`, tier: 'Milestone', endless: n, milestone: true,
-    }, false);
+    }, false, 1);
   }
   return generateFrom(n * 7919, difficultyFor(n), {
     id: `E${n}`, name: `Sequence ${String(n).padStart(3, '0')}`, tier: 'Endless', endless: n,
@@ -153,7 +160,7 @@ export function generateContinuationLevel(n) {
     id: n,
     name: relief ? `Interlude ${String(n).padStart(3, '0')}` : `System ${String(n).padStart(3, '0')}`,
     tier: relief ? 'Relief' : 'Continuum',
-  }, relief);
+  }, relief, relief ? 0 : 1);
 }
 
 // Same puzzle for every player on a given date.

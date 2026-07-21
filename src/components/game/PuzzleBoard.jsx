@@ -36,12 +36,20 @@ export default function PuzzleBoard({ level }) {
   const [completed, setCompleted] = useState(null);
   const [preview, setPreview] = useState(null);
   const [deadEnd, setDeadEnd] = useState(null);
+  const [revealed, setRevealed] = useState({});
+  const [bestMatch, setBestMatch] = useState(0);
   const startRef = useRef(Date.now());
   const deniedRef = useRef(0);
   const resetsRef = useRef(0);
 
   const { states, locks, moves, history, undosUsed } = game;
   const won = moves > 0 && level.buttons.every((b) => !!states[b.id] === !!level.target[b.id]);
+  const matched = level.buttons.filter((b) => !!states[b.id] === !!level.target[b.id]).length;
+  const total = level.buttons.length;
+
+  useEffect(() => {
+    if (moves > 0 && matched > bestMatch) setBestMatch(matched);
+  }, [matched, moves]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!won || completed) return;
@@ -69,6 +77,7 @@ export default function PuzzleBoard({ level }) {
 
   const handlePress = (button) => {
     if (animating || won || completed) return;
+    if (button.mystery && !revealed[button.id]) setRevealed((r) => ({ ...r, [button.id]: true }));
     if (!canPress(states, locks, button)) {
       playDenied(settings.sound);
       vibrate(settings.haptics, [25, 40, 25]);
@@ -122,6 +131,7 @@ export default function PuzzleBoard({ level }) {
 
   const retry = () => {
     resetsRef.current = completed ? 0 : resetsRef.current + 1;
+    if (completed) setBestMatch(0);
     dispatch({ type: 'RESET', level });
     setCompleted(null);
     setPreview(null);
@@ -158,10 +168,11 @@ export default function PuzzleBoard({ level }) {
           onPreview={previewAllowed ? handlePreview : undefined}
           onPreviewEnd={() => setPreview(null)}
           highlightId={highlightId} deniedId={deniedId} settings={settings}
+          revealed={revealed}
         />
       </div>
 
-      {deadEnd && !completed && <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} />}
+      {deadEnd && !completed && <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} matched={matched} total={total} />}
 
       <div className="flex items-center gap-2.5 mt-5">
         {level.undoAllowed && (
@@ -174,6 +185,11 @@ export default function PuzzleBoard({ level }) {
           <RotateCcw className="w-3.5 h-3.5" /> Reset
         </button>
       </div>
+      {resetsRef.current > 0 && bestMatch > 0 && !won && !completed && (
+        <div className="mt-3 text-[11px] font-bold text-muted-foreground">
+          Best attempt: <span className="text-[#00A38C]">{bestMatch}/{total}</span> targets — you know this system better now.
+        </div>
+      )}
       <HintPanel hint={hint} hintLevel={hintLevel} onRequest={requestHint} />
       <PreviewPanel preview={preview} />
 

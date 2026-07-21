@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { Power, ArrowRightLeft, Diamond, Lock, Copy } from 'lucide-react';
+import { Power, ArrowRightLeft, Diamond, Lock, Copy, HelpCircle } from 'lucide-react';
 import Toggle from '@/components/game/Toggle';
 import { describeRule } from '@/lib/game/ruleEngine';
 
 const ICONS = { toggle: Power, linked: ArrowRightLeft, conditional: Diamond, lock: Lock, copy: Copy };
 
-export default function SwitchRow({ button, on, locked, available = true, highlight, denied, flash, flashDelay = 0, onPress, onPreview, onPreviewEnd, colorblind, reducedMotion, innerRef }) {
+export default function SwitchRow({ button, on, locked, available = true, highlight, denied, flash, flashDelay = 0, hidden, onPress, onPreview, onPreviewEnd, colorblind, reducedMotion, innerRef }) {
   const Icon = ICONS[button.rule.type] || Power;
   const holdRef = useRef({ timer: null, held: false });
 
@@ -51,8 +51,8 @@ export default function SwitchRow({ button, on, locked, available = true, highli
         on ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-muted text-muted-foreground'
       }`}>{button.id}</span>
       <span className="flex-1 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
-        {locked ? <Lock className="w-3.5 h-3.5 text-amber-500" /> : <Icon className={`w-3.5 h-3.5 ${!available ? 'text-amber-500' : 'text-[#B4BACA]'}`} />}
-        {locked ? 'locked' : describeRule(button.rule, button.id)}
+        {locked ? <Lock className="w-3.5 h-3.5 text-amber-500" /> : hidden ? <HelpCircle className="w-3.5 h-3.5 text-violet-500" /> : <Icon className={`w-3.5 h-3.5 ${!available ? 'text-amber-500' : 'text-[#B4BACA]'}`} />}
+        {locked ? 'locked' : hidden ? <span className="text-violet-500 dark:text-violet-400">unknown rule — press to discover</span> : describeRule(button.rule, button.id)}
       </span>
       <Toggle on={on} locked={locked} dim={!available && !locked} colorblind={colorblind} reducedMotion={reducedMotion} />
     </button>
