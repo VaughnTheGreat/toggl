@@ -28,14 +28,14 @@ export default function SystemPanel({ buttons, states, locks, onPress, lastEffec
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B7280] mb-2">System</div>
+      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5] mb-2.5">System</div>
       {lines.length > 0 && (
         <svg className="absolute inset-0 pointer-events-none z-10 w-full h-full" aria-hidden="true">
           {lines.map((l, i) => (
             <path
               key={i}
               d={`M 14 ${l.y1} C -6 ${(l.y1 + l.y2) / 2}, -6 ${(l.y1 + l.y2) / 2}, 14 ${l.y2}`}
-              stroke="#00E5C8" strokeWidth="1.5" fill="none" opacity="0.75" className="animate-pulse"
+              stroke="#00C2A8" strokeWidth="2" fill="none" opacity="0.8" className="animate-pulse"
             />
           ))}
         </svg>

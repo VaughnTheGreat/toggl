@@ -3,8 +3,8 @@ import { Check } from 'lucide-react';
 
 export default function TargetPanel({ buttons, target, states }) {
   return (
-    <div>
-      <div className="text-[10px] uppercase tracking-[0.25em] text-[#6B7280] mb-2">Target</div>
+    <div className="bg-white rounded-2xl shadow-sm px-4 py-3.5">
+      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5] mb-2.5">Target</div>
       <div className="flex flex-wrap gap-2">
         {buttons.map((b) => {
           const want = !!target[b.id];
@@ -12,9 +12,9 @@ export default function TargetPanel({ buttons, target, states }) {
           return (
             <div
               key={b.id}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-bold tracking-wide ${
-                want ? 'border-[#00E5C8]/50 text-[#00E5C8]' : 'border-[#2A2F3E] text-[#6B7280]'
-              } ${matched ? 'opacity-45' : ''}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold font-mono ${
+                want ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-[#F2F4F8] text-[#8A91A5]'
+              } ${matched ? 'opacity-40' : ''}`}
             >
               {b.id} {want ? '●' : '○'}
               {matched && <Check className="w-3 h-3" />}

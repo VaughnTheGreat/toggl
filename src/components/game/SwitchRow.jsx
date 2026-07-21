@@ -12,13 +12,15 @@ export default function SwitchRow({ button, on, locked, available = true, highli
       ref={innerRef}
       onClick={() => onPress?.(button)}
       aria-label={`Switch ${button.id}, ${on ? 'on' : 'off'}${locked ? ', locked' : ''}${!available && !locked ? ', unavailable' : ''}`}
-      className={`w-full flex items-center gap-3 min-h-[56px] px-4 py-2 rounded border text-left transition-colors ${
-        highlight ? 'border-[#00E5C8]/70 bg-[#00E5C8]/5' : flash ? 'border-[#00E5C8]/50' : 'border-[#1a1e26]'
-      } ${denied ? 'animate-shake' : ''} bg-[#0E1116] active:bg-[#12161d]`}
+      className={`w-full flex items-center gap-3 min-h-[60px] px-4 py-2.5 rounded-2xl text-left bg-white shadow-sm transition-all active:scale-[0.98] ${
+        highlight ? 'ring-2 ring-[#00C2A8]' : flash ? 'ring-2 ring-[#00C2A8]/50' : ''
+      } ${denied ? 'animate-shake' : ''}`}
     >
-      <span className="w-6 text-base font-bold tracking-wider">{button.id}</span>
-      <span className="flex-1 flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-[#6B7280]">
-        {locked ? <Lock className="w-3.5 h-3.5 text-amber-500" /> : <Icon className={`w-3.5 h-3.5 ${!available ? 'text-amber-500/70' : ''}`} />}
+      <span className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono font-extrabold text-sm ${
+        on ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-[#F2F4F8] text-[#8A91A5]'
+      }`}>{button.id}</span>
+      <span className="flex-1 flex items-center gap-1.5 text-[11px] font-semibold text-[#8A91A5]">
+        {locked ? <Lock className="w-3.5 h-3.5 text-amber-500" /> : <Icon className={`w-3.5 h-3.5 ${!available ? 'text-amber-500' : 'text-[#B4BACA]'}`} />}
         {locked ? 'locked' : describeRule(button.rule)}
       </span>
       <Toggle on={on} locked={locked} dim={!available && !locked} colorblind={colorblind} reducedMotion={reducedMotion} />

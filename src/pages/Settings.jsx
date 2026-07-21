@@ -27,20 +27,22 @@ export default function Settings() {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-8">
-        <Link to="/" aria-label="Back to menu" className="p-2 -ml-2"><ArrowLeft className="w-5 h-5" /></Link>
-        <h1 className="text-lg font-bold uppercase tracking-widest">Settings</h1>
+        <Link to="/" aria-label="Back to menu" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <h1 className="text-xl font-extrabold">Settings</h1>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2.5">
         {ROWS.map((row) => (
           <button
             key={row.key}
             onClick={() => toggle(row.key)}
             aria-label={`${row.label}, ${settings[row.key] ? 'on' : 'off'}`}
-            className="w-full flex items-center gap-3 min-h-[56px] px-4 py-2 rounded border border-[#1a1e26] bg-[#0E1116] text-left active:bg-[#12161d]"
+            className="w-full flex items-center gap-3 min-h-[60px] px-4 py-2.5 rounded-2xl bg-white shadow-sm text-left active:scale-[0.98] transition-transform"
           >
             <span className="flex-1">
-              <span className="block text-sm">{row.label}</span>
-              <span className="block text-[11px] text-[#6B7280]">{row.desc}</span>
+              <span className="block text-sm font-bold">{row.label}</span>
+              <span className="block text-[11px] font-semibold text-[#8A91A5]">{row.desc}</span>
             </span>
             <Toggle on={settings[row.key]} colorblind={settings.colorblind} reducedMotion={settings.reducedMotion} />
           </button>

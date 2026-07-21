@@ -13,13 +13,15 @@ export default function Levels() {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-8">
-        <Link to="/" aria-label="Back to menu" className="p-2 -ml-2"><ArrowLeft className="w-5 h-5" /></Link>
-        <h1 className="text-lg font-bold uppercase tracking-widest">Levels</h1>
+        <Link to="/" aria-label="Back to menu" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <h1 className="text-xl font-extrabold">All Levels</h1>
       </div>
       {TIERS.map((tier) => (
         <div key={tier} className="mb-8">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-[#00E5C8] mb-3">{tier}</div>
-          <div className="grid grid-cols-1 gap-2">
+          <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#00A38C] mb-3">{tier}</div>
+          <div className="grid grid-cols-1 gap-2.5">
             {LEVELS.filter((l) => l.tier === tier).map((level) => {
               const isLocked = level.id > unlocked;
               const s = stars[level.id] || 0;
@@ -28,18 +30,20 @@ export default function Levels() {
                   key={level.id}
                   disabled={isLocked}
                   onClick={() => navigate(`/play?level=${level.id}`)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded border text-left ${
-                    isLocked ? 'border-[#1E2128]/50 text-[#3a4150]' : 'border-[#1E2128] bg-[#0E1116] active:bg-[#12161d]'
+                  className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-left transition-transform ${
+                    isLocked ? 'bg-white/50 text-[#B4BACA]' : 'bg-white shadow-sm active:scale-[0.98]'
                   }`}
                 >
-                  <span className="text-xs w-8 text-[#6B7280]">{String(level.id).padStart(2, '0')}</span>
-                  <span className="flex-1 text-sm">{level.name}</span>
+                  <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-mono font-extrabold ${
+                    isLocked ? 'bg-[#F2F4F8]' : s > 0 ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-[#F2F4F8] text-[#8A91A5]'
+                  }`}>{String(level.id).padStart(2, '0')}</span>
+                  <span className="flex-1 text-sm font-bold">{level.name}</span>
                   {isLocked ? (
                     <Lock className="w-4 h-4" />
                   ) : (
                     <span className="flex gap-0.5">
                       {[1, 2, 3].map((n) => (
-                        <Star key={n} className={`w-3.5 h-3.5 ${n <= s ? 'text-[#00E5C8] fill-[#00E5C8]' : 'text-[#2A2F3E]'}`} />
+                        <Star key={n} className={`w-4 h-4 ${n <= s ? 'text-[#F5B21B] fill-[#F5B21B]' : 'text-[#E3E7EF] fill-[#E3E7EF]'}`} />
                       ))}
                     </span>
                   )}

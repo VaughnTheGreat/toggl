@@ -53,31 +53,33 @@ export default function Tutorial() {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/')} aria-label="Back to menu" className="p-2 -ml-2"><ArrowLeft className="w-5 h-5" /></button>
+        <button onClick={() => navigate('/')} aria-label="Back to menu" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0">
+          <ArrowLeft className="w-5 h-5" />
+        </button>
         <div className="flex-1">
-          <div className="text-sm font-bold">{step.title}</div>
-          <div className="text-[10px] uppercase tracking-widest text-[#6B7280]">Tutorial {stepIndex + 1} / {TUTORIAL_STEPS.length}</div>
+          <div className="text-base font-extrabold">{step.title}</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8A91A5]">Tutorial {stepIndex + 1} / {TUTORIAL_STEPS.length}</div>
         </div>
       </div>
 
-      <p className="text-xs text-[#9aa3b2] leading-relaxed mb-5">{step.text}</p>
+      <div className="bg-white rounded-2xl shadow-sm px-4 py-3.5 text-xs font-semibold text-[#5A6178] leading-relaxed mb-4">{step.text}</div>
       <TargetPanel buttons={step.buttons} target={step.target} states={states} />
-      <div className="border-t border-[#1E2128] my-5" />
+      <div className="my-4" />
       <SystemPanel buttons={step.buttons} states={states} locks={locks} onPress={handlePress} lastEffect={lastEffect} deniedId={deniedId} settings={settings} />
 
       <div className="mt-6">
         {solved ? (
           <div>
-            <div className="px-3 py-3 rounded border border-[#00E5C8]/30 bg-[#00E5C8]/5 text-xs text-[#c9efe8] leading-relaxed mb-3">
-              <span className="text-[#00E5C8] font-bold uppercase tracking-widest text-[10px] block mb-1">Principle</span>
+            <div className="px-4 py-3.5 rounded-2xl bg-[#00C2A8]/10 text-xs font-semibold text-[#00806E] leading-relaxed mb-3">
+              <span className="text-[#00A38C] font-extrabold uppercase tracking-[0.2em] text-[10px] block mb-1">Principle</span>
               {step.principle}
             </div>
-            <button onClick={() => goTo(stepIndex + 1)} className="w-full py-3 rounded bg-[#00E5C8] text-[#0A0C10] font-bold text-sm tracking-widest uppercase">
+            <button onClick={() => goTo(stepIndex + 1)} className="w-full py-4 rounded-full bg-gradient-to-b from-[#00CDAF] to-[#00A88F] text-white font-extrabold text-sm tracking-widest uppercase shadow-[0_4px_14px_rgba(0,194,168,0.4)] active:scale-[0.98] transition-transform">
               {stepIndex + 1 >= TUTORIAL_STEPS.length ? 'Start Campaign' : 'Continue'}
             </button>
           </div>
         ) : (
-          <button onClick={() => { setStates({ ...step.start }); setLocks({}); }} className="text-[11px] uppercase tracking-widest text-[#6B7280]">
+          <button onClick={() => { setStates({ ...step.start }); setLocks({}); }} className="px-4 py-2.5 rounded-full bg-white shadow-sm text-[11px] font-bold uppercase tracking-widest text-[#8A91A5] active:scale-95 transition-transform">
             Reset step
           </button>
         )}
