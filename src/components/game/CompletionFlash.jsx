@@ -30,11 +30,12 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center cursor-pointer"
+      className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer bg-background/70 backdrop-blur-sm"
+      style={{ animation: 'lg-pop 0.25s ease backwards' }}
       onClick={hasNext ? onNext : onMenu}
       role="dialog" aria-label="Level complete — tap to continue"
     >
-      <div className="w-full max-w-md px-5 pb-8 pt-24 bg-gradient-to-t from-background via-background/90 to-transparent">
+      <div className="w-full max-w-md px-5">
         <div className="bg-card rounded-3xl shadow-xl p-5 text-center">
           <div className="flex justify-center gap-1.5 mb-2.5">
             {[1, 2, 3].map((n) => (
@@ -64,9 +65,6 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
               ))}
             </div>
           )}
-          <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground mt-4 animate-pulse">
-            {hasNext ? 'Tap to continue' : 'Tap to finish'}
-          </div>
           <div className="flex justify-center gap-2 mt-4">
             <button onClick={(e) => { e.stopPropagation(); onRetry(); }} aria-label="Retry"
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform">
@@ -77,6 +75,9 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
               <Map className="w-4 h-4" />
             </button>
           </div>
+        </div>
+        <div className="text-center text-[11px] font-bold uppercase tracking-[0.25em] text-muted-foreground mt-6 animate-pulse">
+          {hasNext ? 'Tap anywhere to continue' : 'Tap anywhere to finish'}
         </div>
       </div>
     </div>
