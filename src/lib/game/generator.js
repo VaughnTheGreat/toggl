@@ -89,21 +89,26 @@ function findTarget(buttons, ids, start, targetMoves, rng) {
   return { target: { ...patternState.get(pickKey) }, depth: best };
 }
 
-export function generateLevel(n) {
-  const { buttonCount, types, targetMoves, undoAllowed } = difficultyFor(n);
+// Player-selectable difficulty presets for Custom Play.
+export const DIFFICULTIES = {
+  beginner: { label: 'Beginner', desc: 'Toggles & linked switches', buttonCount: 3, types: ['toggle', 'linked'], targetMoves: 3, undoAllowed: true },
+  skilled: { label: 'Skilled', desc: 'Conditional switches appear', buttonCount: 5, types: ['toggle', 'linked', 'conditional'], targetMoves: 5, undoAllowed: true },
+  advanced: { label: 'Advanced', desc: 'Locks — no undo', buttonCount: 6, types: ['toggle', 'linked', 'conditional', 'lock'], targetMoves: 7, undoAllowed: false },
+  expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy'], targetMoves: 9, undoAllowed: false },
+};
+
+function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit) {
   const ids = IDS.slice(0, buttonCount);
-  const base = {
-    id: `E${n}`, name: `Sequence ${String(n).padStart(3, '0')}`, tier: 'Endless', endless: n, undoAllowed,
-  };
+  const base = { ...meta, undoAllowed };
   for (let attempt = 0; attempt < 80; attempt++) {
-    const rng = mulberry32(n * 7919 + attempt * 104729 + 1);
+    const rng = mulberry32(seedBase + attempt * 104729 + 1);
     const buttons = buildButtons(rng, ids, types);
     const start = Object.fromEntries(ids.map((id) => [id, rng() < 0.35]));
     const found = findTarget(buttons, ids, start, targetMoves, rng);
     if (found) {
       return {
         ...base, buttons, start, target: found.target,
-        optimalMoves: found.depth, moveLimit: found.depth + (n < 10 ? 2 : 1),
+        optimalMoves: found.depth, moveLimit: found.depth + (generousLimit ? 2 : 1),
       };
     }
   }
@@ -115,4 +120,17 @@ export function generateLevel(n) {
     target: Object.fromEntries(ids.map((id) => [id, true])),
     optimalMoves: ids.length, moveLimit: ids.length + 2,
   };
+}
+
+export function generateLevel(n) {
+  return generateFrom(n * 7919, difficultyFor(n), {
+    id: `E${n}`, name: `Sequence ${String(n).padStart(3, '0')}`, tier: 'Endless', endless: n,
+  }, n < 10);
+}
+
+export function generateCustomLevel(tierKey, seed) {
+  const d = DIFFICULTIES[tierKey] || DIFFICULTIES.beginner;
+  return generateFrom(seed * 6151 + 13, d, {
+    id: `C-${tierKey}-${seed}`, name: `${d.label} Run ${seed}`, tier: d.label, custom: { tier: tierKey, seed },
+  }, tierKey === 'beginner' || tierKey === 'skilled');
 }

@@ -5,6 +5,7 @@ import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getStars, getUnlocked, getEndlessLevel } from '@/lib/game/storage';
+import DifficultyPicker from '@/components/game/DifficultyPicker';
 
 export default function Home() {
   useEffect(() => { validateAllLevels(LEVELS); }, []);
@@ -56,7 +57,7 @@ export default function Home() {
         <ChevronRight className="w-5 h-5 text-[#B4BACA]" />
       </Link>
 
-      <Link to="/tutorial" className="flex items-center gap-4 bg-white rounded-3xl shadow-sm p-4 mb-8 active:scale-[0.98] transition-transform">
+      <Link to="/tutorial" className="flex items-center gap-4 bg-white rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
         <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center">
           <GraduationCap className="w-6 h-6 text-amber-500" />
         </div>
@@ -66,6 +67,8 @@ export default function Home() {
         </div>
         <ChevronRight className="w-5 h-5 text-[#B4BACA]" />
       </Link>
+
+      <DifficultyPicker />
 
       <Link
         to={`/play?level=${current}`}
