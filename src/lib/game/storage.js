@@ -18,12 +18,12 @@ export function getUnlocked() {
   return loadSave().unlocked || 1;
 }
 
-export function recordResult(levelId, stars) {
+export function recordResult(levelId, stars, skipNext = false) {
   const s = loadSave();
   const prev = (s.stars || {})[levelId] || 0;
   writeSave({
     stars: { ...(s.stars || {}), [levelId]: Math.max(prev, stars) },
-    unlocked: Math.max(s.unlocked || 1, levelId + 1),
+    unlocked: Math.max(s.unlocked || 1, levelId + (skipNext ? 2 : 1)),
   });
 }
 

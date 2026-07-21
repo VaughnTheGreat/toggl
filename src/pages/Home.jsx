@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Infinity, GraduationCap, ChevronRight, LayoutGrid } from 'lucide-react';
+import { Star, Infinity, GraduationCap, ChevronRight } from 'lucide-react';
 import BottomNav from '@/components/game/BottomNav';
 import Screen from '@/components/game/Screen';
+import ModeTile from '@/components/game/ModeTile';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getStars, getUnlocked, getEndlessLevel } from '@/lib/game/storage';
 import DifficultyPicker from '@/components/game/DifficultyPicker';
 import DailyCard from '@/components/game/DailyCard';
-import RankCard from '@/components/game/RankCard';
 
 export default function Home() {
   useEffect(() => { validateAllLevels(LEVELS); }, []);
@@ -32,57 +32,36 @@ export default function Home() {
         <p className="text-sm font-semibold text-muted-foreground">Observe. Predict. Commit.</p>
       </div>
 
-      <div className="bg-card rounded-3xl shadow-sm p-5 mb-4 text-sm font-medium italic text-muted-foreground leading-relaxed">
-        Every switch is part of a system. Flipping one may flip others, unlock conditions, or seal options forever. Change the state — reach the target.
-      </div>
+      <Link
+        to={`/play?level=${current}`}
+        className="block rounded-3xl bg-gradient-to-b from-[#00CDAF] to-[#00A88F] text-white p-5 mb-4 shadow-[0_6px_18px_rgba(0,194,168,0.45)] active:scale-[0.98] transition-transform"
+      >
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">Campaign</div>
+        <div className="text-xl font-extrabold mt-1">Level {current} · {level?.name}</div>
+        <div className="flex items-center justify-between mt-3">
+          <span className="text-xs font-semibold text-white/80">{level?.tier} tier</span>
+          <span className="flex items-center gap-1 text-sm font-extrabold uppercase tracking-widest">Play <ChevronRight className="w-4 h-4" /></span>
+        </div>
+      </Link>
 
       <DailyCard />
 
-      <Link to={`/play?level=${current}`} className="flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
-        <div className="w-12 h-12 rounded-2xl bg-[#00C2A8]/10 flex items-center justify-center">
-          <LayoutGrid className="w-6 h-6 text-[#00A38C]" />
-        </div>
-        <div className="flex-1">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Campaign</div>
-          <div className="text-base font-extrabold">Level {current} · {level?.name}</div>
-          <div className="text-xs font-semibold text-muted-foreground">{level?.tier} tier</div>
-        </div>
-        <ChevronRight className="w-5 h-5 text-[#B4BACA]" />
-      </Link>
-
-      <Link to={`/play?endless=${getEndlessLevel()}`} className="flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
-        <div className="w-12 h-12 rounded-2xl bg-violet-100 dark:bg-violet-500/15 flex items-center justify-center">
-          <Infinity className="w-6 h-6 text-violet-500" />
-        </div>
-        <div className="flex-1">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Endless</div>
-          <div className="text-base font-extrabold">Sequence {String(getEndlessLevel()).padStart(3, '0')}</div>
-          <div className="text-xs font-semibold text-muted-foreground">Unlimited generated puzzles</div>
-        </div>
-        <ChevronRight className="w-5 h-5 text-[#B4BACA]" />
-      </Link>
-
-      <Link to="/tutorial" className="flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
-        <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center">
-          <GraduationCap className="w-6 h-6 text-amber-500" />
-        </div>
-        <div className="flex-1">
-          <div className="text-base font-extrabold">Tutorial</div>
-          <div className="text-xs font-semibold text-muted-foreground">Learn the six principles</div>
-        </div>
-        <ChevronRight className="w-5 h-5 text-[#B4BACA]" />
-      </Link>
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <ModeTile
+          to={`/play?endless=${getEndlessLevel()}`}
+          icon={Infinity} iconClass="text-violet-500" bgClass="bg-violet-100 dark:bg-violet-500/15"
+          title={`Endless ${String(getEndlessLevel()).padStart(3, '0')}`}
+          subtitle="Generated puzzles"
+        />
+        <ModeTile
+          to="/tutorial"
+          icon={GraduationCap} iconClass="text-amber-500" bgClass="bg-amber-100 dark:bg-amber-500/15"
+          title="Tutorial"
+          subtitle="The six principles"
+        />
+      </div>
 
       <DifficultyPicker />
-
-      <RankCard totalStars={totalStars} />
-
-      <Link
-        to={`/play?level=${current}`}
-        className="block w-full py-4 rounded-full bg-gradient-to-b from-[#00CDAF] to-[#00A88F] text-white text-center font-extrabold text-lg tracking-wide shadow-[0_6px_18px_rgba(0,194,168,0.45)] active:scale-[0.98] transition-transform"
-      >
-        Play
-      </Link>
 
       <BottomNav active="home" />
     </Screen>

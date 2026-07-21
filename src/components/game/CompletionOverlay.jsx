@@ -31,6 +31,11 @@ export default function CompletionOverlay({ result, level, hasNext, onNext, onRe
             </span>
           </div>
         )}
+        {result.skipped && (
+          <div className="text-center text-[11px] font-bold text-[#00A38C] -mt-3 mb-5">
+            Perfect solve — you skipped the next level!
+          </div>
+        )}
         <div className="bg-muted rounded-2xl px-4 py-3 text-xs font-semibold text-muted-foreground space-y-2 mb-6">
           <div className="flex justify-between"><span>Moves</span><span className="text-foreground">{result.moves} / {level.optimalMoves} optimal</span></div>
           <div className="flex justify-between"><span>Time</span><span className="text-foreground">{result.time}s</span></div>
