@@ -6,7 +6,6 @@ import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getPathLevel } from '@/lib/game/levelPath';
 import { getUnlocked } from '@/lib/game/storage';
-import DailyCard from '@/components/game/DailyCard';
 
 export default function Home() {
   useEffect(() => { validateAllLevels(LEVELS); }, []);
@@ -33,10 +32,6 @@ export default function Home() {
       >
         Play
       </Link>
-
-      <div className="mt-6">
-        <DailyCard />
-      </div>
 
       <BottomNav active="home" />
     </Screen>
