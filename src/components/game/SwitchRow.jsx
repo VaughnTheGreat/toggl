@@ -5,7 +5,7 @@ import { describeRule } from '@/lib/game/ruleEngine';
 
 const ICONS = { toggle: Power, linked: ArrowRightLeft, conditional: Diamond, lock: Lock, copy: Copy };
 
-export default function SwitchRow({ button, on, locked, available = true, highlight, denied, flash, onPress, onPreview, onPreviewEnd, colorblind, reducedMotion, innerRef }) {
+export default function SwitchRow({ button, on, locked, available = true, highlight, denied, flash, flashDelay = 0, onPress, onPreview, onPreviewEnd, colorblind, reducedMotion, innerRef }) {
   const Icon = ICONS[button.rule.type] || Power;
   const holdRef = useRef({ timer: null, held: false });
 
@@ -42,7 +42,10 @@ export default function SwitchRow({ button, on, locked, available = true, highli
       className={`w-full flex items-center gap-3 min-h-[60px] px-4 py-2.5 rounded-2xl text-left bg-card shadow-sm transition-all active:scale-[0.98] select-none ${
         highlight ? 'ring-2 ring-[#00C2A8]' : flash ? 'ring-2 ring-[#00C2A8]/50' : ''
       } ${denied ? 'animate-shake' : ''}`}
-      style={{ WebkitTouchCallout: 'none' }}
+      style={{
+        WebkitTouchCallout: 'none',
+        ...(flash && !reducedMotion ? { animation: `lg-cascade 0.45s cubic-bezier(0.34,1.56,0.64,1) ${flashDelay}ms` } : {}),
+      }}
     >
       <span className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono font-extrabold text-sm ${
         on ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-muted text-muted-foreground'

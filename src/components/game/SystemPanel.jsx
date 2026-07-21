@@ -22,7 +22,7 @@ export default function SystemPanel({ buttons, states, locks, onPress, onPreview
       .filter(Boolean);
     setLines(ls);
     setFlashIds(targets);
-    const to = setTimeout(() => { setLines([]); setFlashIds([]); }, 450);
+    const to = setTimeout(() => { setLines([]); setFlashIds([]); }, 600);
     return () => clearTimeout(to);
   }, [lastEffect, settings.reducedMotion]);
 
@@ -35,7 +35,8 @@ export default function SystemPanel({ buttons, states, locks, onPress, onPreview
             <path
               key={i}
               d={`M 14 ${l.y1} C -6 ${(l.y1 + l.y2) / 2}, -6 ${(l.y1 + l.y2) / 2}, 14 ${l.y2}`}
-              stroke="#00C2A8" strokeWidth="2" fill="none" opacity="0.8" className="animate-pulse"
+              stroke="#00C2A8" strokeWidth="2" fill="none" strokeDasharray="6 4"
+              style={{ animation: `lg-dash 0.5s ease ${i * 70}ms both` }}
             />
           ))}
         </svg>
@@ -51,6 +52,7 @@ export default function SystemPanel({ buttons, states, locks, onPress, onPreview
             available={canPress(states, locks, b)}
             highlight={highlightId === b.id}
             flash={flashIds.includes(b.id)}
+            flashDelay={Math.max(0, flashIds.indexOf(b.id)) * 70}
             denied={deniedId === b.id}
             onPress={onPress}
             onPreview={onPreview}

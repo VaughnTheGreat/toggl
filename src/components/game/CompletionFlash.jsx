@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import confetti from 'canvas-confetti';
 import { Star, RotateCcw, Map, Flame } from 'lucide-react';
 import { BADGES } from '@/lib/game/ranks';
+import { playWin } from '@/lib/game/feedback';
+import { getSettings } from '@/lib/game/storage';
 
 const RANK_STYLES = {
   'Perfect Prediction': 'bg-[#00C2A8]/15 text-[#00806E] dark:text-[#2BD9BF]',
@@ -10,6 +13,21 @@ const RANK_STYLES = {
 };
 
 export default function CompletionFlash({ result, level, hasNext, onNext, onRetry, onMenu }) {
+  useEffect(() => {
+    const s = getSettings();
+    playWin(s.sound);
+    if (!s.reducedMotion) {
+      confetti({
+        particleCount: result.stars * 25,
+        spread: 75,
+        startVelocity: 32,
+        origin: { y: 0.7 },
+        colors: ['#00C2A8', '#F5B21B', '#6C9EFF', '#ffffff'],
+        disableForReducedMotion: true,
+      });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center cursor-pointer"

@@ -14,7 +14,7 @@ import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
-import { playClick, vibrate } from '@/lib/game/feedback';
+import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
 
 function calcStars(moves, level, hintLevel) {
   let s = moves <= level.optimalMoves ? 3 : moves <= level.moveLimit ? 2 : 1;
@@ -70,7 +70,7 @@ export default function PuzzleBoard({ level }) {
   const handlePress = (button) => {
     if (animating || won || completed) return;
     if (!canPress(states, locks, button)) {
-      playClick(settings.sound, true);
+      playDenied(settings.sound);
       vibrate(settings.haptics, [25, 40, 25]);
       deniedRef.current += 1;
       setDeniedId(button.id);
@@ -78,7 +78,8 @@ export default function PuzzleBoard({ level }) {
       return;
     }
     const res = applyPress(states, locks, button);
-    playClick(settings.sound);
+    if (res.changed.length > 1) playCascade(settings.sound, res.changed.length - 1);
+    else playFlip(settings.sound);
     vibrate(settings.haptics, res.changed.length > 1 ? [15, 60, 15] : 15);
     setLastEffect({ source: button.id, targets: res.changed, ts: Date.now() });
     setHighlightId(null);

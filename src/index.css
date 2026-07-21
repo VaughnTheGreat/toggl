@@ -88,6 +88,17 @@
 }
 .animate-shake { animation: lg-shake 0.25s ease; }
 
+@keyframes lg-cascade {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lg-dash {
+  from { stroke-dashoffset: 60; opacity: 1; }
+  to { stroke-dashoffset: 0; opacity: 0.4; }
+}
+
 @keyframes lg-pop {
   0% { transform: scale(0); opacity: 0; }
   70% { transform: scale(1.25); }
