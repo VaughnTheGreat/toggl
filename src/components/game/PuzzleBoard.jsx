@@ -4,7 +4,7 @@ import { ArrowLeft, Undo2, RotateCcw } from 'lucide-react';
 import Screen from '@/components/game/Screen';
 import TargetPanel from '@/components/game/TargetPanel';
 import SystemPanel from '@/components/game/SystemPanel';
-import CompletionOverlay from '@/components/game/CompletionOverlay';
+import CompletionFlash from '@/components/game/CompletionFlash';
 import HintPanel from '@/components/game/HintPanel';
 import PreviewPanel from '@/components/game/PreviewPanel';
 import DeadEndBanner from '@/components/game/DeadEndBanner';
@@ -12,7 +12,6 @@ import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
-import { LEVELS } from '@/lib/game/levels';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playClick, vibrate } from '@/lib/game/feedback';
@@ -50,7 +49,7 @@ export default function PuzzleBoard({ level }) {
       const stars = calcStars(moves, level, hintLevel);
       const rank = solveRank({ moves, undos: undosUsed, hints: hintLevel, resets: resetsRef.current }, level);
       const isCampaign = !level.custom && !level.daily && !level.endless;
-      const skipped = isCampaign && rank === 'Perfect Prediction' && LEVELS.some((l) => l.id === level.id + 2);
+      const skipped = isCampaign && rank === 'Perfect Prediction';
       const streak = level.daily ? recordDaily().streak : null;
       if (level.endless) recordEndless(level.endless);
       else if (isCampaign) recordResult(level.id, stars, skipped);
@@ -151,13 +150,15 @@ export default function PuzzleBoard({ level }) {
 
       <TargetPanel buttons={level.buttons} target={level.target} states={states} />
       <div className="my-4" />
-      <SystemPanel
-        buttons={level.buttons} states={states} locks={locks}
-        onPress={handlePress} lastEffect={lastEffect}
-        onPreview={previewAllowed ? handlePreview : undefined}
-        onPreviewEnd={() => setPreview(null)}
-        highlightId={highlightId} deniedId={deniedId} settings={settings}
-      />
+      <div className={won && !settings.reducedMotion ? 'animate-pulse' : ''}>
+        <SystemPanel
+          buttons={level.buttons} states={states} locks={locks}
+          onPress={handlePress} lastEffect={lastEffect}
+          onPreview={previewAllowed ? handlePreview : undefined}
+          onPreviewEnd={() => setPreview(null)}
+          highlightId={highlightId} deniedId={deniedId} settings={settings}
+        />
+      </div>
 
       {deadEnd && !completed && <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} />}
 
@@ -176,9 +177,9 @@ export default function PuzzleBoard({ level }) {
       <PreviewPanel preview={preview} />
 
       {completed && (
-        <CompletionOverlay
+        <CompletionFlash
           result={completed} level={level}
-          hasNext={level.daily ? false : level.endless || level.custom ? true : LEVELS.some((l) => l.id === level.id + 1)}
+          hasNext={!level.daily}
           onNext={() => navigate(
             level.endless ? `/play?endless=${level.endless + 1}`
             : level.custom ? `/play?custom=${level.custom.tier}&seed=${level.custom.seed + 1}`

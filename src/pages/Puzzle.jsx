@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { LEVELS } from '@/lib/game/levels';
+import { getPathLevel } from '@/lib/game/levelPath';
 import { generateLevel, generateCustomLevel, generateDailyLevel } from '@/lib/game/generator';
 import { todayKey } from '@/lib/game/storage';
 import PuzzleBoard from '@/components/game/PuzzleBoard';
@@ -14,8 +14,8 @@ export default function Puzzle() {
     if (endless) return generateLevel(Math.max(1, parseInt(endless, 10) || 1));
     const custom = params.get('custom');
     if (custom) return generateCustomLevel(custom, Math.max(1, parseInt(params.get('seed'), 10) || 1));
-    const levelId = parseInt(params.get('level') || '1', 10);
-    return LEVELS.find((l) => l.id === levelId) || LEVELS[0];
+    const levelId = Math.max(1, parseInt(params.get('level') || '1', 10) || 1);
+    return getPathLevel(levelId);
   }, [location.search]);
   return <PuzzleBoard key={level.id} level={level} />;
 }

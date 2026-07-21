@@ -139,6 +139,23 @@ export function generateLevel(n) {
   }, n < 10);
 }
 
+// Infinite campaign continuation (levels 31+). Sawtooth rhythm:
+// easy → easy+ → medium → hard → relief, ramping slowly overall so
+// momentum builds without exhaustion.
+const SAW = [0, 1, 2, 3, -3];
+export function generateContinuationLevel(n) {
+  const m = n - 30;
+  const saw = SAW[(m - 1) % 5];
+  const relief = saw < 0;
+  const eff = Math.max(10, 14 + Math.floor((m - 1) / 5) + saw);
+  const d = difficultyFor(eff);
+  return generateFrom(n * 15013 + 7, { ...d, undoAllowed: relief || d.undoAllowed }, {
+    id: n,
+    name: relief ? `Interlude ${String(n).padStart(3, '0')}` : `System ${String(n).padStart(3, '0')}`,
+    tier: relief ? 'Relief' : 'Continuum',
+  }, relief);
+}
+
 // Same puzzle for every player on a given date.
 export function generateDailyLevel(dateKey) {
   const seed = parseInt(dateKey.replace(/-/g, ''), 10);
