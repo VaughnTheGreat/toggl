@@ -49,7 +49,7 @@ export default function SwitchRow({ button, on, locked, available = true, highli
       }`}>{button.id}</span>
       <span className="flex-1 flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
         {locked ? <Lock className="w-3.5 h-3.5 text-amber-500" /> : <Icon className={`w-3.5 h-3.5 ${!available ? 'text-amber-500' : 'text-[#B4BACA]'}`} />}
-        {locked ? 'locked' : describeRule(button.rule)}
+        {locked ? 'locked' : describeRule(button.rule, button.id)}
       </span>
       <Toggle on={on} locked={locked} dim={!available && !locked} colorblind={colorblind} reducedMotion={reducedMotion} />
     </button>

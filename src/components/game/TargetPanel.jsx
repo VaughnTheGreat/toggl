@@ -12,12 +12,17 @@ export default function TargetPanel({ buttons, target, states }) {
           return (
             <div
               key={b.id}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold font-mono ${
-                want ? 'bg-[#00C2A8]/10 text-[#00A38C]' : 'bg-muted text-muted-foreground'
-              } ${matched ? 'opacity-40' : ''}`}
+              className={`flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-full text-xs font-extrabold font-mono border ${
+                want
+                  ? 'bg-[#00C2A8]/10 border-[#00C2A8]/40 text-[#00A38C]'
+                  : 'bg-muted border-border text-muted-foreground'
+              } ${matched ? 'opacity-45' : ''}`}
             >
-              {b.id} {want ? '●' : '○'}
-              {matched && <Check className="w-3 h-3" />}
+              {b.id}
+              <span className={`px-1.5 py-0.5 rounded-full text-[9px] tracking-widest ${
+                want ? 'bg-[#00C2A8] text-white' : 'bg-[#B4BACA]/30 text-muted-foreground'
+              }`}>{want ? 'ON' : 'OFF'}</span>
+              {matched && <Check className="w-3.5 h-3.5" />}
             </div>
           );
         })}

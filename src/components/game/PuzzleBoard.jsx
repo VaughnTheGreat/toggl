@@ -109,7 +109,7 @@ export default function PuzzleBoard({ level }) {
     const btn = level.buttons.find((b) => b.id === firstId);
     const texts = {
       1: `Focus on switch ${firstId}.`,
-      2: `Switch ${firstId} ${describeRule(btn.rule)}. Consider what state the system needs before and after it fires.`,
+      2: `Switch ${firstId} ${describeRule(btn.rule, firstId)}. Consider what state the system needs before and after it fires.`,
       3: `Press ${firstId} next.`,
       4: `Solution from here: ${sol.path.join(' → ')}`,
     };

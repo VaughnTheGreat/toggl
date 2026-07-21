@@ -44,13 +44,14 @@ export function applyPress(states, locks, button) {
   return { states: s, locks: l, changed };
 }
 
-export function describeRule(rule) {
+export function describeRule(rule, selfId) {
+  const name = (id) => (id === selfId ? 'itself' : id);
   switch (rule.type) {
-    case 'toggle': return 'toggles itself';
-    case 'linked': return `toggles ${rule.targets.join(' + ')}`;
-    case 'conditional': return `needs ${rule.condition.button} ${rule.condition.state ? 'ON' : 'OFF'}`;
-    case 'lock': return `locks ${rule.locks.join(' + ')} on press`;
-    case 'copy': return `copies ${rule.source}`;
+    case 'toggle': return 'flips itself only';
+    case 'linked': return `flips ${rule.targets.map(name).join(' + ')} together`;
+    case 'conditional': return `flips itself — needs ${rule.condition.button} ${rule.condition.state ? 'ON' : 'OFF'}`;
+    case 'lock': return `flips itself & locks ${rule.locks.map(name).join(' + ')}`;
+    case 'copy': return `becomes whatever ${rule.source} is`;
     default: return '';
   }
 }
