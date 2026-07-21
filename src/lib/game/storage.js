@@ -4,9 +4,22 @@ export function loadSave() {
   try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
 }
 
+let changeListener = null;
+
+// cloudSync registers here to push the save to the player's account after every write.
+export function onSaveChange(fn) {
+  changeListener = fn;
+}
+
+// Replaces the whole local save (used after merging in the cloud save).
+export function replaceSave(save) {
+  localStorage.setItem(KEY, JSON.stringify(save));
+}
+
 function writeSave(patch) {
   const s = { ...loadSave(), ...patch };
   localStorage.setItem(KEY, JSON.stringify(s));
+  changeListener?.(s);
   return s;
 }
 
