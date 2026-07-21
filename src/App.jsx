@@ -11,7 +11,6 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Home from './pages/Home';
-import Levels from './pages/Levels';
 import Puzzle from './pages/Puzzle';
 import Tutorial from './pages/Tutorial';
 import Profile from './pages/Profile';
@@ -44,7 +43,6 @@ const AuthenticatedApp = () => {
     <Routes>
       {/* Add your page Route elements here */}
       <Route path="/" element={<Home />} />
-      <Route path="/levels" element={<Levels />} />
       <Route path="/play" element={<Puzzle />} />
       <Route path="/tutorial" element={<Tutorial />} />
       <Route path="/profile" element={<Profile />} />

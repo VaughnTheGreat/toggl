@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import PlaySwitch from '@/components/game/PlaySwitch';
 import BottomNav from '@/components/game/BottomNav';
 import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
@@ -26,12 +26,7 @@ export default function Home() {
 
       <div className="flex-1" />
 
-      <Link
-        to={`/play?level=${current}`}
-        className="block w-full max-w-xs mx-auto py-4 rounded-full bg-gradient-to-b from-[#00CDAF] to-[#00A88F] text-white text-center text-lg font-extrabold shadow-[0_8px_24px_rgba(0,194,168,0.45)] active:scale-[0.97] transition-transform"
-      >
-        Play
-      </Link>
+      <PlaySwitch to={`/play?level=${current}`} />
 
       <BottomNav active="home" />
     </Screen>

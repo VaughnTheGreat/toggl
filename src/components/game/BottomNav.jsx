@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home as HomeIcon, LayoutGrid, User } from 'lucide-react';
+import { Home as HomeIcon, User } from 'lucide-react';
 
 const ITEMS = [
   { key: 'home', to: '/', label: 'Home', Icon: HomeIcon },
-  { key: 'levels', to: '/levels', label: 'Levels', Icon: LayoutGrid },
   { key: 'profile', to: '/profile', label: 'Profile', Icon: User },
 ];
 

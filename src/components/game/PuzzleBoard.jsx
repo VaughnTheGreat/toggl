@@ -135,7 +135,7 @@ export default function PuzzleBoard({ level }) {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate(level.daily || level.endless || level.custom ? '/' : '/levels')} aria-label="Back" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0">
+        <button onClick={() => navigate('/')} aria-label="Back" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
@@ -186,7 +186,7 @@ export default function PuzzleBoard({ level }) {
             : `/play?level=${level.id + (completed.skipped ? 2 : 1)}`
           )}
           onRetry={retry}
-          onMenu={() => navigate(level.daily || level.endless || level.custom ? '/' : '/levels')}
+          onMenu={() => navigate('/')}
         />
       )}
     </Screen>
