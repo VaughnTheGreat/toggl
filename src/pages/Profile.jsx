@@ -8,6 +8,7 @@ import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
 import SettingsRows from '@/components/profile/SettingsRows';
+import AccountConnection from '@/components/profile/AccountConnection';
 import { getStars } from '@/lib/game/storage';
 
 export default function Profile() {
@@ -29,6 +30,7 @@ export default function Profile() {
       <RankProgress totalStars={totalStars} />
       <StatTiles />
       <AppearanceToggle />
+      <AccountConnection />
       <SettingsRows />
 
       <BottomNav active="profile" />
