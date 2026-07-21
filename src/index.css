@@ -81,6 +81,19 @@
 
 
 
+@keyframes lg-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+.animate-shake { animation: lg-shake 0.25s ease; }
+
+@keyframes lg-pop {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.25); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
