@@ -27,6 +27,15 @@ export function recordResult(levelId, stars) {
   });
 }
 
+export function getEndlessLevel() {
+  return loadSave().endless || 1;
+}
+
+export function recordEndless(n) {
+  const s = loadSave();
+  writeSave({ endless: Math.max(s.endless || 1, n + 1) });
+}
+
 export function isTutorialDone() {
   return !!loadSave().tutorialDone;
 }

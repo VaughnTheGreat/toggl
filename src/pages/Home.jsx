@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
-import { getStars } from '@/lib/game/storage';
+import { getStars, getEndlessLevel } from '@/lib/game/storage';
 
 export default function Home() {
   useEffect(() => { validateAllLevels(LEVELS); }, []);
@@ -24,6 +24,10 @@ export default function Home() {
         <Link to="/levels" className="flex items-center justify-between px-4 py-4 rounded border border-[#1E2128] bg-[#0E1116] active:bg-[#12161d]">
           <span className="text-sm uppercase tracking-widest font-bold">Campaign</span>
           <span className="text-[11px] text-[#00E5C8]">★ {totalStars}/90</span>
+        </Link>
+        <Link to={`/play?endless=${getEndlessLevel()}`} className="flex items-center justify-between px-4 py-4 rounded border border-[#1E2128] bg-[#0E1116] active:bg-[#12161d]">
+          <span className="text-sm uppercase tracking-widest font-bold">Endless</span>
+          <span className="text-[11px] text-[#00E5C8]">Sequence {String(getEndlessLevel()).padStart(3, '0')}</span>
         </Link>
         <Link to="/tutorial" className="px-4 py-4 rounded border border-[#1E2128] bg-[#0E1116] text-sm uppercase tracking-widest active:bg-[#12161d]">
           Tutorial

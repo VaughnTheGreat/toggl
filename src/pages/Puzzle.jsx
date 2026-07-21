@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { LEVELS } from '@/lib/game/levels';
+import { generateLevel } from '@/lib/game/generator';
 import PuzzleBoard from '@/components/game/PuzzleBoard';
 
 export default function Puzzle() {
   const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const levelId = parseInt(params.get('level') || '1', 10);
-  const level = LEVELS.find((l) => l.id === levelId) || LEVELS[0];
+  const level = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const endless = params.get('endless');
+    if (endless) return generateLevel(Math.max(1, parseInt(endless, 10) || 1));
+    const levelId = parseInt(params.get('level') || '1', 10);
+    return LEVELS.find((l) => l.id === levelId) || LEVELS[0];
+  }, [location.search]);
   return <PuzzleBoard key={level.id} level={level} />;
 }

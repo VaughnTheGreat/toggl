@@ -10,7 +10,7 @@ import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { LEVELS } from '@/lib/game/levels';
-import { getSettings, recordResult } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless } from '@/lib/game/storage';
 import { playClick, vibrate } from '@/lib/game/feedback';
 
 function calcStars(moves, level, hintLevel) {
@@ -40,7 +40,8 @@ export default function PuzzleBoard({ level }) {
     if (!won || completed) return;
     const t = setTimeout(() => {
       const stars = calcStars(moves, level, hintLevel);
-      recordResult(level.id, stars);
+      if (level.endless) recordEndless(level.endless);
+      else recordResult(level.id, stars);
       setCompleted({ stars, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed });
     }, 550);
     return () => clearTimeout(t);
@@ -102,9 +103,9 @@ export default function PuzzleBoard({ level }) {
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/levels')} aria-label="Back to levels" className="p-2 -ml-2"><ArrowLeft className="w-5 h-5" /></button>
+        <button onClick={() => navigate(level.endless ? '/' : '/levels')} aria-label="Back" className="p-2 -ml-2"><ArrowLeft className="w-5 h-5" /></button>
         <div className="flex-1">
-          <div className="text-sm font-bold">{String(level.id).padStart(2, '0')} · {level.name}</div>
+          <div className="text-sm font-bold">{level.endless ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
           <div className="text-[10px] uppercase tracking-widest text-[#6B7280]">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
         </div>
         <div className="text-right">
@@ -137,10 +138,10 @@ export default function PuzzleBoard({ level }) {
       {completed && (
         <CompletionOverlay
           result={completed} level={level}
-          hasNext={LEVELS.some((l) => l.id === level.id + 1)}
-          onNext={() => navigate(`/play?level=${level.id + 1}`)}
+          hasNext={level.endless ? true : LEVELS.some((l) => l.id === level.id + 1)}
+          onNext={() => navigate(level.endless ? `/play?endless=${level.endless + 1}` : `/play?level=${level.id + 1}`)}
           onRetry={retry}
-          onMenu={() => navigate('/levels')}
+          onMenu={() => navigate(level.endless ? '/' : '/levels')}
         />
       )}
     </Screen>
