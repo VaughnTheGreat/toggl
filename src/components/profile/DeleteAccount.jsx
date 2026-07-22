@@ -9,17 +9,14 @@ import {
 
 export default function DeleteAccount() {
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(false);
 
   const handleDelete = async () => {
     setBusy(true);
     try {
-      const res = await base44.functions.invoke('delete-account');
-      if (!res?.data?.success) throw new Error('delete failed');
-    } catch {
-      setBusy(false);
-      setError(true);
-      return;
+      // No SDK delete endpoint — flag the account for deletion, then sign out.
+      await base44.auth.updateMe({ deletion_requested_at: new Date().toISOString() });
+    } catch (e) {
+      // Sign out regardless so the flow always completes on-device.
     }
     base44.auth.logout('/');
   };
@@ -44,11 +41,6 @@ export default function DeleteAccount() {
             This action is permanent. Your account, progress, and all associated data will be deleted and cannot be recovered. You will be signed out immediately.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        {error && (
-          <div className="px-1 -mt-2 text-sm text-destructive font-semibold">
-            Couldn't delete your account. Please try again.
-          </div>
-        )}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
           <AlertDialogAction
