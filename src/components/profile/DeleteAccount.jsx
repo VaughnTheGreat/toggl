@@ -9,6 +9,7 @@ import {
 
 export default function DeleteAccount() {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleDelete = async () => {
     setBusy(true);
@@ -43,6 +44,11 @@ export default function DeleteAccount() {
             This action is permanent. Your account, progress, and all associated data will be deleted and cannot be recovered. You will be signed out immediately.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        {error && (
+          <div className="px-1 -mt-2 text-sm text-destructive font-semibold">
+            Couldn't delete your account. Please try again.
+          </div>
+        )}
         <AlertDialogFooter>
           <AlertDialogCancel disabled={busy}>Cancel</AlertDialogCancel>
           <AlertDialogAction
