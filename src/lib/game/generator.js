@@ -13,24 +13,32 @@ function mulberry32(a) {
   };
 }
 
-const IDS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+const IDS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
 
 // Difficulty curve: more buttons, more rule types, deeper solutions as n grows.
+// New rule types keep unlocking deep into the game, and boards keep growing
+// past the early cap of 8 — so complexity never fully plateaus.
 export function difficultyFor(n) {
-  const buttonCount = Math.min(2 + Math.ceil(n / 3), 8);
+  const extraButtons = Math.min(Math.max(0, Math.floor((n - 40) / 15)), 4);
+  const buttonCount = Math.min(2 + Math.ceil(n / 3), 8) + extraButtons;
   const types = ['toggle'];
   if (n >= 3) types.push('linked');
   if (n >= 6) types.push('conditional');
   if (n >= 10) types.push('lock');
   if (n >= 14) types.push('copy');
-  const targetMoves = Math.min(1 + Math.ceil(n / 2), 9);
+  if (n >= 18) types.push('inverse');
+  if (n >= 22) types.push('swap');
+  if (n >= 26) types.push('oneshot');
+  if (n >= 30) types.push('chain');
+  const extraDepth = Math.min(Math.max(0, Math.floor((n - 40) / 20)), 3);
+  const targetMoves = Math.min(1 + Math.ceil(n / 2), 9) + extraDepth;
   return { buttonCount, types, targetMoves, undoAllowed: n < 12 };
 }
 
 function buildButtons(rng, ids, types) {
   const pick = (arr) => arr[Math.floor(rng() * arr.length)];
   const others = (id) => ids.filter((x) => x !== id);
-  return ids.map((id) => {
+  const buttons = ids.map((id) => {
     const t = pick(types);
     switch (t) {
       case 'linked': {
@@ -44,10 +52,27 @@ function buildButtons(rng, ids, types) {
         return { id, rule: { type: 'lock', locks: [pick(others(id))] } };
       case 'copy':
         return { id, rule: { type: 'copy', source: pick(others(id)) } };
+      case 'inverse':
+        return { id, rule: { type: 'inverse', targets: others(id) } };
+      case 'swap':
+        return { id, rule: { type: 'swap', target: pick(others(id)) } };
+      case 'oneshot':
+        return { id, rule: { type: 'oneshot' } };
+      case 'chain':
+        return { id, rule: { type: 'chain', target: null } };
       default:
         return { id, rule: { type: 'toggle' } };
     }
   });
+  // Resolve chains: each fires a non-chain neighbour's rule (snapshot, so no cycles).
+  for (const b of buttons) {
+    if (b.rule.type !== 'chain') continue;
+    const cands = buttons.filter((x) => x.id !== b.id && x.rule.type !== 'chain');
+    if (!cands.length) { b.rule = { type: 'toggle' }; continue; }
+    const t = cands[Math.floor(rng() * cands.length)];
+    b.rule = { type: 'chain', target: t.id, targetRule: t.rule };
+  }
+  return buttons;
 }
 
 // BFS from the start state, recording the first depth each button-state pattern
@@ -94,7 +119,7 @@ export const DIFFICULTIES = {
   beginner: { label: 'Beginner', desc: 'Toggles & linked switches', buttonCount: 3, types: ['toggle', 'linked'], targetMoves: 3, undoAllowed: true },
   skilled: { label: 'Skilled', desc: 'Conditional switches appear', buttonCount: 5, types: ['toggle', 'linked', 'conditional'], targetMoves: 5, undoAllowed: true },
   advanced: { label: 'Advanced', desc: 'Locks — no undo', buttonCount: 6, types: ['toggle', 'linked', 'conditional', 'lock'], targetMoves: 7, undoAllowed: false },
-  expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy'], targetMoves: 9, undoAllowed: false },
+  expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'], targetMoves: 9, undoAllowed: false },
 };
 
 function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit, mysteryCount = 0) {
@@ -135,8 +160,8 @@ export function generateLevel(n) {
     const d = difficultyFor(n);
     return generateFrom(n * 7919, {
       ...d,
-      buttonCount: Math.min(d.buttonCount + 2, 8),
-      targetMoves: Math.min(d.targetMoves + 2, 11),
+      buttonCount: Math.min(d.buttonCount + 2, 12),
+      targetMoves: Math.min(d.targetMoves + 2, 12),
     }, {
       id: `E${n}`, name: `Milestone ${String(n).padStart(3, '0')}`, tier: 'Milestone', endless: n, milestone: true,
     }, false, 1);
@@ -150,17 +175,34 @@ export function generateLevel(n) {
 // easy → easy+ → medium → hard → relief, ramping slowly overall so
 // momentum builds without exhaustion.
 const SAW = [0, 1, 2, 3, -3];
+
+// Rotating modifiers keep late-game levels feeling distinct even after
+// every rule type has been unlocked.
+const MODIFIERS = [
+  { label: 'Mystery', mystery: 2 },
+  { label: 'Precision', exact: true },
+  { label: 'Surge', surge: true },
+  { label: 'Veiled', mystery: 3 },
+];
+
 export function generateContinuationLevel(n) {
   const m = n - 30;
   const saw = SAW[(m - 1) % 5];
   const relief = saw < 0;
   const eff = Math.max(10, 14 + Math.floor((m - 1) / 5) + saw);
   const d = difficultyFor(eff);
-  return generateFrom(n * 15013 + 7, { ...d, undoAllowed: relief || d.undoAllowed }, {
+  const mod = !relief && n > 50 ? MODIFIERS[Math.floor((n - 51) / 5) % MODIFIERS.length] : null;
+  if (mod?.surge) {
+    d.buttonCount = Math.min(d.buttonCount + 1, 12);
+    d.targetMoves = Math.min(d.targetMoves + 1, 12);
+  }
+  const level = generateFrom(n * 15013 + 7, { ...d, undoAllowed: relief || d.undoAllowed }, {
     id: n,
     name: relief ? `Interlude ${String(n).padStart(3, '0')}` : `System ${String(n).padStart(3, '0')}`,
-    tier: relief ? 'Relief' : 'Continuum',
-  }, relief, relief ? 0 : 1);
+    tier: relief ? 'Relief' : mod ? `Continuum · ${mod.label}` : 'Continuum',
+  }, relief, relief ? 0 : (mod?.mystery ?? 1));
+  if (mod?.exact) level.moveLimit = level.optimalMoves;
+  return level;
 }
 
 // Same puzzle for every player on a given date.
@@ -168,7 +210,7 @@ export function generateDailyLevel(dateKey) {
   const seed = parseInt(dateKey.replace(/-/g, ''), 10);
   return generateFrom(seed, {
     buttonCount: 6,
-    types: ['toggle', 'linked', 'conditional', 'lock', 'copy'],
+    types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'],
     targetMoves: 6,
     undoAllowed: true,
   }, {

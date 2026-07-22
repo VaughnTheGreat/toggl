@@ -6,7 +6,9 @@ export function previewPress(states, locks, button) {
   const res = applyPress(states, locks, button);
   const lines = res.changed.map((id) =>
     res.locks[id] && !locks[id]
-      ? `${id} will become locked`
+      ? (!!res.states[id] !== !!states[id]
+        ? `${id} will turn ${res.states[id] ? 'ON' : 'OFF'} and lock`
+        : `${id} will become locked`)
       : `${id} will turn ${res.states[id] ? 'ON' : 'OFF'}`
   );
   return lines.length ? lines : ['Nothing will change'];

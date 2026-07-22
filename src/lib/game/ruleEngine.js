@@ -38,6 +38,37 @@ export function applyPress(states, locks, button) {
         changed.push(button.id);
       }
       break;
+    case 'inverse':
+      for (const t of r.targets) {
+        s[t] = !s[t];
+        changed.push(t);
+      }
+      break;
+    case 'swap': {
+      const a = !!s[button.id];
+      const b = !!s[r.target];
+      if (a !== b) {
+        s[button.id] = b;
+        s[r.target] = a;
+        changed.push(button.id, r.target);
+      }
+      break;
+    }
+    case 'oneshot':
+      s[button.id] = !s[button.id];
+      l[button.id] = true;
+      changed.push(button.id);
+      break;
+    case 'chain': {
+      s[button.id] = !s[button.id];
+      changed.push(button.id);
+      if (!l[r.target]) {
+        const sub = applyPress(s, l, { id: r.target, rule: r.targetRule });
+        for (const c of sub.changed) if (!changed.includes(c)) changed.push(c);
+        return { states: sub.states, locks: sub.locks, changed };
+      }
+      break;
+    }
     default:
       break;
   }
@@ -52,6 +83,10 @@ export function describeRule(rule, selfId) {
     case 'conditional': return `flips itself — needs ${rule.condition.button} ${rule.condition.state ? 'ON' : 'OFF'}`;
     case 'lock': return `flips itself & locks ${rule.locks.map(name).join(' + ')}`;
     case 'copy': return `becomes whatever ${rule.source} is`;
+    case 'inverse': return 'flips every switch except itself';
+    case 'swap': return `trades states with ${rule.target}`;
+    case 'oneshot': return 'flips itself once, then locks forever';
+    case 'chain': return `flips itself & fires ${rule.target}'s rule`;
     default: return '';
   }
 }
