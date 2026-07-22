@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Apple } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import DeleteAccount from '@/components/profile/DeleteAccount';
 
 export default function AccountConnection() {
   const [email, setEmail] = useState(null);
@@ -28,6 +29,7 @@ export default function AccountConnection() {
           <span className="block text-[11px] font-semibold text-muted-foreground">sign in with Apple on this account</span>
         </span>
       </button>
+      <DeleteAccount />
     </div>
   );
 }

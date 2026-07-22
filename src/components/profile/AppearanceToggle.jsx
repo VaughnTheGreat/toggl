@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Smartphone } from 'lucide-react';
 import { getSettings, saveSettings } from '@/lib/game/storage';
 import { applyTheme } from '@/lib/game/theme';
 
 const MODES = [
   { key: 'light', label: 'Light', Icon: Sun },
   { key: 'dark', label: 'Dark', Icon: Moon },
+  { key: 'system', label: 'System', Icon: Smartphone },
 ];
 
 export default function AppearanceToggle() {
@@ -20,7 +21,7 @@ export default function AppearanceToggle() {
   return (
     <div className="bg-card rounded-3xl shadow-sm p-4 mb-4">
       <div className="text-sm font-bold mb-3">Appearance</div>
-      <div className="grid grid-cols-2 gap-1 bg-muted rounded-full p-1">
+      <div className="grid grid-cols-3 gap-1 bg-muted rounded-full p-1">
         {MODES.map(({ key, label, Icon }) => (
           <button
             key={key}

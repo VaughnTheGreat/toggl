@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import SaveGate from './components/SaveGate';
+import PageFade from './components/PageFade';
 // Add page imports here
 import Home from './pages/Home';
 import Puzzle from './pages/Puzzle';
@@ -42,6 +43,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <SaveGate>
+    <PageFade>
     <Routes>
       {/* Add your page Route elements here */}
       <Route path="/" element={<Home />} />
@@ -51,6 +53,7 @@ const AuthenticatedApp = () => {
       <Route path="/settings" element={<Profile />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </PageFade>
     </SaveGate>
   );
 };

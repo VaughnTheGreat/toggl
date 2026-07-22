@@ -10,7 +10,7 @@ const ITEMS = [
 export default function BottomNav({ active }) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40">
-      <div className="max-w-md mx-auto flex items-center justify-around py-2.5 pb-4">
+      <div className="max-w-md mx-auto flex items-center justify-around py-2.5 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
         {ITEMS.map(({ key, to, label, Icon }) =>
           key === active ? (
             <span key={key} className="flex flex-col items-center gap-0.5 text-[#00A38C]">
