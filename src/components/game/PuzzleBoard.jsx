@@ -8,6 +8,7 @@ import CompletionFlash from '@/components/game/CompletionFlash';
 import HintPanel from '@/components/game/HintPanel';
 import PreviewPanel from '@/components/game/PreviewPanel';
 import DeadEndBanner from '@/components/game/DeadEndBanner';
+import RuleGuide from '@/components/game/RuleGuide';
 import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
@@ -153,6 +154,7 @@ export default function PuzzleBoard({ level }) {
           <div className="text-base font-extrabold">{level.daily ? '◆' : level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
         </div>
+        <RuleGuide buttons={level.buttons} revealed={revealed} />
         <div className="bg-card rounded-full shadow-sm px-4 py-2 text-right">
           <span className="text-sm font-extrabold tabular-nums">{moves} / {settings.zen ? '∞' : level.moveLimit}</span>
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1.5">moves</span>

@@ -13,10 +13,12 @@ export default function DeleteAccount() {
   const handleDelete = async () => {
     setBusy(true);
     try {
-      // No SDK delete endpoint — flag the account for deletion, then sign out.
-      await base44.auth.updateMe({ deletion_requested_at: new Date().toISOString() });
+      const res = await base44.functions.invoke('delete-account');
+      if (!res?.data?.success) throw new Error('delete failed');
     } catch {
-      // Sign out regardless so the flow always completes on-device.
+      setBusy(false);
+      setError(true);
+      return;
     }
     base44.auth.logout('/');
   };
