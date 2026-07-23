@@ -247,7 +247,7 @@ export function generateContinuationLevel(n) {
     id: n,
     name: relief ? `Interlude ${String(n).padStart(3, '0')}` : `System ${String(n).padStart(3, '0')}`,
     tier: relief ? 'Relief' : mod ? `Continuum · ${mod.label}` : 'Continuum',
-  }, relief, relief ? 0 : (mod?.mystery ?? 1));
+  }, relief, relief ? 0 : (mod?.mystery ?? 1), mod?.objective === 'count' ? 'count' : 'match');
   if (mod?.exact) level.moveLimit = level.optimalMoves;
   return level;
 }
