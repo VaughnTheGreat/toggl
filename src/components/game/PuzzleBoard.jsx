@@ -13,6 +13,7 @@ import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
+import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
@@ -44,13 +45,18 @@ export default function PuzzleBoard({ level }) {
   const resetsRef = useRef(0);
 
   const { states, locks, moves, history, undosUsed } = game;
-  const won = moves > 0 && level.buttons.every((b) => !!states[b.id] === !!level.target[b.id]);
-  const matched = level.buttons.filter((b) => !!states[b.id] === !!level.target[b.id]).length;
-  const total = level.buttons.length;
+  const countMode = isCountObjective(level);
+  const won = moves > 0 && isSolved(states, level);
+  const matched = countMode
+    ? countOn(states, level)
+    : level.buttons.filter((b) => !!states[b.id] === !!level.target[b.id]).length;
+  const total = countMode ? level.objective.count : level.buttons.length;
 
   useEffect(() => {
-    if (moves > 0 && matched > bestMatch) setBestMatch(matched);
-  }, [matched, moves]); // eslint-disable-line react-hooks/exhaustive-deps
+    // "Best attempt" tracking only makes sense for exact-match levels — a count
+    // objective isn't monotonically closer as the ON-count rises past the target.
+    if (!countMode && moves > 0 && matched > bestMatch) setBestMatch(matched);
+  }, [matched, moves, countMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!won || completed) return;
@@ -161,7 +167,7 @@ export default function PuzzleBoard({ level }) {
         </div>
       </div>
 
-      <TargetPanel buttons={level.buttons} target={level.target} states={states} />
+      <TargetPanel level={level} buttons={level.buttons} target={level.target} states={states} />
       <div className="my-4" />
       <div className={won && !settings.reducedMotion ? 'animate-pulse' : ''}>
         <SystemPanel
@@ -187,7 +193,7 @@ export default function PuzzleBoard({ level }) {
           <RotateCcw className="w-3.5 h-3.5" /> Reset
         </button>
       </div>
-      {resetsRef.current > 0 && bestMatch > 0 && !won && !completed && (
+      {!countMode && resetsRef.current > 0 && bestMatch > 0 && !won && !completed && (
         <div className="mt-3 text-[11px] font-bold text-muted-foreground">
           Best attempt: <span className="text-[#00A38C]">{bestMatch}/{total}</span> targets — you know this system better now.
         </div>
