@@ -162,14 +162,16 @@ export const DIFFICULTIES = {
   expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'], targetMoves: 9, undoAllowed: false },
 };
 
-function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit, mysteryCount = 0) {
+function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit, mysteryCount = 0, objectiveMode = 'match') {
   const ids = IDS.slice(0, buttonCount);
   const base = { ...meta, undoAllowed };
   for (let attempt = 0; attempt < 80; attempt++) {
     const rng = mulberry32(seedBase + attempt * 104729 + 1);
     const buttons = buildButtons(rng, ids, types);
     const start = Object.fromEntries(ids.map((id) => [id, rng() < 0.35]));
-    const found = findTarget(buttons, ids, start, targetMoves, rng);
+    const found = objectiveMode === 'count'
+      ? findCountGoal(buttons, ids, start, targetMoves, rng)
+      : findTarget(buttons, ids, start, targetMoves, rng);
     if (found) {
       // Mystery switches: hide the rule of a non-trivial button until first pressed.
       if (mysteryCount > 0 && rng() < 0.6) {
@@ -178,8 +180,11 @@ function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }
           cands.splice(Math.floor(rng() * cands.length), 1)[0].mystery = true;
         }
       }
+      const objective = objectiveMode === 'count'
+        ? { type: 'count', count: ids.filter((id) => found.target[id]).length }
+        : { type: 'match' };
       return {
-        ...base, buttons, start, target: found.target,
+        ...base, buttons, start, target: found.target, objective,
         optimalMoves: found.depth, moveLimit: found.depth + (generousLimit ? 2 : 1),
       };
     }
@@ -187,6 +192,7 @@ function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }
   // Guaranteed-solvable fallback (practically unreachable).
   return {
     ...base,
+    objective: objectiveMode === 'count' ? { type: 'count', count: ids.length } : { type: 'match' },
     buttons: ids.map((id) => ({ id, rule: { type: 'toggle' } })),
     start: Object.fromEntries(ids.map((id) => [id, false])),
     target: Object.fromEntries(ids.map((id) => [id, true])),
