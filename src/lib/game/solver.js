@@ -1,9 +1,10 @@
 // BFS state-space solver. Respects locks and conditions. Returns minimum-move solution.
 import { canPress, applyPress } from './ruleEngine';
+import { isSolved } from './objective';
 
 export function solveFrom(states, locks, level, maxDepth = 16) {
   const key = (s, l) => level.buttons.map((b) => `${s[b.id] ? 1 : 0}${l[b.id] ? 1 : 0}`).join('');
-  const matches = (s) => level.buttons.every((b) => !!s[b.id] === !!level.target[b.id]);
+  const matches = (s) => isSolved(s, level);
   if (matches(states)) return { solvable: true, minMoves: 0, path: [] };
 
   const visited = new Set([key(states, locks)]);
