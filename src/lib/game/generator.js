@@ -114,6 +114,46 @@ function findTarget(buttons, ids, start, targetMoves, rng) {
   return { target: { ...patternState.get(pickKey) }, depth: best };
 }
 
+// Same BFS shape as findTarget, but keyed by ON-count instead of exact pattern —
+// backs the 'count' objective ("turn ON exactly N switches") without adding any
+// new dimension to the solver's state space: it's still states+locks, just a
+// different predicate over the same reachable set.
+function findCountGoal(buttons, ids, start, targetMoves, rng) {
+  const countKey = (s) => String(ids.reduce((n, id) => n + (s[id] ? 1 : 0), 0));
+  const fullKey = (s, l) => ids.map((id) => `${s[id] ? 1 : 0}${l[id] ? 1 : 0}`).join('');
+  const countDepth = new Map([[countKey(start), 0]]);
+  const countState = new Map();
+  const visited = new Set([fullKey(start, {})]);
+  let frontier = [{ s: start, l: {} }];
+
+  for (let d = 1; d <= targetMoves && frontier.length; d++) {
+    const next = [];
+    for (const node of frontier) {
+      for (const b of buttons) {
+        if (!canPress(node.s, node.l, b)) continue;
+        const r = applyPress(node.s, node.l, b);
+        const fk = fullKey(r.states, r.locks);
+        if (visited.has(fk)) continue;
+        visited.add(fk);
+        const ck = countKey(r.states);
+        if (!countDepth.has(ck)) {
+          countDepth.set(ck, d);
+          countState.set(ck, r.states);
+        }
+        next.push({ s: r.states, l: r.locks });
+      }
+    }
+    frontier = next;
+  }
+
+  let best = 0;
+  for (const d of countDepth.values()) best = Math.max(best, d);
+  if (best < Math.min(2, targetMoves)) return null;
+  const candidates = [...countDepth.entries()].filter(([, d]) => d === best).map(([k]) => k);
+  const pickKey = candidates[Math.floor(rng() * candidates.length)];
+  return { target: { ...countState.get(pickKey) }, depth: best };
+}
+
 // Player-selectable difficulty presets for Custom Play.
 export const DIFFICULTIES = {
   beginner: { label: 'Beginner', desc: 'Toggles & linked switches', buttonCount: 3, types: ['toggle', 'linked'], targetMoves: 3, undoAllowed: true },
