@@ -180,7 +180,9 @@ export default function PuzzleBoard({ level }) {
         />
       </div>
 
-      {deadEnd && !completed && <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} matched={matched} total={total} />}
+      {deadEnd && !completed && (
+        <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} matched={countMode ? null : matched} total={total} />
+      )}
 
       <div className="flex items-center gap-2.5 mt-5">
         {level.undoAllowed && (
