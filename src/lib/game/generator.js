@@ -229,6 +229,7 @@ const MODIFIERS = [
   { label: 'Precision', exact: true },
   { label: 'Surge', surge: true },
   { label: 'Veiled', mystery: 3 },
+  { label: 'Quota', objective: 'count' },
 ];
 
 export function generateContinuationLevel(n) {
