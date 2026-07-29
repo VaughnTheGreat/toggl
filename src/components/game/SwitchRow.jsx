@@ -58,6 +58,9 @@ export default function SwitchRow({ button, on, locked, available = true, highli
             }`}>{button.id}</span>
             {locked ? <Lock className="w-3.5 h-3.5 text-amber-500" /> : hidden ? <HelpCircle className="w-3.5 h-3.5 text-violet-500" /> : <Icon className={`w-3.5 h-3.5 ${!available ? 'text-amber-500' : 'text-[#B4BACA]'}`} />}
           </span>
+          <span className="text-[9.5px] leading-tight font-semibold text-muted-foreground text-center line-clamp-2">
+            {locked ? 'locked' : hidden ? <span className="text-violet-500 dark:text-violet-400">unknown — press to discover</span> : describeRule(button.rule, button.id)}
+          </span>
           <Toggle on={on} locked={locked} dim={!available && !locked} colorblind={colorblind} reducedMotion={reducedMotion} />
         </>
       ) : (
