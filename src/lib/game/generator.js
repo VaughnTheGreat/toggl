@@ -30,6 +30,7 @@ export function difficultyFor(n) {
   if (n >= 22) types.push('swap');
   if (n >= 26) types.push('oneshot');
   if (n >= 30) types.push('chain');
+  if (n >= 34) types.push('delay');
   const extraDepth = Math.min(Math.max(0, Math.floor((n - 40) / 20)), 3);
   const targetMoves = Math.min(1 + Math.ceil(n / 2), 9) + extraDepth;
   return { buttonCount, types, targetMoves, undoAllowed: n < 12 };
@@ -60,6 +61,8 @@ function buildButtons(rng, ids, types) {
         return { id, rule: { type: 'oneshot' } };
       case 'chain':
         return { id, rule: { type: 'chain', target: null } };
+      case 'delay':
+        return { id, rule: { type: 'delay', target: pick(others(id)), delayMs: 1200 + Math.floor(rng() * 1200) } };
       default:
         return { id, rule: { type: 'toggle' } };
     }

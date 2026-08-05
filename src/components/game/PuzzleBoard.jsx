@@ -39,12 +39,14 @@ export default function PuzzleBoard({ level }) {
   const [preview, setPreview] = useState(null);
   const [deadEnd, setDeadEnd] = useState(null);
   const [revealed, setRevealed] = useState({});
+  const [pendingVisual, setPendingVisual] = useState({});
   const [bestMatch, setBestMatch] = useState(0);
   const startRef = useRef(Date.now());
   const deniedRef = useRef(0);
   const resetsRef = useRef(0);
 
   const { states, locks, moves, history, undosUsed } = game;
+  const displayStates = { ...states, ...pendingVisual };
   const countMode = isCountObjective(level);
   const won = moves > 0 && isSolved(states, level);
   const matched = countMode
@@ -94,13 +96,26 @@ export default function PuzzleBoard({ level }) {
       return;
     }
     const res = applyPress(states, locks, button);
-    if (res.changed.length > 1) playCascade(settings.sound, res.changed.length - 1);
+    const isDelay = button.rule.type === 'delay';
+    const delayTarget = isDelay ? button.rule.target : null;
+    const immediateTargets = isDelay ? res.changed.filter((id) => id !== delayTarget) : res.changed;
+    if (immediateTargets.length > 1) playCascade(settings.sound, immediateTargets.length - 1);
     else playFlip(settings.sound);
-    vibrate(settings.haptics, res.changed.length > 1 ? [15, 60, 15] : 15);
-    setLastEffect({ source: button.id, targets: res.changed, ts: Date.now() });
+    vibrate(settings.haptics, immediateTargets.length > 1 ? [15, 60, 15] : 15);
+    setLastEffect({ source: button.id, targets: immediateTargets, ts: Date.now() });
     setHighlightId(null);
     setHint(null);
     setPreview(null);
+    if (isDelay) {
+      const oldVal = !!states[delayTarget];
+      setPendingVisual((p) => ({ ...p, [delayTarget]: oldVal }));
+      setTimeout(() => {
+        setPendingVisual((p) => { const np = { ...p }; delete np[delayTarget]; return np; });
+        setLastEffect({ source: button.id, targets: [delayTarget], ts: Date.now() });
+        playCascade(settings.sound, 1);
+        vibrate(settings.haptics, [15, 60, 15]);
+      }, button.rule.delayMs || 1500);
+    }
     dispatch({ type: 'PRESS', button });
     if (!settings.reducedMotion) {
       setAnimating(true);
@@ -167,16 +182,17 @@ export default function PuzzleBoard({ level }) {
         </div>
       </div>
 
-      <TargetPanel level={level} buttons={level.buttons} target={level.target} states={states} />
+      <TargetPanel level={level} buttons={level.buttons} target={level.target} states={displayStates} />
       <div className="my-4" />
       <div className={won && !settings.reducedMotion ? 'animate-pulse' : ''}>
         <SystemPanel
-          buttons={level.buttons} states={states} locks={locks}
+          buttons={level.buttons} states={displayStates} locks={locks}
           onPress={handlePress} lastEffect={lastEffect}
           onPreview={previewAllowed ? handlePreview : undefined}
           onPreviewEnd={() => setPreview(null)}
           highlightId={highlightId} deniedId={deniedId} settings={settings}
           revealed={revealed}
+          pendingIds={Object.keys(pendingVisual)}
         />
       </div>
 

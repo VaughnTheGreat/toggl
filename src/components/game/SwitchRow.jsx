@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { Power, ArrowRightLeft, Diamond, Lock, Copy, HelpCircle, Repeat, ArrowLeftRight, Zap, Link2 } from 'lucide-react';
+import { Power, ArrowRightLeft, Diamond, Lock, Copy, HelpCircle, Repeat, ArrowLeftRight, Zap, Link2, Clock } from 'lucide-react';
 import Toggle from '@/components/game/Toggle';
 import { describeRule } from '@/lib/game/ruleEngine';
 
-const ICONS = { toggle: Power, linked: ArrowRightLeft, conditional: Diamond, lock: Lock, copy: Copy, inverse: Repeat, swap: ArrowLeftRight, oneshot: Zap, chain: Link2 };
+const ICONS = { toggle: Power, linked: ArrowRightLeft, conditional: Diamond, lock: Lock, copy: Copy, inverse: Repeat, swap: ArrowLeftRight, oneshot: Zap, chain: Link2, delay: Clock };
 
-export default function SwitchRow({ button, on, locked, available = true, highlight, denied, flash, flashDelay = 0, hidden, onPress, onPreview, onPreviewEnd, colorblind, reducedMotion, innerRef, compact }) {
+export default function SwitchRow({ button, on, locked, available = true, highlight, denied, flash, flashDelay = 0, hidden, onPress, onPreview, onPreviewEnd, colorblind, reducedMotion, innerRef, compact, pending }) {
   const Icon = ICONS[button.rule.type] || Power;
   const holdRef = useRef({ timer: null, held: false });
 
@@ -43,7 +43,7 @@ export default function SwitchRow({ button, on, locked, available = true, highli
         ? 'flex flex-col items-center gap-1.5 px-2 py-2.5'
         : 'flex items-center gap-3 min-h-[60px] px-4 py-2.5'
       } rounded-2xl text-left bg-card shadow-sm transition-all active:scale-[0.98] select-none ${
-        highlight ? 'ring-2 ring-[#00C2A8]' : flash ? 'ring-2 ring-[#00C2A8]/50' : ''
+        highlight ? 'ring-2 ring-[#00C2A8]' : flash ? 'ring-2 ring-[#00C2A8]/50' : pending ? 'ring-2 ring-amber-400/70 animate-pulse' : ''
       } ${denied ? 'animate-shake' : ''}`}
       style={{
         WebkitTouchCallout: 'none',

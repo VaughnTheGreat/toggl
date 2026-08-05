@@ -59,6 +59,12 @@ export function applyPress(states, locks, button) {
       l[button.id] = true;
       changed.push(button.id);
       break;
+    case 'delay':
+      s[button.id] = !s[button.id];
+      changed.push(button.id);
+      s[r.target] = !s[r.target];
+      changed.push(r.target);
+      break;
     case 'chain': {
       s[button.id] = !s[button.id];
       changed.push(button.id);
@@ -87,6 +93,7 @@ export function describeRule(rule, selfId) {
     case 'swap': return `trades states with ${rule.target}`;
     case 'oneshot': return 'flips itself once, then locks forever';
     case 'chain': return `flips itself & fires ${rule.target}'s rule`;
+    case 'delay': return `flips itself, then ${rule.target} after a delay`;
     default: return '';
   }
 }
