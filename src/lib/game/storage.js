@@ -49,6 +49,18 @@ export function recordEndless(n) {
   writeSave({ endless: Math.max(s.endless || 1, n + 1) });
 }
 
+// Bumps local unlocked-level state to at least n (used after the backend
+// reports highest_level_unlocked increased for the signed-in player).
+export function setUnlockedAtLeast(n) {
+  const s = loadSave();
+  writeSave({ unlocked: Math.max(s.unlocked || 1, n) });
+}
+
+// Wipes the entire local save (used after deleteMyData succeeds).
+export function resetSave() {
+  replaceSave({});
+}
+
 export function isTutorialDone() {
   return !!loadSave().tutorialDone;
 }

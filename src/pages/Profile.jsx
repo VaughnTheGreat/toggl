@@ -7,9 +7,11 @@ import BottomNav from '@/components/game/BottomNav';
 import StreakCard from '@/components/profile/StreakCard';
 import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
+import BackendProgressCard from '@/components/profile/BackendProgressCard';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
 import SettingsRows from '@/components/profile/SettingsRows';
 import AccountConnection from '@/components/profile/AccountConnection';
+import DeleteMyData from '@/components/profile/DeleteMyData';
 import { getStars } from '@/lib/game/storage';
 
 export default function Profile() {
@@ -33,9 +35,11 @@ export default function Profile() {
       <StreakCard />
       <RankProgress totalStars={totalStars} />
       <StatTiles />
+      <BackendProgressCard />
       <AppearanceToggle />
       <AccountConnection />
       <SettingsRows />
+      <DeleteMyData />
 
       <BottomNav active="profile" />
     </Screen>

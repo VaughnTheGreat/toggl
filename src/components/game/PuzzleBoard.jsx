@@ -14,9 +14,10 @@ import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
-import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
+import { submitAttempt } from '@/lib/game/backendSync';
 
 function calcStars(moves, level, hintLevel) {
   let s = moves <= level.optimalMoves ? 3 : moves <= level.moveLimit ? 2 : 1;
@@ -44,6 +45,23 @@ export default function PuzzleBoard({ level }) {
   const startRef = useRef(Date.now());
   const deniedRef = useRef(0);
   const resetsRef = useRef(0);
+  const switchesRef = useRef(0);
+  const submittedRef = useRef(false);
+
+  const submitGameResult = (isCompleted, isPerfect) => {
+    const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
+    submitAttempt({
+      levelId: numericLevelId,
+      timeTakenSeconds: Math.round((Date.now() - startRef.current) / 1000),
+      movesUsed: moves,
+      optimalMoves: level.optimalMoves ?? level.buttons.length,
+      completed: isCompleted,
+      perfect: !!isPerfect,
+      switchesToggled: switchesRef.current,
+    }).then((stats) => {
+      if (stats?.highest_level_unlocked) setUnlockedAtLeast(stats.highest_level_unlocked);
+    }).catch(() => {});
+  };
 
   const { states, locks, moves, history, undosUsed } = game;
   const displayStates = { ...states, ...pendingVisual };
@@ -74,6 +92,10 @@ export default function PuzzleBoard({ level }) {
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);
       setCompleted({ ...result, newBadges });
+      if (!submittedRef.current) {
+        submittedRef.current = true;
+        submitGameResult(true, moves === level.optimalMoves);
+      }
     }, 550);
     return () => clearTimeout(t);
   }, [won]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -96,6 +118,7 @@ export default function PuzzleBoard({ level }) {
       return;
     }
     const res = applyPress(states, locks, button);
+    switchesRef.current += res.changed.length;
     const isDelay = button.rule.type === 'delay';
     const delayTarget = isDelay ? button.rule.target : null;
     const immediateTargets = isDelay ? res.changed.filter((id) => id !== delayTarget) : res.changed;
@@ -163,12 +186,22 @@ export default function PuzzleBoard({ level }) {
     setHighlightId(null);
     startRef.current = Date.now();
     deniedRef.current = 0;
+    switchesRef.current = 0;
+    submittedRef.current = false;
+  };
+
+  const handleBack = () => {
+    if (moves > 0 && !won && !completed && !submittedRef.current) {
+      submittedRef.current = true;
+      submitGameResult(false, false);
+    }
+    navigate('/');
   };
 
   return (
     <Screen>
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/')} aria-label="Back" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0">
+        <button onClick={handleBack} aria-label="Back" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
