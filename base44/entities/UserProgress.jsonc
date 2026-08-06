@@ -1,0 +1,68 @@
+{
+  "name": "UserProgress",
+  "type": "object",
+  "properties": {
+    "rating": {
+      "type": "number",
+      "default": 1000
+    },
+    "rank": {
+      "type": "string",
+      "default": "novice"
+    },
+    "current_level": {
+      "type": "number",
+      "default": 1
+    },
+    "highest_level_unlocked": {
+      "type": "number",
+      "default": 1
+    },
+    "total_solves": {
+      "type": "number",
+      "default": 0
+    },
+    "total_attempts": {
+      "type": "number",
+      "default": 0
+    },
+    "daily_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "longest_daily_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "current_perfect_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "longest_perfect_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "last_play_date": {
+      "type": "string"
+    },
+    "consistency_score": {
+      "type": "number",
+      "default": 0
+    },
+    "selected_difficulty": {
+      "type": "string",
+      "default": "normal"
+    },
+    "adaptive_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "rating_history": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "Attempt",
+  "type": "object",
+  "properties": {
+    "level_id": {
+      "type": "number"
+    },
+    "time_taken_seconds": {
+      "type": "number"
+    },
+    "moves_used": {
+      "type": "number"
+    },
+    "optimal_moves": {
+      "type": "number"
+    },
+    "completed": {
+      "type": "boolean"
+    },
+    "perfect": {
+      "type": "boolean"
+    },
+    "switches_toggled": {
+      "type": "number"
+    },
+    "date": {
+      "type": "string"
+    }
+  }
+}
