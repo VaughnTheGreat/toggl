@@ -5,10 +5,24 @@ import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getPathLevel } from '@/lib/game/levelPath';
-import { getUnlocked } from '@/lib/game/storage';
+import { getUnlocked, setUnlockedAtLeast } from '@/lib/game/storage';
+import { getProgress } from '@/lib/game/backendSync';
 
 export default function Home() {
   useEffect(() => { validateAllLevels(LEVELS); }, []);
+
+  // Sync local level state from the backend on mount — so progress made on
+  // another device (or before the local save was cleared) is restored.
+  useEffect(() => {
+    getProgress()
+      .then((data) => {
+        if (data?.progress?.highest_level_unlocked) {
+          setUnlockedAtLeast(data.progress.highest_level_unlocked);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const current = getUnlocked();
   const level = getPathLevel(current);
 

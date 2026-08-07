@@ -25,6 +25,33 @@
     },
     "date": {
       "type": "string"
+    },
+    "difficulty": {
+      "type": "number",
+      "default": 1
+    },
+    "skill_scores": {
+      "type": "object",
+      "default": {},
+      "properties": {
+        "planning": {
+          "type": "number"
+        },
+        "efficiency": {
+          "type": "number"
+        },
+        "adaptability": {
+          "type": "number"
+        },
+        "persistence": {
+          "type": "number"
+        }
+      }
+    },
+    "stars": {
+      "type": "number",
+      "default": 0
     }
-  }
+  },
+  "required": []
 }

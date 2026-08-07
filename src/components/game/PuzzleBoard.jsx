@@ -50,6 +50,7 @@ export default function PuzzleBoard({ level }) {
 
   const submitGameResult = (isCompleted, isPerfect) => {
     const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
+    const stars = calcStars(moves, level, hintLevel);
     submitAttempt({
       levelId: numericLevelId,
       timeTakenSeconds: Math.round((Date.now() - startRef.current) / 1000),
@@ -58,6 +59,8 @@ export default function PuzzleBoard({ level }) {
       completed: isCompleted,
       perfect: !!isPerfect,
       switchesToggled: switchesRef.current,
+      difficulty: level.buttons.length,
+      stars: isCompleted ? stars : 0,
     }).then((stats) => {
       if (stats?.highest_level_unlocked) setUnlockedAtLeast(stats.highest_level_unlocked);
     }).catch(() => {});

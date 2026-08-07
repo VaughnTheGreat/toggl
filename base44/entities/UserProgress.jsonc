@@ -63,6 +63,38 @@
       "items": {
         "type": "object"
       }
+    },
+    "cognitive_skills": {
+      "type": "object",
+      "default": {},
+      "properties": {
+        "planning": {
+          "type": "number",
+          "default": 0
+        },
+        "efficiency": {
+          "type": "number",
+          "default": 0
+        },
+        "adaptability": {
+          "type": "number",
+          "default": 0
+        },
+        "persistence": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    },
+    "level_best": {
+      "type": "object",
+      "default": {},
+      "description": "levelId \u2192 { best_moves, best_time, stars, perfect }"
+    },
+    "daily_challenge_date": {
+      "type": "string",
+      "default": ""
     }
-  }
+  },
+  "required": []
 }
