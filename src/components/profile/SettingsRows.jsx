@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Toggle from '@/components/game/Toggle';
 import { getSettings, saveSettings } from '@/lib/game/storage';
 import { playClick, vibrate } from '@/lib/game/feedback';
@@ -39,6 +40,10 @@ export default function SettingsRows() {
           <Toggle on={settings[row.key]} colorblind={settings.colorblind} reducedMotion={settings.reducedMotion} />
         </button>
       ))}
+      <Link to="/privacy" className="w-full flex items-center min-h-[48px] px-4 py-2.5 rounded-2xl bg-card shadow-sm text-left active:scale-[0.98] transition-transform">
+        <span className="flex-1 text-sm font-bold">Privacy Policy</span>
+        <span className="text-[11px] font-semibold text-muted-foreground">↗</span>
+      </Link>
     </div>
   );
 }

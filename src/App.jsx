@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Puzzle from './pages/Puzzle';
 import Tutorial from './pages/Tutorial';
 import Profile from './pages/Profile';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -51,6 +52,7 @@ const AuthenticatedApp = () => {
       <Route path="/tutorial" element={<Tutorial />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/settings" element={<Profile />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </PageFade>
