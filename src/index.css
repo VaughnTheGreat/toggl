@@ -99,11 +99,6 @@
   to { stroke-dashoffset: 0; opacity: 0.4; }
 }
 
-@keyframes lg-drain {
-  from { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: var(--lg-c); }
-}
-
 @keyframes lg-pop {
   0% { transform: scale(0); opacity: 0; }
   70% { transform: scale(1.25); }
