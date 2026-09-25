@@ -26,5 +26,5 @@ export default function Puzzle() {
   }, [location.search]);
 
   if (result.redirect) return <Navigate to={result.redirect} replace />;
-  return <PuzzleBoard key={result.level.id} level={result.level} />;
+  return <PuzzleBoard key={location.search} level={result.level} />;
 }
