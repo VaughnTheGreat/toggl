@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Apple, LogIn, UserPlus } from 'lucide-react';
+import { LogIn, UserPlus } from 'lucide-react';
+import AppleIcon from '@/components/AppleIcon';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
 import GoogleIcon from '@/components/GoogleIcon';
@@ -70,7 +71,7 @@ function SignedInAccount({ email }) {
         className="w-full flex items-center gap-3 min-h-[60px] px-4 py-2.5 rounded-2xl bg-card shadow-sm text-left active:scale-[0.98] transition-transform"
       >
         <span className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center shrink-0">
-          <Apple className="w-5 h-5" />
+          <AppleIcon className="w-4 h-4 -mt-0.5" />
         </span>
         <span className="flex-1">
           <span className="block text-sm font-bold">Connect Apple account</span>
