@@ -62,7 +62,9 @@ export function resetSave() {
 }
 
 export function isTutorialDone() {
-  return !!loadSave().tutorialDone;
+  // Players who already made progress (before the tutorial existed) count as done.
+  const s = loadSave();
+  return !!s.tutorialDone || (s.unlocked || 1) > 1 || Object.keys(s.stars || {}).length > 0;
 }
 
 export function setTutorialDone() {

@@ -4,7 +4,6 @@ import BottomNav from '@/components/game/BottomNav';
 import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
-import { Link } from 'react-router-dom';
 import { getPathLevel, nextTwist } from '@/lib/game/levelPath';
 import { getUnlocked, setUnlockedAtLeast, isTutorialDone } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
@@ -60,10 +59,6 @@ export default function Home() {
       {!syncing && (
         <PlaySwitch to={isTutorialDone() ? `/play?level=${current}` : '/tutorial'} />
       )}
-
-      <div className="text-center mt-4">
-        <Link to="/privacy" className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
-      </div>
 
       <BottomNav active="home" />
     </Screen>

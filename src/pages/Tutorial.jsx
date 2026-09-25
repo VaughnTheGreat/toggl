@@ -6,7 +6,7 @@ import TargetPanel from '@/components/game/TargetPanel';
 import SystemPanel from '@/components/game/SystemPanel';
 import { TUTORIAL_STEPS } from '@/lib/game/tutorialSteps';
 import { canPress, applyPress } from '@/lib/game/ruleEngine';
-import { getSettings, setTutorialDone } from '@/lib/game/storage';
+import { getSettings, setTutorialDone, getUnlocked } from '@/lib/game/storage';
 import { playClick, vibrate } from '@/lib/game/feedback';
 
 export default function Tutorial() {
@@ -41,7 +41,7 @@ export default function Tutorial() {
   const goTo = (i) => {
     if (i >= TUTORIAL_STEPS.length) {
       setTutorialDone();
-      navigate('/play?level=1');
+      navigate(`/play?level=${getUnlocked()}`);
       return;
     }
     setStepIndex(i);
