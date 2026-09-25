@@ -69,6 +69,15 @@ export function setTutorialDone() {
   writeSave({ tutorialDone: true });
 }
 
+// Rule types the player has already been introduced to (auto-opens the rule guide for new ones).
+export function getSeenRules() {
+  return loadSave().seenRules || ['toggle', 'linked', 'copy', 'conditional', 'lock'].filter(() => isTutorialDone());
+}
+
+export function markRulesSeen(types) {
+  writeSave({ seenRules: [...new Set([...getSeenRules(), ...types])] });
+}
+
 // --- Daily challenge ---
 export function todayKey() {
   const d = new Date();

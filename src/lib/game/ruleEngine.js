@@ -82,18 +82,18 @@ export function applyPress(states, locks, button) {
 }
 
 export function describeRule(rule, selfId) {
-  const name = (id) => (id === selfId ? 'itself' : id);
+  const name = (id) => (id === selfId ? 'this' : id);
   switch (rule.type) {
-    case 'toggle': return 'flips itself only';
-    case 'linked': return `flips ${rule.targets.map(name).join(' + ')} together`;
-    case 'conditional': return `flips itself — needs ${rule.condition.button} ${rule.condition.state ? 'ON' : 'OFF'}`;
-    case 'lock': return `flips itself & locks ${rule.locks.map(name).join(' + ')}`;
-    case 'copy': return `becomes whatever ${rule.source} is`;
-    case 'inverse': return 'flips every switch except itself';
-    case 'swap': return `trades states with ${rule.target}`;
-    case 'oneshot': return 'flips itself once, then locks forever';
-    case 'chain': return `flips itself & fires ${rule.target}'s rule`;
-    case 'delay': return `flips itself, then ${rule.target} after a delay`;
+    case 'toggle': return 'flips only this switch';
+    case 'linked': return `flips ${rule.targets.map(name).join(' and ')} at once`;
+    case 'conditional': return `flips this — only works while ${rule.condition.button} is ${rule.condition.state ? 'ON' : 'OFF'}`;
+    case 'lock': return `flips this, then freezes ${rule.locks.map(name).join(' and ')} for good`;
+    case 'copy': return `sets this to match ${rule.source}`;
+    case 'inverse': return 'flips every other switch (not this one)';
+    case 'swap': return `swaps ON/OFF with ${rule.target}`;
+    case 'oneshot': return 'flips this, then can never be used again';
+    case 'chain': return `flips this, then also does ${rule.target}'s action`;
+    case 'delay': return `flips this now, ${rule.target} a moment later`;
     default: return '';
   }
 }
