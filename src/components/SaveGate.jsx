@@ -18,11 +18,7 @@ export default function SaveGate({ children }) {
   }, []);
 
   if (!ready) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
-        <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
-      </div>
-    );
+    return <div className="fixed inset-0 bg-background" />;
   }
   return children;
 }
