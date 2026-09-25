@@ -46,7 +46,7 @@ export default function Home() {
 
   return (
     <div ref={ptr.ref} className="fixed inset-0 overflow-hidden touch-none">
-    <Screen className="h-[calc(100dvh_-_env(safe-area-inset-top)_-_env(safe-area-inset-bottom))] flex flex-col pb-24">
+    <Screen className="h-[calc(100dvh_-_var(--safe-top)_-_var(--safe-bottom))] flex flex-col pb-24">
       <div className="flex-[1.2]" />
 
       <div className="text-center">

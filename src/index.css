@@ -115,6 +115,13 @@
   }
 }
 
+/* Safe zone under the status bar / notch. Some native wrappers report 0 for
+   env(safe-area-inset-top), so phones get a guaranteed minimum. */
+:root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); }
+@media (hover: none) and (pointer: coarse) {
+  :root { --safe-top: max(env(safe-area-inset-top, 0px), 48px); }
+}
+
 /* Native-like iOS behavior: no rubber-band overscroll bounce. */
 html, body, #root {
   overscroll-behavior: none;
