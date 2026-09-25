@@ -14,7 +14,7 @@ export default function AppearanceToggle() {
 
   const set = (t) => {
     setTheme(t);
-    saveSettings({ ...getSettings(), theme: t });
+    saveSettings({ ...getSettings(), theme: t, themeChosen: true });
     applyTheme(t);
   };
 

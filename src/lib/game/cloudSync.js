@@ -27,8 +27,16 @@ function mergeSaves(local, cloud) {
     tutorialDone: !!(local.tutorialDone || cloud.tutorialDone),
     badges: { ...(cloud.badges || {}), ...(local.badges || {}) },
     daily,
-    settings: { ...(cloud.settings || {}), ...(local.settings || {}) },
+    settings: mergeSettings(cloud.settings, local.settings),
   };
+}
+
+// A cloud theme only carries over if the player explicitly picked it —
+// older saves stored the previous 'light' default, which must not override dark.
+function mergeSettings(cloud = {}, local = {}) {
+  const c = { ...cloud };
+  if (!c.themeChosen) { delete c.theme; delete c.themeChosen; }
+  return { ...c, ...local };
 }
 
 let pushTimer;

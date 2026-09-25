@@ -167,7 +167,9 @@ export function addBadges(ids) {
 const DEFAULT_SETTINGS = { sound: true, haptics: true, reducedMotion: false, colorblind: false, zen: false, theme: 'dark' };
 
 export function getSettings() {
-  return { ...DEFAULT_SETTINGS, ...(loadSave().settings || {}) };
+  const s = { ...DEFAULT_SETTINGS, ...(loadSave().settings || {}) };
+  if (!s.themeChosen) s.theme = 'dark'; // dark until the player picks otherwise
+  return s;
 }
 
 export function saveSettings(settings) {

@@ -110,7 +110,7 @@ export default async function (req) {
     const perfect = !!completed && movesUsed === optimalMoves;
     // Zen mode: no move limit, so clears still unlock but earn at most 1 star and never move rating.
     const zen = !!body.zen;
-    const skipped = !zen && !!body.skipped && perfect && !undos && !resets;
+    const skipped = false; // level skipping disabled — progression is strictly one level at a time
     let stars = completed ? Math.max(0, Math.min(3, Math.round(Number(body.stars) || 0))) : 0;
     if (!perfect) stars = Math.min(stars, 2);
     if (zen) stars = Math.min(stars, 1);
