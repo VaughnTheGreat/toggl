@@ -10,7 +10,7 @@ export default function NoUndoNotice() {
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && close()}>
-      <DialogContent className="max-w-sm rounded-3xl">
+      <DialogContent className="w-[calc(100%-2.5rem)] max-w-sm rounded-3xl p-5">
         <DialogHeader>
           <DialogTitle className="text-base flex items-center gap-2">
             <Undo2 className="w-4 h-4 text-amber-500" /> From here on: no Undo

@@ -7,7 +7,7 @@ export default function RuleCard({ info, isNew }) {
       <span className="w-8 h-8 rounded-xl bg-[#00C2A8]/10 text-[#00A38C] flex items-center justify-center shrink-0 mt-0.5">
         <Icon className="w-4 h-4" />
       </span>
-      <span>
+      <span className="min-w-0 flex-1 break-words">
         <span className="flex items-center gap-1.5 text-sm font-bold">
           {name}
           {isNew && <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#00A38C] bg-[#00C2A8]/10 rounded-full px-1.5 py-0.5">New</span>}

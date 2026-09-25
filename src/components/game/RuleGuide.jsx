@@ -31,7 +31,7 @@ export default function RuleGuide({ buttons, revealed = {} }) {
         <BookOpen className="w-4 h-4 text-muted-foreground" />
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-sm rounded-3xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2.5rem)] max-w-sm rounded-3xl max-h-[85vh] overflow-y-auto overflow-x-hidden p-5">
           <DialogHeader>
             <DialogTitle className="text-base">{newTypes.length ? 'New rule unlocked' : 'Rules in this level'}</DialogTitle>
           </DialogHeader>
