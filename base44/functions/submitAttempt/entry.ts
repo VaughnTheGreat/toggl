@@ -95,9 +95,37 @@ export default async function (req) {
     const body = await req.json();
     const {
       levelId, timeTakenSeconds, movesUsed, optimalMoves,
-      completed, perfect, switchesToggled, difficulty = 1, stars = 0,
-      mode = 'campaign', skipped = false, resets = 0, undos = 0, localDate,
+      completed, switchesToggled, difficulty = 1,
+      mode = 'campaign', resets = 0, undos = 0, localDate,
     } = body;
+
+    // ── Sanity checks: never trust client-reported results blindly ──────
+    if (!Number.isFinite(movesUsed) || !Number.isFinite(optimalMoves) || movesUsed < 0 || optimalMoves < 1) {
+      return Response.json({ error: 'Invalid attempt' }, { status: 400 });
+    }
+    // A solve in fewer moves than the proven minimum is impossible.
+    if (completed && movesUsed < optimalMoves) {
+      return Response.json({ error: 'Invalid attempt' }, { status: 400 });
+    }
+    const perfect = !!completed && movesUsed === optimalMoves;
+    const skipped = !!body.skipped && perfect && !undos && !resets;
+    let stars = completed ? Math.max(0, Math.min(3, Math.round(Number(body.stars) || 0))) : 0;
+    if (!perfect) stars = Math.min(stars, 2);
+
+    // ── Load or create UserProgress ──────────────────────────────────────
+    const existing = await base44.entities.UserProgress.filter({ created_by_id: user.id });
+    let progress = existing[0];
+    if (!progress) {
+      progress = await base44.entities.UserProgress.create({});
+    }
+
+    // Campaign levels must already be unlocked (server record or the player's synced save).
+    if (mode === 'campaign') {
+      const allowed = Math.max(progress.highest_level_unlocked || 1, Number(user.game_data?.unlocked) || 1);
+      if (!Number.isInteger(levelId) || levelId < 1 || levelId > allowed) {
+        return Response.json({ error: 'Level not unlocked' }, { status: 403 });
+      }
+    }
     const buttonCount = difficulty;
     // Use the player's local calendar date so streaks match their day, not UTC.
     const today = /^\d{4}-\d{2}-\d{2}$/.test(localDate || '') ? localDate : todayKey();
@@ -115,15 +143,8 @@ export default async function (req) {
       date: today,
       difficulty,
       skill_scores: skills,
-      stars: stars || 0,
+      stars,
     });
-
-    // ── Load or create UserProgress ──────────────────────────────────────
-    const existing = await base44.entities.UserProgress.filter({ created_by_id: user.id });
-    let progress = existing[0];
-    if (!progress) {
-      progress = await base44.entities.UserProgress.create({});
-    }
 
     let rating = progress.rating ?? 1000;
     const total_attempts = (progress.total_attempts || 0) + 1;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { initCloudSync } from '@/lib/game/cloudSync';
+import { flushPendingAttempt } from '@/lib/game/backendSync';
 import { getSettings } from '@/lib/game/storage';
 import { applyTheme } from '@/lib/game/theme';
 
@@ -10,6 +11,7 @@ export default function SaveGate({ children }) {
 
   useEffect(() => {
     initCloudSync().finally(() => {
+      flushPendingAttempt();
       applyTheme(getSettings().theme);
       setReady(true);
     });

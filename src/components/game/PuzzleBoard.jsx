@@ -18,7 +18,7 @@ import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBa
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
-import { submitAttempt } from '@/lib/game/backendSync';
+import { submitAttempt, savePendingAttempt, clearPendingAttempt, flushPendingAttempt } from '@/lib/game/backendSync';
 
 function calcStars(moves, level, hintLevel) {
   let s = moves <= level.optimalMoves ? 3 : moves <= level.moveLimit ? 2 : 1;
@@ -49,11 +49,11 @@ export default function PuzzleBoard({ level }) {
   const switchesRef = useRef(0);
   const submittedRef = useRef(false);
 
-  const submitGameResult = (isCompleted, isPerfect, skipped = false) => {
+  const buildPayload = (isCompleted, isPerfect, skipped = false) => {
     const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
     const stars = calcStars(moves, level, hintLevel);
     const mode = level.daily ? 'daily' : level.endless ? 'endless' : level.custom ? 'custom' : 'campaign';
-    submitAttempt({
+    return {
       mode,
       skipped: !!skipped,
       resets: resetsRef.current,
@@ -68,7 +68,12 @@ export default function PuzzleBoard({ level }) {
       switchesToggled: switchesRef.current,
       difficulty: level.buttons.length,
       stars: isCompleted ? stars : 0,
-    }).then((stats) => {
+    };
+  };
+
+  const submitGameResult = (isCompleted, isPerfect, skipped = false) => {
+    clearPendingAttempt();
+    submitAttempt(buildPayload(isCompleted, isPerfect, skipped)).then((stats) => {
       if (stats?.highest_level_unlocked) setUnlockedAtLeast(stats.highest_level_unlocked);
     }).catch(() => {});
   };
@@ -88,6 +93,11 @@ export default function PuzzleBoard({ level }) {
     // objective isn't monotonically closer as the ON-count rises past the target.
     if (!countMode && moves > 0 && matched > bestMatch) setBestMatch(matched);
   }, [matched, moves, countMode]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep an up-to-date "abandoned" record so quitting the app still counts.
+  useEffect(() => {
+    if (moves > 0 && !submittedRef.current) savePendingAttempt(buildPayload(false, false));
+  }, [moves]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!won || completed) return;
@@ -205,6 +215,8 @@ export default function PuzzleBoard({ level }) {
     if (moves > 0 && !won && !completed && !submittedRef.current) {
       submittedRef.current = true;
       submitGameResult(false, false);
+    } else {
+      flushPendingAttempt(); // e.g. played, reset, then left
     }
     navigate('/');
   };
