@@ -23,6 +23,7 @@ function mergeSaves(local, cloud) {
     stars,
     unlocked: Math.max(local.unlocked || 1, cloud.unlocked || 1),
     endless: Math.max(local.endless || 1, cloud.endless || 1),
+    starsSpent: Math.max(local.starsSpent || 0, cloud.starsSpent || 0),
     tutorialDone: !!(local.tutorialDone || cloud.tutorialDone),
     badges: { ...(cloud.badges || {}), ...(local.badges || {}) },
     daily,

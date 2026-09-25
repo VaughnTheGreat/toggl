@@ -16,11 +16,14 @@ import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast, todayKey } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
+import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
+import { getStarBalance, spendStars } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
 import { submitAttempt, savePendingAttempt, clearPendingAttempt, flushPendingAttempt } from '@/lib/game/backendSync';
 
-function calcStars(moves, level, hintLevel) {
+function calcStars(moves, level, hintLevel, boughtMoves = false) {
+  if (boughtMoves) return 1;
   let s = moves <= level.optimalMoves ? 3 : moves <= level.moveLimit ? 2 : 1;
   if (hintLevel >= 4) s = 1;
   else if (hintLevel > 0) s = Math.min(s, 2);
@@ -43,6 +46,8 @@ export default function PuzzleBoard({ level }) {
   const [revealed, setRevealed] = useState({});
   const [pendingVisual, setPendingVisual] = useState({});
   const [bestMatch, setBestMatch] = useState(0);
+  const [extraMoves, setExtraMoves] = useState(0);
+  const buysRef = useRef(0); // price doubles with each purchase on this level
   const startRef = useRef(Date.now());
   const deniedRef = useRef(0);
   const resetsRef = useRef(0);
@@ -51,7 +56,7 @@ export default function PuzzleBoard({ level }) {
 
   const buildPayload = (isCompleted, isPerfect, skipped = false) => {
     const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
-    const stars = calcStars(moves, level, hintLevel);
+    const stars = calcStars(moves, level, hintLevel, extraMoves > 0);
     const mode = level.daily ? 'daily' : level.endless ? 'endless' : level.custom ? 'custom' : 'campaign';
     return {
       mode,
@@ -87,6 +92,15 @@ export default function PuzzleBoard({ level }) {
     ? countOn(states, level)
     : level.buttons.filter((b) => !!states[b.id] === !!level.target[b.id]).length;
   const total = countMode ? level.objective.count : level.buttons.length;
+  const limit = level.moveLimit + extraMoves;
+  const outOfMoves = !settings.zen && !completed && moves >= limit && !isSolved(states, level);
+  const buyCost = 2 * 2 ** buysRef.current;
+
+  const buyMoves = () => {
+    if (!spendStars(buyCost)) return;
+    buysRef.current += 1;
+    setExtraMoves((e) => e + 3);
+  };
 
   useEffect(() => {
     // "Best attempt" tracking only makes sense for exact-match levels — a count
@@ -102,7 +116,7 @@ export default function PuzzleBoard({ level }) {
   useEffect(() => {
     if (!won || completed) return;
     const t = setTimeout(() => {
-      const stars = calcStars(moves, level, hintLevel);
+      const stars = calcStars(moves, level, hintLevel, extraMoves > 0);
       const rank = solveRank({ moves, undos: undosUsed, hints: hintLevel, resets: resetsRef.current }, level);
       const isCampaign = !level.custom && !level.daily && !level.endless;
       const skipped = isCampaign && rank === 'Perfect Prediction';
@@ -128,7 +142,7 @@ export default function PuzzleBoard({ level }) {
   }, [states, locks]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handlePress = (button) => {
-    if (animating || won || completed) return;
+    if (animating || won || completed || outOfMoves) return;
     if (button.mystery && !revealed[button.id]) setRevealed((r) => ({ ...r, [button.id]: true }));
     if (!canPress(states, locks, button)) {
       playDenied(settings.sound);
@@ -198,6 +212,7 @@ export default function PuzzleBoard({ level }) {
   const retry = () => {
     resetsRef.current = completed ? 0 : resetsRef.current + 1;
     if (completed) setBestMatch(0);
+    setExtraMoves(0);
     dispatch({ type: 'RESET', level });
     setCompleted(null);
     setPreview(null);
@@ -234,7 +249,7 @@ export default function PuzzleBoard({ level }) {
         </div>
         <RuleGuide buttons={level.buttons} revealed={revealed} />
         <div className="bg-card rounded-full shadow-sm px-3 sm:px-4 py-2 text-right shrink-0">
-          <span className="text-sm font-extrabold tabular-nums">{moves} / {settings.zen ? '∞' : level.moveLimit}</span>
+          <span className="text-sm font-extrabold tabular-nums">{moves} / {settings.zen ? '∞' : limit}</span>
           <span className="hidden min-[380px]:inline text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1.5">moves</span>
         </div>
       </div>
@@ -253,7 +268,10 @@ export default function PuzzleBoard({ level }) {
         />
       </div>
 
-      {deadEnd && !completed && (
+      {outOfMoves && (
+        <OutOfMovesPanel cost={buyCost} balance={getStarBalance()} canBuy={!deadEnd} onBuy={buyMoves} onReset={retry} />
+      )}
+      {deadEnd && !completed && !outOfMoves && (
         <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} matched={countMode ? null : matched} total={total} />
       )}
 

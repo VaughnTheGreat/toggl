@@ -40,6 +40,21 @@ export function recordResult(levelId, stars, skipNext = false) {
   });
 }
 
+// Spendable stars = every best-star earned on campaign levels minus what's been
+// spent. Replaying a level only adds stars when it beats the previous best,
+// so the balance can't be farmed, and spending never lowers the profile total.
+export function getStarBalance() {
+  const s = loadSave();
+  const total = Object.values(s.stars || {}).reduce((a, b) => a + b, 0);
+  return Math.max(0, total - (s.starsSpent || 0));
+}
+
+export function spendStars(n) {
+  if (getStarBalance() < n) return false;
+  writeSave({ starsSpent: (loadSave().starsSpent || 0) + n });
+  return true;
+}
+
 export function getEndlessLevel() {
   return loadSave().endless || 1;
 }
