@@ -5,7 +5,6 @@ import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getPathLevel } from '@/lib/game/levelPath';
-import DifficultyArrows from '@/components/game/DifficultyArrows';
 import { getUnlocked, setUnlockedAtLeast, isTutorialDone, mergeStarsFromBest } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
 
@@ -40,7 +39,6 @@ export default function Home() {
           Togg<span className="text-[#00A38C]">l</span>
         </h1>
         <div className="text-2xl font-extrabold text-[#00A38C] mt-3">Level {current}</div>
-        <div className="flex justify-center mt-2"><DifficultyArrows level={level} /></div>
       </div>
 
       <div className="flex-1" />
