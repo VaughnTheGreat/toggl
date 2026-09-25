@@ -9,7 +9,7 @@ import { getUnlocked, setUnlockedAtLeast, isTutorialDone, mergeStarsFromBest } f
 import { getProgress } from '@/lib/game/backendSync';
 
 export default function Home() {
-  const [syncing, setSyncing] = useState(true);
+  const [, setSynced] = useState(0);
 
   useEffect(() => { validateAllLevels(LEVELS); }, []);
 
@@ -24,7 +24,7 @@ export default function Home() {
         if (data?.progress?.level_best) mergeStarsFromBest(data.progress.level_best);
       })
       .catch(() => {})
-      .finally(() => setSyncing(false));
+      .finally(() => setSynced((n) => n + 1)); // re-render with any restored progress
   }, []);
 
   const current = getUnlocked();
@@ -39,27 +39,16 @@ export default function Home() {
         <h1 className="text-4xl font-extrabold tracking-tight">
           Togg<span className="text-[#00A38C]">l</span>
         </h1>
-        {syncing ? (
-          <div className="mt-3">
-            <div className="w-5 h-5 border-2 border-muted-foreground/30 border-t-[#00A38C] rounded-full animate-spin mx-auto" />
-            <div className="text-xs font-bold text-muted-foreground mt-2">Syncing progress…</div>
-          </div>
-        ) : (
-          <>
-            <div className="text-2xl font-extrabold text-[#00A38C] mt-3">Level {current}</div>
-            <div className="text-sm font-bold text-sky-500 dark:text-sky-400 mt-1">{level.tier}</div>
-            <div className="text-[11px] font-bold text-muted-foreground mt-3">
-              {twist.away} level{twist.away === 1 ? '' : 's'} until <span className="text-foreground">{twist.label}</span>
-            </div>
-          </>
-        )}
+        <div className="text-2xl font-extrabold text-[#00A38C] mt-3">Level {current}</div>
+        <div className="text-sm font-bold text-sky-500 dark:text-sky-400 mt-1">{level.tier}</div>
+        <div className="text-[11px] font-bold text-muted-foreground mt-3">
+          {twist.away} level{twist.away === 1 ? '' : 's'} until <span className="text-foreground">{twist.label}</span>
+        </div>
       </div>
 
       <div className="flex-1" />
 
-      {!syncing && (
-        <PlaySwitch to={isTutorialDone() ? `/play?level=${current}` : '/tutorial'} />
-      )}
+      <PlaySwitch to={isTutorialDone() ? `/play?level=${current}` : '/tutorial'} />
 
       <BottomNav active="home" />
     </Screen>
