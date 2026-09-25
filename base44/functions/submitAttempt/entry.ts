@@ -108,9 +108,12 @@ export default async function (req) {
       return Response.json({ error: 'Invalid attempt' }, { status: 400 });
     }
     const perfect = !!completed && movesUsed === optimalMoves;
-    const skipped = !!body.skipped && perfect && !undos && !resets;
+    // Zen mode: no move limit, so clears still unlock but earn at most 1 star and never move rating.
+    const zen = !!body.zen;
+    const skipped = !zen && !!body.skipped && perfect && !undos && !resets;
     let stars = completed ? Math.max(0, Math.min(3, Math.round(Number(body.stars) || 0))) : 0;
     if (!perfect) stars = Math.min(stars, 2);
+    if (zen) stars = Math.min(stars, 1);
 
     // ── Load or create UserProgress ──────────────────────────────────────
     const existing = await base44.entities.UserProgress.filter({ created_by_id: user.id });
@@ -161,7 +164,7 @@ export default async function (req) {
       total_solves += 1;
       current_perfect_streak = perfect ? current_perfect_streak + 1 : 0;
       if (current_perfect_streak > longest_perfect_streak) longest_perfect_streak = current_perfect_streak;
-      rating += eloDelta(rating, lvRating, 1, perfect);
+      if (!zen) rating += eloDelta(rating, lvRating, 1, perfect);
 
       // Only the main path unlocks levels (endless/daily/custom have their own numbering).
       if (mode === 'campaign') {
@@ -169,7 +172,7 @@ export default async function (req) {
       }
     } else {
       current_perfect_streak = 0;
-      rating += eloDelta(rating, lvRating, 0, false);
+      if (!zen) rating += eloDelta(rating, lvRating, 0, false);
       rating = Math.max(0, rating);
     }
 

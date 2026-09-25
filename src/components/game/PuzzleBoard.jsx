@@ -56,11 +56,12 @@ export default function PuzzleBoard({ level }) {
 
   const buildPayload = (isCompleted, isPerfect, skipped = false) => {
     const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
-    const stars = calcStars(moves, level, hintLevel, extraMoves > 0);
+    const stars = calcStars(moves, level, hintLevel, extraMoves > 0 || settings.zen);
     const mode = level.daily ? 'daily' : level.endless ? 'endless' : level.custom ? 'custom' : 'campaign';
     return {
       mode,
       skipped: !!skipped,
+      zen: !!settings.zen,
       resets: resetsRef.current,
       undos: undosUsed,
       localDate: todayKey(),
@@ -116,13 +117,13 @@ export default function PuzzleBoard({ level }) {
   useEffect(() => {
     if (!won || completed) return;
     const t = setTimeout(() => {
-      const stars = calcStars(moves, level, hintLevel, extraMoves > 0);
+      const stars = calcStars(moves, level, hintLevel, extraMoves > 0 || settings.zen);
       const rank = solveRank({ moves, undos: undosUsed, hints: hintLevel, resets: resetsRef.current }, level);
       const isCampaign = !level.custom && !level.daily && !level.endless;
-      const skipped = isCampaign && rank === 'Perfect Prediction';
+      const skipped = isCampaign && !settings.zen && rank === 'Perfect Prediction';
       const streak = level.daily ? recordDaily().streak : null;
       if (level.endless) recordEndless(level.endless);
-      else if (isCampaign) recordResult(level.id, stars, skipped);
+      else if (isCampaign) recordResult(level.id, stars, skipped, !!settings.zen);
       const result = { stars, rank, skipped, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);

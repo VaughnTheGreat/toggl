@@ -1,10 +1,10 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { rankFor, BADGES } from '@/lib/game/ranks';
-import { getBadges, getUnlocked } from '@/lib/game/storage';
+import { getBadges, getRankedClears } from '@/lib/game/storage';
 
 export default function RankProgress({ totalStars }) {
-  const cleared = getUnlocked() - 1;
+  const cleared = getRankedClears();
   const rank = rankFor(cleared);
   const owned = getBadges();
   const pct = rank.next

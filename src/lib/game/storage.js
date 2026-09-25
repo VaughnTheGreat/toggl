@@ -31,13 +31,25 @@ export function getUnlocked() {
   return loadSave().unlocked || 1;
 }
 
-export function recordResult(levelId, stars, skipNext = false) {
+export function recordResult(levelId, stars, skipNext = false, zen = false) {
   const s = loadSave();
   const prev = (s.stars || {})[levelId] || 0;
+  // Levels cleared only in Zen mode unlock the next level but don't count toward rank.
+  const zenOnly = { ...(s.zenOnly || {}) };
+  const alreadyCleared = levelId < (s.unlocked || 1) && !zenOnly[levelId];
+  if (!zen) delete zenOnly[levelId];
+  else if (!alreadyCleared) zenOnly[levelId] = true;
   writeSave({
     stars: { ...(s.stars || {}), [levelId]: Math.max(prev, stars) },
     unlocked: Math.max(s.unlocked || 1, levelId + (skipNext ? 2 : 1)),
+    zenOnly,
   });
+}
+
+// Campaign levels cleared outside Zen mode — what rank is based on.
+export function getRankedClears() {
+  const s = loadSave();
+  return Math.max(0, (s.unlocked || 1) - 1 - Object.keys(s.zenOnly || {}).length);
 }
 
 // Spendable stars = every best-star earned on campaign levels minus what's been
