@@ -17,6 +17,7 @@ import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast, todayKey } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
+import PowerUpSheet, { POWER_UP_ICONS } from '@/components/game/PowerUpSheet';
 import { getStarBalance, spendStars } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
@@ -96,6 +97,12 @@ export default function PuzzleBoard({ level }) {
   const limit = level.moveLimit + extraMoves;
   const outOfMoves = !settings.zen && !completed && moves >= limit && !isSolved(states, level);
   const buyCost = 2 * 2 ** buysRef.current;
+
+  const hiddenIds = level.buttons.filter((b) => b.mystery && !revealed[b.id]).map((b) => b.id);
+  const revealRule = () => {
+    if (!hiddenIds.length || !spendStars(2)) return;
+    setRevealed((r) => ({ ...r, [hiddenIds[0]]: true }));
+  };
 
   const buyMoves = () => {
     if (!spendStars(buyCost)) return;
@@ -286,13 +293,25 @@ export default function PuzzleBoard({ level }) {
         <button onClick={retry} className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card shadow-sm text-[11px] font-bold uppercase tracking-widest text-muted-foreground active:scale-95 transition-transform">
           <RotateCcw className="w-3.5 h-3.5" /> Reset
         </button>
+        <div className="flex-1" />
+        {!completed && (
+          <PowerUpSheet balance={getStarBalance()} items={[
+            { key: 'hint', Icon: POWER_UP_ICONS.hint, iconClass: 'text-amber-500', title: `Hint${hintLevel ? ` ${hintLevel + 1}/4` : ''}`,
+              desc: hintLevel >= 3 ? 'Show the full solution · max 1 star' : 'A clue for your next move · max 2 stars',
+              cost: 1, disabled: hintLevel >= 4 || won, hidden: false, onBuy: () => spendStars(1) && requestHint() },
+            { key: 'moves', Icon: POWER_UP_ICONS.moves, iconClass: 'text-[#00A38C]', title: '+3 Moves',
+              desc: 'Raise the move limit · max 1 star', cost: buyCost, disabled: !!deadEnd || won, hidden: !!settings.zen, onBuy: buyMoves },
+            { key: 'reveal', Icon: POWER_UP_ICONS.reveal, iconClass: 'text-sky-500', title: 'Reveal a rule',
+              desc: 'Uncover one hidden switch', cost: 2, disabled: won, hidden: !hiddenIds.length, onBuy: revealRule },
+          ]} />
+        )}
       </div>
       {!countMode && resetsRef.current > 0 && bestMatch > 0 && !won && !completed && (
         <div className="mt-3 text-[11px] font-bold text-muted-foreground">
           Best attempt: <span className="text-[#00A38C]">{bestMatch}/{total}</span> targets — you know this system better now.
         </div>
       )}
-      <HintPanel hint={hint} hintLevel={hintLevel} onRequest={requestHint} />
+      <HintPanel hint={hint} hintLevel={hintLevel} />
       <PreviewPanel preview={preview} />
 
       {completed && (

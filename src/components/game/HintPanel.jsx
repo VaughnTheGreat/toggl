@@ -9,14 +9,14 @@ export default function HintPanel({ hint, hintLevel, onRequest }) {
           {hint}
         </div>
       )}
-      <button
+      {onRequest && <button
         onClick={onRequest}
         disabled={hintLevel >= 4}
         className="flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-card shadow-sm text-[11px] font-bold uppercase tracking-widest text-muted-foreground disabled:opacity-40 active:scale-95 transition-transform"
       >
         <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
         Hint {hintLevel > 0 ? `${hintLevel}/4` : ''}
-      </button>
+      </button>}
     </div>
   );
 }
