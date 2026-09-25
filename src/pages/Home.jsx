@@ -5,11 +5,13 @@ import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getPathLevel } from '@/lib/game/levelPath';
-import { getUnlocked, setUnlockedAtLeast, isTutorialDone, mergeStarsFromBest } from '@/lib/game/storage';
+import { useNavigate } from 'react-router-dom';
+import { getUnlocked, setUnlockedAtLeast, isTutorialDone, setTutorialDone, mergeStarsFromBest } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
 import usePullToRefresh from '@/hooks/usePullToRefresh';
 
 export default function Home() {
+  const navigate = useNavigate();
   const [, setSynced] = useState(0);
 
   useEffect(() => { validateAllLevels(LEVELS); }, []);
@@ -27,7 +29,16 @@ export default function Home() {
       .catch(() => {})
       .finally(() => setSynced((n) => n + 1)); // re-render with any restored progress
 
-  useEffect(() => { syncProgress(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Brand-new players go straight into Level 1 (levels 1–5 are the tutorial).
+  // Waits for the progress sync so returning players aren't sent back.
+  useEffect(() => {
+    syncProgress().then(() => {
+      if (!isTutorialDone()) {
+        setTutorialDone();
+        navigate('/play?level=1');
+      }
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const ptr = usePullToRefresh(syncProgress);
 
   const current = getUnlocked();
@@ -47,7 +58,7 @@ export default function Home() {
 
       <div className="flex-1" />
 
-      <PlaySwitch to={isTutorialDone() ? `/play?level=${current}` : '/tutorial'} />
+      <PlaySwitch to={`/play?level=${current}`} />
 
       <BottomNav active="home" />
     </Screen>

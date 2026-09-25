@@ -16,6 +16,7 @@ import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast, todayKey } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
+import LevelCoach from '@/components/game/LevelCoach';
 import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
 import PowerUpSheet, { POWER_UP_ICONS } from '@/components/game/PowerUpSheet';
 import { getStarBalance, spendStars } from '@/lib/game/storage';
@@ -262,6 +263,7 @@ export default function PuzzleBoard({ level }) {
         </div>
       </div>
 
+      {!level.daily && !level.endless && !level.custom && <LevelCoach levelId={level.id} />}
       <TargetPanel level={level} buttons={level.buttons} target={level.target} states={displayStates} />
       <div className="my-4" />
       <div className={won && !settings.reducedMotion ? 'animate-pulse' : ''}>
