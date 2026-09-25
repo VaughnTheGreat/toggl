@@ -14,7 +14,7 @@ import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
-import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast, todayKey } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import LevelCoach from '@/components/game/LevelCoach';
 import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
@@ -22,7 +22,6 @@ import PowerUpSheet, { POWER_UP_ICONS } from '@/components/game/PowerUpSheet';
 import { getStarBalance, spendStars } from '@/lib/game/storage';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
-import { submitAttempt, savePendingAttempt, clearPendingAttempt, flushPendingAttempt } from '@/lib/game/backendSync';
 
 function calcStars(moves, level, hintLevel, boughtMoves = false) {
   if (boughtMoves) return 1;
@@ -54,37 +53,6 @@ export default function PuzzleBoard({ level }) {
   const deniedRef = useRef(0);
   const resetsRef = useRef(0);
   const switchesRef = useRef(0);
-  const submittedRef = useRef(false);
-
-  const buildPayload = (isCompleted, isPerfect, skipped = false) => {
-    const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
-    const stars = calcStars(moves, level, hintLevel, extraMoves > 0 || settings.zen);
-    const mode = level.daily ? 'daily' : level.endless ? 'endless' : level.custom ? 'custom' : 'campaign';
-    return {
-      mode,
-      skipped: !!skipped,
-      zen: !!settings.zen,
-      resets: resetsRef.current,
-      undos: undosUsed,
-      localDate: todayKey(),
-      levelId: numericLevelId,
-      timeTakenSeconds: Math.round((Date.now() - startRef.current) / 1000),
-      movesUsed: moves,
-      optimalMoves: level.optimalMoves ?? level.buttons.length,
-      completed: isCompleted,
-      perfect: !!isPerfect,
-      switchesToggled: switchesRef.current,
-      difficulty: level.buttons.length,
-      stars: isCompleted ? stars : 0,
-    };
-  };
-
-  const submitGameResult = (isCompleted, isPerfect, skipped = false) => {
-    clearPendingAttempt();
-    submitAttempt(buildPayload(isCompleted, isPerfect, skipped)).then((stats) => {
-      if (stats?.highest_level_unlocked) setUnlockedAtLeast(stats.highest_level_unlocked);
-    }).catch(() => {});
-  };
 
   const { states, locks, moves, history, undosUsed } = game;
   const displayStates = { ...states, ...pendingVisual };
@@ -117,11 +85,6 @@ export default function PuzzleBoard({ level }) {
     if (!countMode && moves > 0 && matched > bestMatch) setBestMatch(matched);
   }, [matched, moves, countMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Keep an up-to-date "abandoned" record so quitting the app still counts.
-  useEffect(() => {
-    if (moves > 0 && !submittedRef.current) savePendingAttempt(buildPayload(false, false));
-  }, [moves]); // eslint-disable-line react-hooks/exhaustive-deps
-
   useEffect(() => {
     if (!won || completed) return;
     const t = setTimeout(() => {
@@ -136,10 +99,6 @@ export default function PuzzleBoard({ level }) {
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);
       setCompleted({ ...result, newBadges });
-      if (!submittedRef.current) {
-        submittedRef.current = true;
-        submitGameResult(true, moves === level.optimalMoves, skipped);
-      }
     }, 550);
     return () => clearTimeout(t);
   }, [won]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -232,18 +191,9 @@ export default function PuzzleBoard({ level }) {
     startRef.current = Date.now();
     deniedRef.current = 0;
     switchesRef.current = 0;
-    submittedRef.current = false;
   };
 
-  const handleBack = () => {
-    if (moves > 0 && !won && !completed && !submittedRef.current) {
-      submittedRef.current = true;
-      submitGameResult(false, false);
-    } else {
-      flushPendingAttempt(); // e.g. played, reset, then left
-    }
-    navigate('/');
-  };
+  const handleBack = () => navigate('/');
 
   return (
     <Screen>
