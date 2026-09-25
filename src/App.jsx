@@ -9,7 +9,6 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import SaveGate from './components/SaveGate';
-import PageFade from './components/PageFade';
 // Add page imports here
 const PageNotFound = lazy(() => import('./lib/PageNotFound'));
 const Home = lazy(() => import('./pages/Home'));
@@ -50,7 +49,6 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <SaveGate>
-    <PageFade>
     <Suspense fallback={null}>
     <Routes location={location}>
       {/* Add your page Route elements here */}
@@ -67,7 +65,6 @@ const AuthenticatedApp = () => {
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </Suspense>
-    </PageFade>
     </SaveGate>
   );
 };

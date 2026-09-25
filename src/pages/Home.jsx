@@ -45,8 +45,8 @@ export default function Home() {
   const level = getPathLevel(current);
 
   return (
-    <div ref={ptr.ref}>
-    <Screen className="min-h-screen flex flex-col pb-24">
+    <div ref={ptr.ref} className="fixed inset-0 overflow-hidden touch-none">
+    <Screen className="h-[calc(100dvh_-_env(safe-area-inset-top)_-_env(safe-area-inset-bottom))] flex flex-col pb-24">
       <div className="flex-[1.2]" />
 
       <div className="text-center">
