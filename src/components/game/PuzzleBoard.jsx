@@ -277,7 +277,7 @@ export default function PuzzleBoard({ level }) {
       </div>
 
       {outOfMoves && (
-        <OutOfMovesPanel cost={buyCost} balance={getStarBalance()} canBuy={!deadEnd} onBuy={buyMoves} onReset={retry} />
+        <OutOfMovesPanel cost={buyCost} balance={getStarBalance()} canBuy={!deadEnd} onBuy={buyMoves} onReset={retry} onMenu={handleBack} />
       )}
       {deadEnd && !completed && !outOfMoves && (
         <DeadEndBanner reason={deadEnd} canUndo={level.undoAllowed} matched={countMode ? null : matched} total={total} />
