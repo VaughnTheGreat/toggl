@@ -2,11 +2,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 
 // ── Rank system ──────────────────────────────────────────────────────────
 const RANK_THRESHOLDS = [
-  { min: 40000, rank: 'grandmaster' },
-  { min: 20000, rank: 'master' },
-  { min: 10000, rank: 'architect' },
-  { min: 5000, rank: 'tactician' },
-  { min: 2000, rank: 'apprentice' },
+  // Reachable with the level-rating scale below (hardest levels ≈ 1780).
+  { min: 1900, rank: 'grandmaster' },
+  { min: 1700, rank: 'master' },
+  { min: 1500, rank: 'architect' },
+  { min: 1300, rank: 'tactician' },
+  { min: 1100, rank: 'apprentice' },
   { min: 0, rank: 'novice' },
 ];
 
@@ -26,28 +27,25 @@ function rankForRating(rating) {
 // adaptability — coped with complexity (button count × rule diversity)
 // persistence — recovered from dead-ends / failures (tracks resets, undos)
 function computeSkills(payload) {
-  const { completed, movesUsed, optimalMoves, timeTakenSeconds, difficulty } = payload;
+  const { completed, movesUsed, optimalMoves, timeTakenSeconds, buttonCount, resets, undos } = payload;
   const opt = Math.max(1, optimalMoves || 1);
-  const diff = Math.max(1, difficulty || 1);
+  const size = Math.max(1, buttonCount || 1);
 
-  // Planning: how close to optimal? Penalised for over-solving, zeroed if failed.
-  const moveRatio = completed ? Math.max(0, opt / Math.max(movesUsed || opt, opt)) : 0;
-  const planning = Math.round(moveRatio * 100);
+  // Planning: optimal / used moves (100 = perfect). Zero if failed.
+  const planning = completed ? Math.round((opt / Math.max(movesUsed || opt, opt)) * 100) : 0;
 
-  // Efficiency: throughput of correct moves. Solved fast = high.
+  // Efficiency: speed relative to the puzzle — ~4s per optimal move earns 100.
   const time = Math.max(1, timeTakenSeconds || 1);
-  const movesPerMin = (movesUsed || 0) / (time / 60);
-  const efficiency = completed ? Math.min(100, Math.round(movesPerMin * 20)) : Math.round(Math.min(50, movesPerMin * 10));
+  const efficiency = completed ? Math.min(100, Math.round((opt * 4 / time) * 100)) : 0;
 
-  // Adaptability: scales with difficulty when solved; partial credit if failed.
+  // Adaptability: solving bigger boards with deeper solutions scores higher.
   const adaptability = completed
-    ? Math.min(100, Math.round(40 + diff * 12))
-    : Math.min(30, Math.round(diff * 5));
+    ? Math.min(100, 20 + size * 4 + opt * 3)
+    : Math.min(30, size * 2);
 
-  // Persistence: bounced back from a non-optimal solve or after resets.
-  // Perfect solve = full credit; over-solve = partial; fail = small credit for trying.
+  // Persistence: finishing after resets/undos (coming back from mistakes) scores higher.
   const persistence = completed
-    ? (movesUsed <= opt ? 100 : Math.max(30, Math.round(100 - (movesUsed - opt) * 15)))
+    ? Math.min(100, 60 + (resets || 0) * 15 + (undos || 0) * 5)
     : 10;
 
   return { planning, efficiency, adaptability, persistence };
@@ -59,12 +57,12 @@ function computeSkills(payload) {
 // proportionally to the expected score — upsets (beating a hard level) move
 // the needle more than expected wins.
 function expectedScore(playerRating, levelRating) {
-  return 1 / (1 + Math.pow(10, (levelRating - playerRating) / 4000));
+  return 1 / (1 + Math.pow(10, (levelRating - playerRating) / 400));
 }
 
-function levelRating(difficulty) {
-  // Base 1000 + 200 per difficulty tier. Higher difficulty = higher level rating.
-  return 1000 + (Math.max(1, difficulty) - 1) * 200;
+// Level strength from real puzzle size: 2 switches / 2 moves ≈ 880, 12 / 12 ≈ 1780.
+function levelRating(optimalMoves, buttonCount) {
+  return 700 + Math.max(1, optimalMoves) * 60 + Math.max(1, buttonCount) * 30;
 }
 
 function eloDelta(playerRating, levelRating, outcome, perfect) {
@@ -98,9 +96,12 @@ export default async function (req) {
     const {
       levelId, timeTakenSeconds, movesUsed, optimalMoves,
       completed, perfect, switchesToggled, difficulty = 1, stars = 0,
+      mode = 'campaign', skipped = false, resets = 0, undos = 0, localDate,
     } = body;
-    const today = todayKey();
-    const skills = computeSkills({ completed, movesUsed, optimalMoves, timeTakenSeconds, difficulty });
+    const buttonCount = difficulty;
+    // Use the player's local calendar date so streaks match their day, not UTC.
+    const today = /^\d{4}-\d{2}-\d{2}$/.test(localDate || '') ? localDate : todayKey();
+    const skills = computeSkills({ completed, movesUsed, optimalMoves, timeTakenSeconds, buttonCount, resets, undos });
 
     // ── Persist the Attempt record ──────────────────────────────────────
     await base44.entities.Attempt.create({
@@ -134,14 +135,17 @@ export default async function (req) {
     let highest_level_unlocked = progress.highest_level_unlocked || 1;
 
     // ── Elo rating adjustment ────────────────────────────────────────────
-    const lvRating = levelRating(difficulty);
+    const lvRating = levelRating(optimalMoves, buttonCount);
     if (completed) {
       total_solves += 1;
       current_perfect_streak = perfect ? current_perfect_streak + 1 : 0;
       if (current_perfect_streak > longest_perfect_streak) longest_perfect_streak = current_perfect_streak;
       rating += eloDelta(rating, lvRating, 1, perfect);
 
-      if (levelId === highest_level_unlocked) highest_level_unlocked += 1;
+      // Only the main path unlocks levels (endless/daily/custom have their own numbering).
+      if (mode === 'campaign') {
+        highest_level_unlocked = Math.max(highest_level_unlocked, levelId + (skipped ? 2 : 1));
+      }
     } else {
       current_perfect_streak = 0;
       rating += eloDelta(rating, lvRating, 0, false);
@@ -159,7 +163,7 @@ export default async function (req) {
     if (daily_streak > longest_daily_streak) longest_daily_streak = daily_streak;
 
     const rank = rankForRating(rating);
-    const rating_history = [...(progress.rating_history || []), { date: today, rating, rank }];
+    const rating_history = [...(progress.rating_history || []), { date: today, rating, rank }].slice(-100);
 
     // ── Consistency: completion rate over last 10 attempts ──────────────
     const recentAttempts = await base44.entities.Attempt.filter({ created_by_id: user.id }, '-created_date', 10);
@@ -168,7 +172,8 @@ export default async function (req) {
       : 0;
 
     // ── Cognitive skills: rolling average ───────────────────────────────
-    const prevSkills = progress.cognitive_skills || {};
+    // First attempt seeds the average directly (otherwise it starts at 30% of the real score).
+    const prevSkills = total_attempts === 1 ? skills : (progress.cognitive_skills || {});
     const cognitive_skills = {
       planning: rollSkill(prevSkills.planning, skills.planning),
       efficiency: rollSkill(prevSkills.efficiency, skills.efficiency),
@@ -178,7 +183,7 @@ export default async function (req) {
 
     // ── Per-level best tracking ────────────────────────────────────────
     const levelBest = { ...(progress.level_best || {}) };
-    const key = String(levelId);
+    const key = mode === 'campaign' ? String(levelId) : `${mode}-${levelId}`;
     const prevBest = levelBest[key] || {};
     levelBest[key] = {
       best_moves: completed ? Math.min(prevBest.best_moves ?? Infinity, movesUsed) : (prevBest.best_moves ?? movesUsed),

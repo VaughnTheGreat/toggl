@@ -14,7 +14,8 @@ import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
-import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, setUnlockedAtLeast, todayKey } from '@/lib/game/storage';
+import NoUndoNotice from '@/components/game/NoUndoNotice';
 import { evaluateBadges } from '@/lib/game/ranks';
 import { playFlip, playCascade, playDenied, vibrate } from '@/lib/game/feedback';
 import { submitAttempt } from '@/lib/game/backendSync';
@@ -48,10 +49,16 @@ export default function PuzzleBoard({ level }) {
   const switchesRef = useRef(0);
   const submittedRef = useRef(false);
 
-  const submitGameResult = (isCompleted, isPerfect) => {
+  const submitGameResult = (isCompleted, isPerfect, skipped = false) => {
     const numericLevelId = typeof level.id === 'number' ? level.id : (level.endless ?? 0);
     const stars = calcStars(moves, level, hintLevel);
+    const mode = level.daily ? 'daily' : level.endless ? 'endless' : level.custom ? 'custom' : 'campaign';
     submitAttempt({
+      mode,
+      skipped: !!skipped,
+      resets: resetsRef.current,
+      undos: undosUsed,
+      localDate: todayKey(),
       levelId: numericLevelId,
       timeTakenSeconds: Math.round((Date.now() - startRef.current) / 1000),
       movesUsed: moves,
@@ -69,7 +76,8 @@ export default function PuzzleBoard({ level }) {
   const { states, locks, moves, history, undosUsed } = game;
   const displayStates = { ...states, ...pendingVisual };
   const countMode = isCountObjective(level);
-  const won = moves > 0 && isSolved(states, level);
+  // Wait for delayed switches to visibly land before declaring the win.
+  const won = moves > 0 && isSolved(states, level) && Object.keys(pendingVisual).length === 0;
   const matched = countMode
     ? countOn(states, level)
     : level.buttons.filter((b) => !!states[b.id] === !!level.target[b.id]).length;
@@ -97,7 +105,7 @@ export default function PuzzleBoard({ level }) {
       setCompleted({ ...result, newBadges });
       if (!submittedRef.current) {
         submittedRef.current = true;
-        submitGameResult(true, moves === level.optimalMoves);
+        submitGameResult(true, moves === level.optimalMoves, skipped);
       }
     }, 550);
     return () => clearTimeout(t);
@@ -203,18 +211,19 @@ export default function PuzzleBoard({ level }) {
 
   return (
     <Screen>
-      <div className="flex items-center gap-3 mb-6">
+      {!level.undoAllowed && <NoUndoNotice />}
+      <div className="flex items-center gap-2 sm:gap-3 mb-6">
         <button onClick={handleBack} aria-label="Back" className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="flex-1">
-          <div className="text-base font-extrabold">{level.daily ? '◆' : level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
+        <div className="flex-1 min-w-0">
+          <div className="text-base font-extrabold truncate">{level.daily ? '◆' : level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground truncate">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
         </div>
         <RuleGuide buttons={level.buttons} revealed={revealed} />
-        <div className="bg-card rounded-full shadow-sm px-4 py-2 text-right">
+        <div className="bg-card rounded-full shadow-sm px-3 sm:px-4 py-2 text-right shrink-0">
           <span className="text-sm font-extrabold tabular-nums">{moves} / {settings.zen ? '∞' : level.moveLimit}</span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1.5">moves</span>
+          <span className="hidden min-[380px]:inline text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1.5">moves</span>
         </div>
       </div>
 

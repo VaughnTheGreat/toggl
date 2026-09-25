@@ -4,7 +4,8 @@ import BottomNav from '@/components/game/BottomNav';
 import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
-import { getPathLevel } from '@/lib/game/levelPath';
+import { Link } from 'react-router-dom';
+import { getPathLevel, nextTwist } from '@/lib/game/levelPath';
 import { getUnlocked, setUnlockedAtLeast, isTutorialDone } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
 
@@ -28,6 +29,7 @@ export default function Home() {
 
   const current = getUnlocked();
   const level = getPathLevel(current);
+  const twist = nextTwist(current);
 
   return (
     <Screen className="min-h-screen flex flex-col pb-24">
@@ -46,6 +48,9 @@ export default function Home() {
           <>
             <div className="text-2xl font-extrabold text-[#00A38C] mt-3">Level {current}</div>
             <div className="text-sm font-bold text-sky-500 dark:text-sky-400 mt-1">{level.tier}</div>
+            <div className="text-[11px] font-bold text-muted-foreground mt-3">
+              {twist.away} level{twist.away === 1 ? '' : 's'} until <span className="text-foreground">{twist.label}</span>
+            </div>
           </>
         )}
       </div>
@@ -57,7 +62,7 @@ export default function Home() {
       )}
 
       <div className="text-center mt-4">
-        <a href="/privacy" className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>
+        <Link to="/privacy" className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
       </div>
 
       <BottomNav active="home" />

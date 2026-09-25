@@ -78,6 +78,14 @@ export function markRulesSeen(types) {
   writeSave({ seenRules: [...new Set([...getSeenRules(), ...types])] });
 }
 
+export function hasSeenNoUndo() {
+  return !!loadSave().seenNoUndo;
+}
+
+export function markNoUndoSeen() {
+  writeSave({ seenNoUndo: true });
+}
+
 // --- Daily challenge ---
 export function todayKey() {
   const d = new Date();

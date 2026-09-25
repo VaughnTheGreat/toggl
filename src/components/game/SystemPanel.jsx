@@ -45,8 +45,8 @@ export default function SystemPanel({ buttons, states, locks, onPress, onPreview
         </svg>
       )}
       <div className={
-        buttons.length >= 10 ? 'grid grid-cols-3 gap-2'
-        : buttons.length >= 7 ? 'grid grid-cols-2 gap-2'
+        buttons.length >= 10 ? 'grid grid-cols-3 md:grid-cols-4 gap-2'
+        : buttons.length >= 7 ? 'grid grid-cols-2 md:grid-cols-3 gap-2'
         : 'flex flex-col gap-2'
       }>
         {buttons.map((b) => (

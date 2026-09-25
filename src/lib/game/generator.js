@@ -227,7 +227,7 @@ const SAW = [0, 1, 2, 3, -3];
 
 // Rotating modifiers keep late-game levels feeling distinct even after
 // every rule type has been unlocked.
-const MODIFIERS = [
+export const MODIFIERS = [
   { label: 'Mystery', mystery: 2 },
   { label: 'Precision', exact: true },
   { label: 'Surge', surge: true },
@@ -246,12 +246,16 @@ export function generateContinuationLevel(n) {
     d.buttonCount = Math.min(d.buttonCount + 1, 12);
     d.targetMoves = Math.min(d.targetMoves + 1, 12);
   }
+  // Board size and solution depth max out around level 460. Past that, pressure
+  // keeps rising instead: zero spare moves (460+), then an extra hidden rule (700+).
+  const lateExact = !relief && n > 460;
+  const lateMystery = !relief && n > 700 ? 1 : 0;
   const level = generateFrom(n * 15013 + 7, { ...d, undoAllowed: relief || d.undoAllowed }, {
     id: n,
     name: relief ? `Interlude ${String(n).padStart(3, '0')}` : `System ${String(n).padStart(3, '0')}`,
     tier: relief ? 'Relief' : mod ? `Continuum · ${mod.label}` : 'Continuum',
-  }, relief, relief ? 0 : (mod?.mystery ?? 1), mod?.objective === 'count' ? 'count' : 'match');
-  if (mod?.exact) level.moveLimit = level.optimalMoves;
+  }, relief, relief ? 0 : (mod?.mystery ?? 1) + lateMystery, mod?.objective === 'count' ? 'count' : 'match');
+  if (mod?.exact || lateExact) level.moveLimit = level.optimalMoves;
   return level;
 }
 
