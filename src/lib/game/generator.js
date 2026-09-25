@@ -252,8 +252,8 @@ export function generateContinuationLevel(n) {
   const lateMystery = !relief && n > 700 ? 1 : 0;
   const level = generateFrom(n * 15013 + 7, { ...d, undoAllowed: relief || d.undoAllowed }, {
     id: n,
-    name: relief ? `Interlude ${String(n).padStart(3, '0')}` : `System ${String(n).padStart(3, '0')}`,
-    tier: relief ? 'Relief' : mod ? `Continuum · ${mod.label}` : 'Continuum',
+    name: `Level ${n}`,
+    tier: relief ? 'Breather' : mod ? mod.label : 'Challenge',
   }, relief, relief ? 0 : (mod?.mystery ?? 1) + lateMystery, mod?.objective === 'count' ? 'count' : 'match');
   if (mod?.exact || lateExact) level.moveLimit = level.optimalMoves;
   return level;

@@ -8,7 +8,6 @@ import StreakCard from '@/components/profile/StreakCard';
 import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
 import BackendProgressCard from '@/components/profile/BackendProgressCard';
-import CognitiveSkillsCard from '@/components/profile/CognitiveSkillsCard';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
 import SettingsRows from '@/components/profile/SettingsRows';
 import AccountConnection from '@/components/profile/AccountConnection';
@@ -37,7 +36,6 @@ export default function Profile() {
       <RankProgress totalStars={totalStars} />
       <StatTiles />
       <BackendProgressCard />
-      <CognitiveSkillsCard />
       <AppearanceToggle />
       <AccountConnection />
       <SettingsRows />

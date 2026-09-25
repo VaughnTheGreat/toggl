@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen } from 'lucide-react';
+import { Hand } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RULE_INFO } from '@/lib/game/ruleInfo';
 import { getSeenRules, markRulesSeen } from '@/lib/game/storage';
@@ -28,7 +28,7 @@ export default function RuleGuide({ buttons, revealed = {} }) {
     <>
       <button onClick={() => { setNewTypes([]); setOpen(true); }} aria-label="Rule guide"
         className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0 active:scale-95 transition-transform">
-        <BookOpen className="w-4 h-4 text-muted-foreground" />
+        <Hand className="w-4 h-4 text-muted-foreground" />
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="w-[calc(100%-2.5rem)] max-w-sm rounded-3xl max-h-[85vh] overflow-y-auto overflow-x-hidden p-5">

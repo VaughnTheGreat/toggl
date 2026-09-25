@@ -217,7 +217,7 @@ export default function PuzzleBoard({ level }) {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1 min-w-0">
-          <div className="text-base font-extrabold truncate">{level.daily ? '◆' : level.endless || level.custom ? '∞' : String(level.id).padStart(2, '0')} · {level.name}</div>
+          <div className="text-base font-extrabold truncate">{level.daily || level.endless || level.custom ? level.name : `Level ${level.id}`}</div>
           <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground truncate">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
         </div>
         <RuleGuide buttons={level.buttons} revealed={revealed} />
