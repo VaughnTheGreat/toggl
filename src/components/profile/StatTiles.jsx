@@ -1,10 +1,10 @@
 import React from 'react';
-import { getStars, getEndlessLevel } from '@/lib/game/storage';
+import { getStars, getEndlessLevel, getUnlocked } from '@/lib/game/storage';
 
 export default function StatTiles() {
   const stars = getStars();
   const tiles = [
-    { value: Object.keys(stars).length, label: 'Levels Cleared', color: 'text-[#00A38C]' },
+    { value: getUnlocked() - 1, label: 'Levels Cleared', color: 'text-[#00A38C]' },
     { value: Object.values(stars).filter((s) => s === 3).length, label: 'Perfect Solves', color: 'text-[#F5B21B]' },
     { value: Math.max(getEndlessLevel() - 1, 0), label: 'Endless Best', color: 'text-violet-500' },
   ];

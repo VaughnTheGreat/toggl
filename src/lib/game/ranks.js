@@ -1,18 +1,19 @@
-// Rank titles (by total campaign stars) and skill badges.
+// Rank titles (by campaign levels cleared, so rank always matches unlocked progress) and skill badges.
 export const RANKS = [
   { min: 0, title: 'Novice' },
-  { min: 10, title: 'Tinkerer' },
-  { min: 25, title: 'Circuit Apprentice' },
-  { min: 45, title: 'Signal Engineer' },
-  { min: 65, title: 'Circuit Architect' },
-  { min: 85, title: 'Logic Master' },
+  { min: 5, title: 'Tinkerer' },
+  { min: 10, title: 'Circuit Apprentice' },
+  { min: 20, title: 'Signal Engineer' },
+  { min: 30, title: 'Circuit Architect' },
+  { min: 50, title: 'Logic Master' },
+  { min: 100, title: 'Grand Logician' },
 ];
 
-export function rankFor(totalStars) {
+export function rankFor(levelsCleared) {
   let current = RANKS[0];
   let next = null;
   for (const r of RANKS) {
-    if (totalStars >= r.min) current = r;
+    if (levelsCleared >= r.min) current = r;
     else { next = r; break; }
   }
   return { ...current, next };

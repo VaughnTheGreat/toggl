@@ -56,6 +56,18 @@ export function setUnlockedAtLeast(n) {
   writeSave({ unlocked: Math.max(s.unlocked || 1, n) });
 }
 
+// Restores campaign stars from the backend's per-level bests (keeps the higher value).
+export function mergeStarsFromBest(levelBest = {}) {
+  const s = loadSave();
+  const stars = { ...(s.stars || {}) };
+  let changed = false;
+  for (const [key, v] of Object.entries(levelBest)) {
+    if (!/^\d+$/.test(key) || !v?.stars) continue;
+    if ((stars[key] || 0) < v.stars) { stars[key] = v.stars; changed = true; }
+  }
+  if (changed) writeSave({ stars });
+}
+
 // Wipes the entire local save (used after deleteMyData succeeds).
 export function resetSave() {
   replaceSave({});

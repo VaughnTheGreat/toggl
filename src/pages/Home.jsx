@@ -5,7 +5,7 @@ import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
 import { getPathLevel, nextTwist } from '@/lib/game/levelPath';
-import { getUnlocked, setUnlockedAtLeast, isTutorialDone } from '@/lib/game/storage';
+import { getUnlocked, setUnlockedAtLeast, isTutorialDone, mergeStarsFromBest } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
 
 export default function Home() {
@@ -21,6 +21,7 @@ export default function Home() {
         if (data?.progress?.highest_level_unlocked) {
           setUnlockedAtLeast(data.progress.highest_level_unlocked);
         }
+        if (data?.progress?.level_best) mergeStarsFromBest(data.progress.level_best);
       })
       .catch(() => {})
       .finally(() => setSyncing(false));

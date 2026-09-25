@@ -1,13 +1,14 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { rankFor, BADGES } from '@/lib/game/ranks';
-import { getBadges } from '@/lib/game/storage';
+import { getBadges, getUnlocked } from '@/lib/game/storage';
 
 export default function RankProgress({ totalStars }) {
-  const rank = rankFor(totalStars);
+  const cleared = getUnlocked() - 1;
+  const rank = rankFor(cleared);
   const owned = getBadges();
   const pct = rank.next
-    ? Math.min(100, Math.round(((totalStars - rank.min) / (rank.next.min - rank.min)) * 100))
+    ? Math.min(100, Math.round(((cleared - rank.min) / (rank.next.min - rank.min)) * 100))
     : 100;
 
   return (
@@ -23,7 +24,7 @@ export default function RankProgress({ totalStars }) {
       </div>
       {rank.next && (
         <div className="text-right text-xs font-semibold text-muted-foreground mb-3">
-          {rank.next.min - totalStars} stars to {rank.next.title}
+          {rank.next.min - cleared} level{rank.next.min - cleared === 1 ? '' : 's'} to {rank.next.title}
         </div>
       )}
       <div className="flex flex-wrap gap-1.5">
