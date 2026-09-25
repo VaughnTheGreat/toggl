@@ -17,7 +17,7 @@ export default function StreakCard() {
         <Flame className="w-7 h-7 text-orange-500" />
       </div>
       <div>
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Streak</div>
+        <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Streak</div>
         <div className="text-3xl font-extrabold leading-tight">
           {streak} <span className="text-sm text-[#00A38C]">day{streak === 1 ? '' : 's'}</span>
         </div>

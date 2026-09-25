@@ -7,6 +7,8 @@ import { validateAllLevels } from '@/lib/game/solver';
 import { getPathLevel } from '@/lib/game/levelPath';
 import { getUnlocked, setUnlockedAtLeast, isTutorialDone, mergeStarsFromBest } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
+import usePullToRefresh from '@/hooks/usePullToRefresh';
+import PullIndicator from '@/components/PullIndicator';
 
 export default function Home() {
   const [, setSynced] = useState(0);
@@ -15,7 +17,7 @@ export default function Home() {
 
   // Sync local level state from the backend on mount — so progress made on
   // another device (or before the local save was cleared) is restored.
-  useEffect(() => {
+  const syncProgress = () =>
     getProgress()
       .then((data) => {
         if (data?.progress?.highest_level_unlocked) {
@@ -25,12 +27,16 @@ export default function Home() {
       })
       .catch(() => {})
       .finally(() => setSynced((n) => n + 1)); // re-render with any restored progress
-  }, []);
+
+  useEffect(() => { syncProgress(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const ptr = usePullToRefresh(syncProgress);
 
   const current = getUnlocked();
   const level = getPathLevel(current);
 
   return (
+    <div ref={ptr.ref}>
+    <PullIndicator pull={ptr.pull} refreshing={ptr.refreshing} ready={ptr.ready} />
     <Screen className="min-h-screen flex flex-col pb-24">
       <div className="flex-[1.2]" />
 
@@ -47,5 +53,6 @@ export default function Home() {
 
       <BottomNav active="home" />
     </Screen>
+    </div>
   );
 }

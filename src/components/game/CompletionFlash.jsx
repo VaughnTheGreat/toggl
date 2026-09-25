@@ -45,7 +45,7 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
               />
             ))}
           </div>
-          <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-[0.2em] ${RANK_STYLES[result.rank] || RANK_STYLES.Solved}`}>
+          <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-[0.2em] ${RANK_STYLES[result.rank] || RANK_STYLES.Solved}`}>
             {result.rank}
           </span>
           <div className="text-[11px] font-semibold text-muted-foreground mt-2">
@@ -59,7 +59,7 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
           {result.newBadges?.length > 0 && (
             <div className="flex flex-wrap justify-center gap-1.5 mt-2">
               {result.newBadges.map((id) => (
-                <span key={id} className="px-2 py-0.5 rounded-full bg-[#00C2A8]/10 text-[9px] font-bold uppercase tracking-wider text-[#00806E] dark:text-[#2BD9BF]">
+                <span key={id} className="px-2 py-0.5 rounded-full bg-[#00C2A8]/10 text-[11px] font-bold uppercase tracking-wider text-[#00806E] dark:text-[#2BD9BF]">
                   +{BADGES[id].label}
                 </span>
               ))}

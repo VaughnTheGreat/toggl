@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import usePullToRefresh from '@/hooks/usePullToRefresh';
+import PullIndicator from '@/components/PullIndicator';
+import { getProgress } from '@/lib/game/backendSync';
+import { setUnlockedAtLeast, mergeStarsFromBest } from '@/lib/game/storage';
 import { LogOut } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useAuth } from '@/lib/AuthContext';
@@ -16,9 +20,23 @@ import { getStars } from '@/lib/game/storage';
 
 export default function Profile() {
   const { isAuthenticated } = useAuth();
+  const [refreshKey, setRefreshKey] = useState(0);
   const totalStars = Object.values(getStars()).reduce((a, b) => a + b, 0);
 
+  // Pull down: re-sync progress, then remount the cards so they refetch.
+  const ptr = usePullToRefresh(() =>
+    getProgress()
+      .then((data) => {
+        if (data?.progress?.highest_level_unlocked) setUnlockedAtLeast(data.progress.highest_level_unlocked);
+        if (data?.progress?.level_best) mergeStarsFromBest(data.progress.level_best);
+      })
+      .catch(() => {})
+      .finally(() => setRefreshKey((k) => k + 1))
+  );
+
   return (
+    <div ref={ptr.ref}>
+    <PullIndicator pull={ptr.pull} refreshing={ptr.refreshing} ready={ptr.ready} />
     <Screen className="pb-28">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-extrabold">Profile</h1>
@@ -32,16 +50,19 @@ export default function Profile() {
         )}
       </div>
 
-      <StreakCard />
-      <RankProgress totalStars={totalStars} />
-      <StatTiles />
-      <BackendProgressCard />
-      <AppearanceToggle />
-      <AccountConnection />
-      <SettingsRows />
-      <DeleteMyData />
+      <div key={refreshKey}>
+        <StreakCard />
+        <RankProgress totalStars={totalStars} />
+        <StatTiles />
+        <BackendProgressCard />
+        <AppearanceToggle />
+        <AccountConnection />
+        <SettingsRows />
+        <DeleteMyData />
+      </div>
 
       <BottomNav active="profile" />
     </Screen>
+    </div>
   );
 }

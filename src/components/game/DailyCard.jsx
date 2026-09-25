@@ -13,7 +13,7 @@ export default function DailyCard() {
         <Flame className="w-6 h-6 text-orange-500" />
       </div>
       <div className="flex-1">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Challenge</div>
+        <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Challenge</div>
         <div className="text-base font-extrabold">
           {done ? 'Completed today' : 'Today\u2019s puzzle awaits'}
         </div>

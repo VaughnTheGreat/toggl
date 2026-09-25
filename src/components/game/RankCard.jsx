@@ -14,7 +14,7 @@ export default function RankCard({ totalStars }) {
           <Award className="w-6 h-6 text-indigo-500" />
         </div>
         <div className="flex-1">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Rank</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Rank</div>
           <div className="text-base font-extrabold">{rank.title}</div>
           {rank.next && (
             <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
@@ -28,7 +28,7 @@ export default function RankCard({ totalStars }) {
           <span
             key={id}
             title={b.desc}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
               owned[id] ? 'bg-[#00C2A8]/10 text-[#00806E] dark:text-[#2BD9BF]' : 'bg-muted text-[#B4BACA]'
             }`}
           >

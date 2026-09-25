@@ -17,7 +17,7 @@ export default function OutOfMovesPanel({ cost, balance, canBuy, onBuy, onReset,
         <div className="self-end flex items-center gap-1 bg-secondary rounded-full px-3 py-1 -mt-1 mb-2 text-sm font-extrabold tabular-nums">
           {balance} <Star className="w-4 h-4 text-[#F5B21B] fill-[#F5B21B]" />
         </div>
-        <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Out of moves</div>
+        <div className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">Out of moves</div>
         <div className="text-2xl font-extrabold mt-1">{offer ? 'Continue?' : 'Level failed'}</div>
         {offer && (
           <button onClick={onBuy} className="my-5 w-24 h-24 rounded-full bg-[#00A38C] text-white flex flex-col items-center justify-center shadow-md active:scale-95 transition-transform">

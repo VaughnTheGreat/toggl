@@ -13,7 +13,7 @@ import DeleteAccount from '@/components/profile/DeleteAccount';
 function GuestAccount() {
   return (
     <div className="flex flex-col gap-2.5 mb-2.5">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1">Account</div>
+      <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1">Account</div>
       <div className="rounded-2xl bg-card shadow-sm px-4 py-3">
         <div className="text-sm font-bold">Playing as guest</div>
         <div className="text-[11px] font-semibold text-muted-foreground">progress is saved on this device only</div>
@@ -61,7 +61,7 @@ function GuestAccount() {
 function SignedInAccount({ email }) {
   return (
     <div className="flex flex-col gap-2.5 mb-2.5">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1">Account</div>
+      <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1">Account</div>
       <div className="rounded-2xl bg-card shadow-sm px-4 py-3">
         <div className="text-sm font-bold">Signed in</div>
         <div className="text-[11px] font-semibold text-muted-foreground">{email || '—'}</div>

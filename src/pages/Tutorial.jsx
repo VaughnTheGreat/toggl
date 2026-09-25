@@ -58,7 +58,7 @@ export default function Tutorial() {
         </button>
         <div className="flex-1">
           <div className="text-base font-extrabold">{step.title}</div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Tutorial {stepIndex + 1} / {TUTORIAL_STEPS.length}</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Tutorial {stepIndex + 1} / {TUTORIAL_STEPS.length}</div>
         </div>
       </div>
 
@@ -71,7 +71,7 @@ export default function Tutorial() {
         {solved ? (
           <div>
             <div className="px-4 py-3.5 rounded-2xl bg-[#00C2A8]/10 text-xs font-semibold text-[#00806E] dark:text-[#2BD9BF] leading-relaxed mb-3">
-              <span className="text-[#00A38C] font-extrabold uppercase tracking-[0.2em] text-[10px] block mb-1">Principle</span>
+              <span className="text-[#00A38C] font-extrabold uppercase tracking-[0.2em] text-[11px] block mb-1">Principle</span>
               {step.principle}
             </div>
             <button onClick={() => goTo(stepIndex + 1)} className="w-full py-4 rounded-full bg-gradient-to-b from-[#00CDAF] to-[#00A88F] text-white font-extrabold text-sm tracking-widest uppercase shadow-[0_4px_14px_rgba(0,194,168,0.4)] active:scale-[0.98] transition-transform">

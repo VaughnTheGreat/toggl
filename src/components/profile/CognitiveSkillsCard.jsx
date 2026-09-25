@@ -22,7 +22,7 @@ export default function CognitiveSkillsCard() {
 
   return (
     <div className="bg-card rounded-3xl shadow-sm p-5 mb-4">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-3">Cognitive Skills</div>
+      <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-3">Cognitive Skills</div>
       <div className="grid grid-cols-2 gap-3">
         {SKILLS.map((s) => {
           const val = skills[s.key] || 0;
@@ -35,7 +35,7 @@ export default function CognitiveSkillsCard() {
               </div>
               <div className="flex items-baseline gap-1">
                 <span className={`text-xl font-extrabold tabular-nums ${s.color}`}>{val}</span>
-                <span className="text-[10px] font-semibold text-muted-foreground">/100</span>
+                <span className="text-[11px] font-semibold text-muted-foreground">/100</span>
               </div>
               <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                 <div className={`h-full rounded-full ${s.color.replace('text-', 'bg-')}`} style={{ width: `${val}%` }} />

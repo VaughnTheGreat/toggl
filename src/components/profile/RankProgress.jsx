@@ -13,7 +13,7 @@ export default function RankProgress({ totalStars }) {
 
   return (
     <div className="bg-card rounded-3xl shadow-sm p-5 mb-4">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Rank</div>
+      <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Rank</div>
       <div className="flex items-baseline gap-2 mb-3">
         <span className="text-4xl font-extrabold tabular-nums">{totalStars}</span>
         <Star className="w-5 h-5 text-[#F5B21B] fill-[#F5B21B] self-center" />
@@ -32,7 +32,7 @@ export default function RankProgress({ totalStars }) {
           <span
             key={id}
             title={b.desc}
-            className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+            className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${
               owned[id] ? 'bg-[#00C2A8]/10 text-[#00806E] dark:text-[#2BD9BF]' : 'bg-muted text-[#B4BACA]'
             }`}
           >

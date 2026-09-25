@@ -25,7 +25,7 @@ export default function SettingsRows() {
 
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1">Settings</div>
+      <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-1">Settings</div>
       {ROWS.map((row) => (
         <button
           key={row.key}
