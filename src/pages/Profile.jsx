@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import usePullToRefresh from '@/hooks/usePullToRefresh';
-import PullIndicator from '@/components/PullIndicator';
 import { getProgress } from '@/lib/game/backendSync';
 import { setUnlockedAtLeast, mergeStarsFromBest } from '@/lib/game/storage';
 import { LogOut } from 'lucide-react';
@@ -36,7 +35,6 @@ export default function Profile() {
 
   return (
     <div ref={ptr.ref}>
-    <PullIndicator pull={ptr.pull} refreshing={ptr.refreshing} ready={ptr.ready} />
     <Screen className="pb-28">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-extrabold">Profile</h1>

@@ -8,7 +8,6 @@ import { getPathLevel } from '@/lib/game/levelPath';
 import { getUnlocked, setUnlockedAtLeast, isTutorialDone, mergeStarsFromBest } from '@/lib/game/storage';
 import { getProgress } from '@/lib/game/backendSync';
 import usePullToRefresh from '@/hooks/usePullToRefresh';
-import PullIndicator from '@/components/PullIndicator';
 
 export default function Home() {
   const [, setSynced] = useState(0);
@@ -36,7 +35,6 @@ export default function Home() {
 
   return (
     <div ref={ptr.ref}>
-    <PullIndicator pull={ptr.pull} refreshing={ptr.refreshing} ready={ptr.ready} />
     <Screen className="min-h-screen flex flex-col pb-24">
       <div className="flex-[1.2]" />
 
