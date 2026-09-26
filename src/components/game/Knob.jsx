@@ -1,12 +1,15 @@
 import React from 'react';
-import { Star, Heart } from 'lucide-react';
+import { Star, Heart, Moon, Zap, Flower2, Crown } from 'lucide-react';
+
+const ICONS = { heart: Heart, moon: Moon, bolt: Zap, flower: Flower2, crown: Crown };
 
 // The sliding thumb of a switch, styled by the equipped knob skin.
 export default function Knob({ knob, className = '' }) {
-  if (knob.icon === 'heart') {
+  const Icon = ICONS[knob.icon];
+  if (Icon) {
     return (
       <div className={`flex items-center justify-center ${className}`}>
-        <Heart className="w-full h-full text-white fill-white drop-shadow" />
+        <Icon className="w-full h-full drop-shadow" style={{ color: knob.iconColor, fill: knob.iconColor }} />
       </div>
     );
   }

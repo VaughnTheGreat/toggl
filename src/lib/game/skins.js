@@ -19,13 +19,20 @@ export const COLORS = [
 
 // Patterned tracks.
 export const PATTERNS = [
-  { id: 'candy', name: 'Candy Cane', cost: 150, bg: 'repeating-linear-gradient(45deg,#EF4444 0 5px,#FFFFFF 5px 10px)', glow: '#EF4444' },
-  { id: 'polka', name: 'Polka', cost: 180, bg: 'radial-gradient(circle,#FFFFFF 1.5px,transparent 2px) 0 0/8px 8px, #8B5CF6', glow: '#8B5CF6' },
-  { id: 'zebra', name: 'Zebra', cost: 220, bg: 'repeating-linear-gradient(60deg,#111827 0 5px,#F8FAFC 5px 11px)', glow: '#94A3B8' },
-  { id: 'tiger', name: 'Tiger', cost: 280, bg: 'repeating-linear-gradient(60deg,#1F1300 0 4px,#F97316 4px 11px)', glow: '#F97316' },
-  { id: 'checker', name: 'Checker', cost: 350, bg: 'repeating-conic-gradient(#111827 0 25%,#F8FAFC 0 50%) 0 0/10px 10px', glow: '#94A3B8' },
-  { id: 'leopard', name: 'Leopard', cost: 500, bg: 'radial-gradient(circle at 30% 40%,#3B2410 2px,transparent 2.5px) 0 0/9px 9px, radial-gradient(circle at 70% 70%,#3B2410 1.5px,transparent 2px) 0 0/7px 7px, #E0A04A', glow: '#E0A04A' },
-  { id: 'rainbow', name: 'Rainbow', cost: 1000, bg: 'linear-gradient(90deg,#EF4444,#F97316,#F5B21B,#22C55E,#3B82F6,#8B5CF6)', glow: '#F5B21B' },
+  { id: 'candy', name: 'Candy Cane', cost: 700, bg: 'repeating-linear-gradient(45deg,#EF4444 0 5px,#FFFFFF 5px 10px)', glow: '#EF4444' },
+  { id: 'polka', name: 'Polka', cost: 800, bg: 'radial-gradient(circle,#FFFFFF 1.5px,transparent 2px) 0 0/8px 8px, #8B5CF6', glow: '#8B5CF6' },
+  { id: 'zebra', name: 'Zebra', cost: 900, bg: 'repeating-linear-gradient(60deg,#111827 0 5px,#F8FAFC 5px 11px)', glow: '#94A3B8' },
+  { id: 'plaid', name: 'Plaid', cost: 1000, bg: 'repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 3px,transparent 3px 9px), repeating-linear-gradient(90deg,rgba(0,0,0,.28) 0 3px,transparent 3px 9px), #DC2626', glow: '#DC2626' },
+  { id: 'tiger', name: 'Tiger', cost: 1100, bg: 'repeating-linear-gradient(60deg,#1F1300 0 4px,#F97316 4px 11px)', glow: '#F97316' },
+  { id: 'camo', name: 'Camo', cost: 1200, bg: 'radial-gradient(circle at 20% 30%,#3F4F2A 3px,transparent 4px) 0 0/12px 12px, radial-gradient(circle at 70% 60%,#2A3520 4px,transparent 5px) 0 0/14px 14px, #6B7A45', glow: '#6B7A45' },
+  { id: 'carbon', name: 'Carbon Fiber', cost: 1350, bg: 'repeating-linear-gradient(45deg,#374151 0 2px,#111827 2px 4px)', glow: '#64748B' },
+  { id: 'checker', name: 'Checker', cost: 1500, bg: 'repeating-conic-gradient(#111827 0 25%,#F8FAFC 0 50%) 0 0/10px 10px', glow: '#94A3B8' },
+  { id: 'waves', name: 'Ocean Waves', cost: 1650, bg: 'repeating-radial-gradient(circle at 0 100%,#0EA5E9 0 4px,#7DD3FC 4px 8px)', glow: '#0EA5E9' },
+  { id: 'leopard', name: 'Leopard', cost: 1800, bg: 'radial-gradient(circle at 30% 40%,#3B2410 2px,transparent 2.5px) 0 0/9px 9px, radial-gradient(circle at 70% 70%,#3B2410 1.5px,transparent 2px) 0 0/7px 7px, #E0A04A', glow: '#E0A04A' },
+  { id: 'lava', name: 'Lava', cost: 2000, bg: 'radial-gradient(circle at 30% 50%,#FDE047,transparent 40%), linear-gradient(90deg,#7F1D1D,#EA580C,#DC2626)', glow: '#EA580C' },
+  { id: 'galaxy', name: 'Galaxy', cost: 2300, bg: 'radial-gradient(circle,#FFFFFF 1px,transparent 1.5px) 0 0/11px 11px, linear-gradient(135deg,#1E1B4B,#6D28D9,#DB2777)', glow: '#6D28D9' },
+  { id: 'holo', name: 'Holographic', cost: 2600, bg: 'linear-gradient(120deg,#A5F3FC,#C4B5FD,#FBCFE8,#FDE68A,#A5F3FC)', glow: '#C4B5FD' },
+  { id: 'rainbow', name: 'Rainbow', cost: 3000, bg: 'linear-gradient(90deg,#EF4444,#F97316,#F5B21B,#22C55E,#3B82F6,#8B5CF6)', glow: '#F5B21B' },
 ];
 
 // Track outline shapes.
@@ -43,11 +50,18 @@ export const KNOBS = [
   { id: 'cube', name: 'Cube', cost: 120, bg: '#FFFFFF', radius: '6px' },
   { id: 'diamond', name: 'Diamond', cost: 180, bg: '#FFFFFF', radius: '0', clip: 'polygon(50% 0,100% 50%,50% 100%,0 50%)' },
   { id: 'hexagon', name: 'Hexagon', cost: 220, bg: '#FFFFFF', radius: '0', clip: 'polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%)' },
+  { id: 'octagon', name: 'Octagon', cost: 260, bg: '#FFFFFF', radius: '0', clip: 'polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)' },
   { id: 'zebraknob', name: 'Zebra Knob', cost: 300, bg: 'repeating-linear-gradient(60deg,#111827 0 3px,#F8FAFC 3px 7px)', radius: '9999px' },
   { id: 'triangle', name: 'Triangle', cost: 350, bg: '#FFFFFF', radius: '0', clip: 'polygon(50% 5%,100% 95%,0 95%)' },
+  { id: 'chrome', name: 'Chrome', cost: 400, bg: 'linear-gradient(135deg,#F8FAFC,#94A3B8,#F1F5F9,#64748B)', radius: '9999px' },
   { id: 'golden', name: 'Golden', cost: 450, bg: 'radial-gradient(circle at 30% 30%,#FFE9A8,#F5B21B)', radius: '9999px' },
-  { id: 'heart', name: 'Heart', cost: 600, bg: 'transparent', radius: '0', icon: 'heart' },
+  { id: 'moon', name: 'Moon', cost: 500, icon: 'moon', iconColor: '#F8FAFC' },
+  { id: 'bolt', name: 'Bolt', cost: 550, icon: 'bolt', iconColor: '#FDE047' },
+  { id: 'heart', name: 'Heart', cost: 600, icon: 'heart', iconColor: '#FFFFFF' },
+  { id: 'flower', name: 'Flower', cost: 700, icon: 'flower', iconColor: '#FBCFE8' },
+  { id: 'crown', name: 'Crown', cost: 800, icon: 'crown', iconColor: '#F5B21B' },
   { id: 'star', name: 'Star Core', cost: 900, bg: '#FFFFFF', radius: '9999px', star: true },
+  { id: 'galaxyknob', name: 'Galaxy Orb', cost: 1200, bg: 'radial-gradient(circle,#FFFFFF 0.8px,transparent 1.2px) 0 0/5px 5px, linear-gradient(135deg,#1E1B4B,#DB2777)', radius: '9999px' },
 ];
 
 const FREE = ['mint', 'classic', 'pill'];
