@@ -99,13 +99,6 @@ function isOrderSensitive(buttons, start, path, goalKey, keyFn) {
   return keyFn(s) !== goalKey;
 }
 
-// Player-selectable difficulty presets for Custom Play.
-export const DIFFICULTIES = {
-  beginner: { label: 'Beginner', desc: 'Toggles & linked switches', buttonCount: 3, types: ['toggle', 'linked'], targetMoves: 3, undoAllowed: true },
-  skilled: { label: 'Skilled', desc: 'Conditional switches appear', buttonCount: 5, types: ['toggle', 'linked', 'conditional'], targetMoves: 5, undoAllowed: true },
-  advanced: { label: 'Advanced', desc: 'Locks — no undo', buttonCount: 6, types: ['toggle', 'linked', 'conditional', 'lock'], targetMoves: 7, undoAllowed: false },
-  expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'], targetMoves: 9, undoAllowed: false },
-};
 
 // Builds candidates in the requested shape and keeps the first one whose optimal
 // solution actually plays like that shape (falls back to the first solvable one).
@@ -247,11 +240,4 @@ export function generateDailyLevel(dateKey) {
   }, {
     id: `D${dateKey}`, name: 'Daily Challenge', tier: 'Daily', daily: dateKey,
   }, { mystery: 1, shape: SHAPE_ORDER[((day % SHAPE_ORDER.length) + SHAPE_ORDER.length) % SHAPE_ORDER.length] });
-}
-
-export function generateCustomLevel(tierKey, seed) {
-  const d = DIFFICULTIES[tierKey] || DIFFICULTIES.beginner;
-  return generateFrom(seed * 6151 + 13, d, {
-    id: `C-${tierKey}-${seed}`, name: `${d.label} Run ${seed}`, tier: d.label, custom: { tier: tierKey, seed },
-  }, { generous: tierKey === 'beginner' || tierKey === 'skilled' });
 }

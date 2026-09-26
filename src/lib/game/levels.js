@@ -1,3 +1,5 @@
+import { RULE_INFO } from './ruleInfo';
+
 // 30 handcrafted campaign levels. Every level is verified solvable by the BFS solver.
 // Rule helpers keep definitions compact and consistent.
 const T = (id) => ({ id, rule: { type: 'toggle' } });
@@ -7,7 +9,7 @@ const K = (id, locks) => ({ id, rule: { type: 'lock', locks } });
 const P = (id, source) => ({ id, rule: { type: 'copy', source } });
 const S = (ids, bits) => Object.fromEntries(ids.split('').map((id, i) => [id, bits[i] === '1']));
 
-export const LEVELS = [
+const RAW_LEVELS = [
   // ——— INTRO (1–5): standard toggles ———
   { id: 1, name: 'First Light', tier: 'Intro', buttons: [T('A')], start: S('A', '0'), target: S('A', '1'), optimalMoves: 1, moveLimit: 2, undoAllowed: true },
   { id: 2, name: 'Two Lights', tier: 'Intro', buttons: [T('A'), T('B')], start: S('AB', '00'), target: S('AB', '11'), optimalMoves: 2, moveLimit: 3, undoAllowed: true },
@@ -49,4 +51,11 @@ export const LEVELS = [
   { id: 30, name: 'State of the System', tier: 'Expert', buttons: [L('A', ['A', 'B']), C('B', 'C', false), K('C', ['A']), P('D', 'C'), L('E', ['E', 'F']), C('F', 'E', true), K('G', ['H']), T('H')], start: S('ABCDEFGH', '01000000'), target: S('ABCDEFGH', '10111011'), optimalMoves: 7, moveLimit: 7, undoAllowed: false },
 ];
 
-export const TIERS = ['Intro', 'Easy', 'Medium', 'Hard', 'Expert'];
+// Label each level by what it teaches: the rule(s) it introduces, otherwise "Practice".
+const seen = new Set();
+export const LEVELS = RAW_LEVELS.map((level) => {
+  const fresh = [...new Set(level.buttons.map((b) => b.rule.type))].filter((t) => !seen.has(t));
+  fresh.forEach((t) => seen.add(t));
+  const tier = fresh.length ? `New: ${fresh.map((t) => RULE_INFO[t].name).join(' + ')}` : 'Practice';
+  return { ...level, tier };
+});

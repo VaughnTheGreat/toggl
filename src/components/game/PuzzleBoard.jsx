@@ -204,7 +204,7 @@ export default function PuzzleBoard({ level }) {
         </button>
         <div className="flex-1 min-w-0">
           <div className="text-base font-extrabold truncate">{level.daily || level.endless || level.custom ? level.name : `Level ${level.id}`}</div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground truncate">{level.tier}{level.shapeLabel && ` · ${level.shapeLabel}`}{!level.undoAllowed && ' · no undo'}</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground truncate">{typeof level.id === 'number' && `Ch ${Math.ceil(level.id / 10)} · `}{level.tier}{level.shapeLabel && ` · ${level.shapeLabel}`}{!level.undoAllowed && ' · no undo'}</div>
         </div>
         <RuleGuide buttons={level.buttons} revealed={revealed} />
         <div className="bg-card rounded-full shadow-sm px-3 sm:px-4 py-2 text-right shrink-0">
@@ -273,7 +273,6 @@ export default function PuzzleBoard({ level }) {
           hasNext={!level.daily}
           onNext={() => navigate(
             level.endless ? `/play?endless=${level.endless + 1}`
-            : level.custom ? `/play?custom=${level.custom.tier}&seed=${level.custom.seed + 1}`
             : `/play?level=${level.id + (completed.skipped ? 2 : 1)}`
           )}
           onRetry={retry}

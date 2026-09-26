@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
 import { getPathLevel } from '@/lib/game/levelPath';
-import { generateLevel, generateCustomLevel, generateDailyLevel } from '@/lib/game/generator';
+import { generateLevel, generateDailyLevel } from '@/lib/game/generator';
 import { todayKey, isDailyDone, getUnlocked, getEndlessLevel } from '@/lib/game/storage';
 import PuzzleBoard from '@/components/game/PuzzleBoard';
 
@@ -21,8 +21,6 @@ export default function Puzzle() {
       if (n > getEndlessLevel()) return { redirect: `/play?endless=${getEndlessLevel()}` };
       return { level: generateLevel(n) };
     }
-    const custom = params.get('custom');
-    if (custom) return { level: generateCustomLevel(custom, Math.max(1, parseInt(params.get('seed'), 10) || 1)) };
     const levelId = Math.max(1, parseInt(params.get('level') || '1', 10) || 1);
     // Locked levels can't be opened by editing the address.
     if (levelId > getUnlocked()) return { redirect: `/play?level=${getUnlocked()}` };
