@@ -3,6 +3,7 @@ import usePullToRefresh from '@/hooks/usePullToRefresh';
 import Screen from '@/components/game/Screen';
 import BottomNav from '@/components/game/BottomNav';
 import StreakCard from '@/components/profile/StreakCard';
+import DailyCard from '@/components/game/DailyCard';
 import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
@@ -26,6 +27,7 @@ export default function Profile() {
 
       <div key={refreshKey}>
         <StreakCard />
+        <div className="mb-4"><DailyCard /></div>
         <RankProgress totalStars={totalStars} />
         <StatTiles />
         <AppearanceToggle />

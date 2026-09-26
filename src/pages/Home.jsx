@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PlaySwitch from '@/components/game/PlaySwitch';
 import BottomNav from '@/components/game/BottomNav';
-import DailyCard from '@/components/game/DailyCard';
 import Screen from '@/components/game/Screen';
 import { LEVELS } from '@/lib/game/levels';
 import { validateAllLevels } from '@/lib/game/solver';
@@ -41,8 +40,6 @@ export default function Home() {
       </div>
 
       <div className="flex-1" />
-
-      <div className="mb-8"><DailyCard /></div>
 
       <PlaySwitch to={`/play?level=${current}`} />
 

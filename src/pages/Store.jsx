@@ -3,6 +3,7 @@ import { Star } from 'lucide-react';
 import Screen from '@/components/game/Screen';
 import BottomNav from '@/components/game/BottomNav';
 import StoreSection from '@/components/store/StoreSection';
+import DailyCard from '@/components/game/DailyCard';
 import { getStarBalance } from '@/lib/game/storage';
 import { COLORS, KNOBS, PATTERNS, TRACKS, getSkinState, getEquippedSkin, buySkin, equipSkin } from '@/lib/game/skins';
 import { playClick, vibrate } from '@/lib/game/feedback';
@@ -35,9 +36,10 @@ export default function Store() {
           {balance} <Star className="w-4 h-4 text-[#F5B21B] fill-[#F5B21B]" />
         </div>
       </div>
-      <p className="text-[11px] font-semibold text-muted-foreground mb-6">
+      <p className="text-[11px] font-semibold text-muted-foreground mb-4">
         Customize your switches. Earn stars by clearing levels.
       </p>
+      <div className="mb-6"><DailyCard /></div>
       <StoreSection title="Switch colors" kind="color" items={COLORS} state={state}
         equippedSkin={equippedSkin} balance={balance} onBuy={onBuy} onEquip={onEquip} />
       <StoreSection title="Patterns" kind="color" items={PATTERNS} state={state}
