@@ -1,4 +1,4 @@
-import { rankFor } from '@/lib/game/ranks';
+import { rankFor, rankUpReward } from '@/lib/game/ranks';
 
 const KEY = 'logicgrid_save';
 
@@ -36,7 +36,8 @@ export function getUnlocked() {
 export function recordResult(levelId, stars, skipNext = false, zen = false) {
   const s = loadSave();
   const prev = (s.stars || {})[levelId] || 0;
-  const mult = rankMultiplier();
+  // Players who ranked up before rewards existed start from their current rank (no back-pay).
+  const claimed = s.rankClaimed ?? rankFor(getRankedClears()).index;
   // Levels cleared only in Zen mode unlock the next level but don't count toward rank.
   const zenOnly = { ...(s.zenOnly || {}) };
   const alreadyCleared = levelId < (s.unlocked || 1) && !zenOnly[levelId];
@@ -47,13 +48,13 @@ export function recordResult(levelId, stars, skipNext = false, zen = false) {
     unlocked: Math.max(s.unlocked || 1, levelId + (skipNext ? 2 : 1)),
     zenOnly,
   });
-  // Rank boost on newly earned level stars; returns the whole stars it added.
-  return addBonusStars(Math.max(0, stars - prev) * (mult - 1));
-}
-
-// Star multiplier of the player's current rank.
-export function rankMultiplier() {
-  return rankFor(getRankedClears()).mult;
+  // Pay out each newly reached rank once; returns { rank, reward } on a rank-up, else null.
+  const rank = rankFor(getRankedClears());
+  writeSave({ rankClaimed: Math.max(claimed, rank.index) });
+  if (rank.index <= claimed) return null;
+  const reward = rankUpReward(claimed, rank.index);
+  addBonusStars(reward);
+  return { rank: rank.title, reward };
 }
 
 // Campaign levels cleared outside Zen mode — what rank is based on.
@@ -83,10 +84,9 @@ export function addBonusStars(n) {
 const STREAK_MILESTONES = { 7: 50, 30: 200, 100: 500 };
 export const BADGE_BONUS = 10;
 
-// Daily Challenge reward: 20 stars per star earned, +5 per streak day (max +50), plus milestone bonuses, × rank multiplier.
+// Daily Challenge reward: 20 stars per star earned, +5 per streak day (max +50), plus milestone bonuses.
 export function dailyBonus(streak, stars = 3) {
-  const base = 20 * stars + 5 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
-  return Math.round(base * rankMultiplier());
+  return 20 * stars + 5 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
 }
 
 export function spendStars(n) {

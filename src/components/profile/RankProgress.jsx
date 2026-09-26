@@ -16,16 +16,18 @@ export default function RankProgress() {
       <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Rank</div>
       <div className="flex items-center justify-between gap-2 mb-3">
         <span className="text-2xl font-extrabold text-[#00A38C]">{rank.title}</span>
-        <span className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F5B21B]/15 text-sm font-extrabold text-[#B7791F] dark:text-[#F5B21B] tabular-nums">
-          <Star className="w-3.5 h-3.5 fill-current" /> {rank.mult}×
-        </span>
+        {rank.next && (
+          <span className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F5B21B]/15 text-sm font-extrabold text-[#B7791F] dark:text-[#F5B21B] tabular-nums">
+            +{rank.next.reward} <Star className="w-3.5 h-3.5 fill-current" />
+          </span>
+        )}
       </div>
       <div className="h-2.5 rounded-full bg-muted overflow-hidden mb-1.5">
         <div className="h-full rounded-full bg-gradient-to-r from-[#00CDAF] to-[#00A88F]" style={{ width: `${pct}%` }} />
       </div>
       {rank.next && (
         <div className="text-right text-xs font-semibold text-muted-foreground mb-3">
-          {rank.next.min - cleared} level{rank.next.min - cleared === 1 ? '' : 's'} to {rank.next.title} · {rank.next.mult}× stars
+          {rank.next.min - cleared} level{rank.next.min - cleared === 1 ? '' : 's'} to {rank.next.title} · rank-up reward
         </div>
       )}
       <div className="flex flex-wrap gap-1.5">

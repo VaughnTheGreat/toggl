@@ -23,14 +23,22 @@ export const RANKS = [
   { min: 1000, title: 'Toggl Immortal' },
 ];
 
-// Each rank adds +0.1× to every star earned: Novice 1.0× … Toggl Immortal 3.0×.
-const withMult = (r, i) => ({ ...r, mult: Math.round((1 + i * 0.1) * 10) / 10 });
+// One-time star payout for reaching each rank — grows with rank since puzzles get harder
+// (Tinkerer 25 … Toggl Immortal 500).
+const withReward = (r, i) => ({ ...r, index: i, reward: i * 25 });
 
 export function rankFor(levelsCleared) {
   let i = 0;
   while (i + 1 < RANKS.length && levelsCleared >= RANKS[i + 1].min) i++;
-  const next = RANKS[i + 1] ? withMult(RANKS[i + 1], i + 1) : null;
-  return { ...withMult(RANKS[i], i), next };
+  const next = RANKS[i + 1] ? withReward(RANKS[i + 1], i + 1) : null;
+  return { ...withReward(RANKS[i], i), next };
+}
+
+// Total reward for ranks above `fromIndex` up to and including `toIndex`.
+export function rankUpReward(fromIndex, toIndex) {
+  let total = 0;
+  for (let i = fromIndex + 1; i <= toIndex; i++) total += i * 25;
+  return total;
 }
 
 export const BADGES = {

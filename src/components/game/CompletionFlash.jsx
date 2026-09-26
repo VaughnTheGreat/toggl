@@ -65,7 +65,12 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
           )}
           {result.bonusStars > 0 && (
             <div className="flex items-center justify-center gap-1 mt-2 text-xs font-extrabold text-[#F5B21B]">
-              <Star className="w-3.5 h-3.5 fill-[#F5B21B]" /> +{result.bonusStars} bonus stars{result.mult > 1 && ` · ${result.mult}× rank boost`}
+              <Star className="w-3.5 h-3.5 fill-[#F5B21B]" /> +{result.bonusStars} bonus stars
+            </div>
+          )}
+          {result.rankUp && (
+            <div className="mt-3 mx-auto w-fit px-3 py-1.5 rounded-full bg-[#F5B21B]/15 text-xs font-extrabold text-[#B7791F] dark:text-[#F5B21B]">
+              Rank up: {result.rankUp.rank} · +{result.rankUp.reward} ★
             </div>
           )}
           {result.newBadges?.length > 0 && (
