@@ -22,7 +22,7 @@ export default function PlaySwitch({ to }) {
   return (
     <button onClick={flip} aria-label="Play" className="mx-auto flex flex-col items-center gap-3 group">
       <span className={`relative block w-32 h-16 transition-colors duration-300 ${on ? '' : 'bg-muted-foreground/25'}`}
-        style={{ borderRadius: track.radius === '9999px' ? track.radius : `calc(${track.radius} * 2)`, ...(on ? { background: color.bg, boxShadow: `0 8px 24px ${color.glow}73` } : {}) }}>
+        style={{ borderRadius: track.big || (track.radius === '9999px' ? track.radius : `calc(${track.radius} * 2)`), clipPath: track.clip, ...(on ? { background: color.bg, boxShadow: `0 8px 24px ${color.glow}73` } : {}) }}>
         <Knob knob={knob} className={`absolute top-1.5 left-1.5 w-[3.25rem] h-[3.25rem] transition-transform duration-300 ${
           on ? 'translate-x-16' : ''
         }`} />

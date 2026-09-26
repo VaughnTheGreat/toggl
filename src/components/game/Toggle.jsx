@@ -18,7 +18,7 @@ export default function Toggle({ on, locked, dim, colorblind, reducedMotion, ski
           ? 'bg-amber-100 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/40'
           : on ? '' : 'bg-[#E3E7EF] dark:bg-[#0E1330]'
       } ${dim ? 'opacity-40' : ''}`}
-      style={{ borderRadius: track.radius, ...onStyle }}
+      style={{ borderRadius: track.radius, clipPath: track.clip, ...onStyle }}
     >
       <Knob knob={knob} className={`w-6 h-6 ${spring} ${on ? 'translate-x-[24px]' : 'translate-x-0'}`} />
     </div>
