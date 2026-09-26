@@ -14,7 +14,7 @@ import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
-import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, addBonusStars, BADGE_BONUS } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, addBonusStars, BADGE_BONUS, rankMultiplier } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import LevelCoach from '@/components/game/LevelCoach';
 import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
@@ -95,13 +95,14 @@ export default function PuzzleBoard({ level }) {
       const daily = level.daily ? recordDaily(stars) : null;
       const streak = daily ? daily.streak : null;
       if (level.endless) recordEndless(level.endless);
-      else if (isCampaign) recordResult(level.id, stars, skipped, !!settings.zen);
+      const mult = rankMultiplier();
+      const rankBoost = isCampaign ? recordResult(level.id, stars, skipped, !!settings.zen) : 0;
       const result = { stars, rank, skipped, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);
-      const bonusStars = (daily?.bonus || 0) + newBadges.length * BADGE_BONUS;
-      addBonusStars(newBadges.length * BADGE_BONUS);
-      setCompleted({ ...result, newBadges, bonusStars });
+      const badgeStars = addBonusStars(Math.round(newBadges.length * BADGE_BONUS * mult));
+      const bonusStars = (daily?.bonus || 0) + rankBoost + badgeStars;
+      setCompleted({ ...result, newBadges, bonusStars, mult });
     }, 550);
     return () => clearTimeout(t);
   }, [won]); // eslint-disable-line react-hooks/exhaustive-deps

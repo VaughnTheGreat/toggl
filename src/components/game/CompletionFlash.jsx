@@ -65,7 +65,7 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
           )}
           {result.bonusStars > 0 && (
             <div className="flex items-center justify-center gap-1 mt-2 text-xs font-extrabold text-[#F5B21B]">
-              <Star className="w-3.5 h-3.5 fill-[#F5B21B]" /> +{result.bonusStars} bonus stars
+              <Star className="w-3.5 h-3.5 fill-[#F5B21B]" /> +{result.bonusStars} bonus stars{result.mult > 1 && ` · ${result.mult}× rank boost`}
             </div>
           )}
           {result.newBadges?.length > 0 && (

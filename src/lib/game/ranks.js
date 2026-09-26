@@ -23,14 +23,14 @@ export const RANKS = [
   { min: 1000, title: 'Toggl Immortal' },
 ];
 
+// Each rank adds +0.1× to every star earned: Novice 1.0× … Toggl Immortal 3.0×.
+const withMult = (r, i) => ({ ...r, mult: Math.round((1 + i * 0.1) * 10) / 10 });
+
 export function rankFor(levelsCleared) {
-  let current = RANKS[0];
-  let next = null;
-  for (const r of RANKS) {
-    if (levelsCleared >= r.min) current = r;
-    else { next = r; break; }
-  }
-  return { ...current, next };
+  let i = 0;
+  while (i + 1 < RANKS.length && levelsCleared >= RANKS[i + 1].min) i++;
+  const next = RANKS[i + 1] ? withMult(RANKS[i + 1], i + 1) : null;
+  return { ...withMult(RANKS[i], i), next };
 }
 
 export const BADGES = {

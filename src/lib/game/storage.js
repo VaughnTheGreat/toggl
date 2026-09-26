@@ -1,3 +1,5 @@
+import { rankFor } from '@/lib/game/ranks';
+
 const KEY = 'logicgrid_save';
 
 export function loadSave() {
@@ -34,6 +36,7 @@ export function getUnlocked() {
 export function recordResult(levelId, stars, skipNext = false, zen = false) {
   const s = loadSave();
   const prev = (s.stars || {})[levelId] || 0;
+  const mult = rankMultiplier();
   // Levels cleared only in Zen mode unlock the next level but don't count toward rank.
   const zenOnly = { ...(s.zenOnly || {}) };
   const alreadyCleared = levelId < (s.unlocked || 1) && !zenOnly[levelId];
@@ -44,6 +47,13 @@ export function recordResult(levelId, stars, skipNext = false, zen = false) {
     unlocked: Math.max(s.unlocked || 1, levelId + (skipNext ? 2 : 1)),
     zenOnly,
   });
+  // Rank boost on newly earned level stars; returns the whole stars it added.
+  return addBonusStars(Math.max(0, stars - prev) * (mult - 1));
+}
+
+// Star multiplier of the player's current rank.
+export function rankMultiplier() {
+  return rankFor(getRankedClears()).mult;
 }
 
 // Campaign levels cleared outside Zen mode — what rank is based on.
@@ -58,20 +68,25 @@ export function getRankedClears() {
 export function getStarBalance() {
   const s = loadSave();
   const total = Object.values(s.stars || {}).reduce((a, b) => a + b, 0);
-  return Math.max(0, total + (s.bonusStars || 0) - (s.starsSpent || 0));
+  return Math.max(0, Math.floor(total + (s.bonusStars || 0) - (s.starsSpent || 0)));
 }
 
-// Extra spendable stars from streaks and badges (not counted toward level stars).
+// Extra spendable stars from streaks, badges and rank boosts (not counted toward level stars).
+// Fractions carry over between clears; returns how many whole stars the balance gained.
 export function addBonusStars(n) {
-  if (n > 0) writeSave({ bonusStars: (loadSave().bonusStars || 0) + n });
+  if (!(n > 0)) return 0;
+  const before = loadSave().bonusStars || 0;
+  writeSave({ bonusStars: before + n });
+  return Math.floor(before + n) - Math.floor(before);
 }
 
 const STREAK_MILESTONES = { 7: 50, 30: 200, 100: 500 };
 export const BADGE_BONUS = 10;
 
-// Daily Challenge reward: 20 stars per star earned, +5 per streak day (max +50), plus milestone bonuses.
+// Daily Challenge reward: 20 stars per star earned, +5 per streak day (max +50), plus milestone bonuses, × rank multiplier.
 export function dailyBonus(streak, stars = 3) {
-  return 20 * stars + 5 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
+  const base = 20 * stars + 5 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
+  return Math.round(base * rankMultiplier());
 }
 
 export function spendStars(n) {

@@ -9,11 +9,9 @@ import StatTiles from '@/components/profile/StatTiles';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
 import SettingsRows from '@/components/profile/SettingsRows';
 import DeleteMyData from '@/components/profile/DeleteMyData';
-import { getStars } from '@/lib/game/storage';
 
 export default function Profile() {
   const [refreshKey, setRefreshKey] = useState(0);
-  const totalStars = Object.values(getStars()).reduce((a, b) => a + b, 0);
 
   // Pull down: remount the cards so they re-read the local save.
   const ptr = usePullToRefresh(async () => setRefreshKey((k) => k + 1));
@@ -28,7 +26,7 @@ export default function Profile() {
       <div key={refreshKey}>
         <StreakCard />
         <div className="mb-4"><DailyCard /></div>
-        <RankProgress totalStars={totalStars} />
+        <RankProgress />
         <StatTiles />
         <AppearanceToggle />
         <SettingsRows />

@@ -7,7 +7,7 @@ import DailyCard from '@/components/game/DailyCard';
 import { getStarBalance } from '@/lib/game/storage';
 import { COLORS, KNOBS, PATTERNS, TRACKS, getSkinState, getEquippedSkin, buySkin, equipSkin } from '@/lib/game/skins';
 import { playClick, vibrate } from '@/lib/game/feedback';
-import { getSettings } from '@/lib/game/storage';
+import { getSettings, rankMultiplier } from '@/lib/game/storage';
 
 export default function Store() {
   const [, setTick] = useState(0);
@@ -37,7 +37,7 @@ export default function Store() {
         </div>
       </div>
       <p className="text-[11px] font-semibold text-muted-foreground mb-4">
-        Customize your switches. Earn stars by clearing levels.
+        Customize your switches. Your rank boosts every star you earn: {rankMultiplier()}×.
       </p>
       <div className="mb-6"><DailyCard /></div>
       <StoreSection title="Switch colors" kind="color" items={COLORS} state={state}
