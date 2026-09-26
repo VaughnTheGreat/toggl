@@ -3,6 +3,7 @@
 // and picks a target at the desired depth — so every level is solvable with a known
 // minimum move count before it is ever shown.
 import { canPress, applyPress } from './ruleEngine';
+import { SHAPES, SHAPE_ORDER, PEAK_SHAPES, buildFreeform } from './archetypes';
 
 function mulberry32(a) {
   return function () {
@@ -36,58 +37,16 @@ export function difficultyFor(n) {
   return { buttonCount, types, targetMoves, undoAllowed: n < 12 };
 }
 
-function buildButtons(rng, ids, types) {
-  const pick = (arr) => arr[Math.floor(rng() * arr.length)];
-  const others = (id) => ids.filter((x) => x !== id);
-  const buttons = ids.map((id) => {
-    const t = pick(types);
-    switch (t) {
-      case 'linked': {
-        const o = others(id).sort(() => rng() - 0.5);
-        const count = rng() < 0.3 && o.length > 1 ? 2 : 1;
-        return { id, rule: { type: 'linked', targets: [id, ...o.slice(0, count)] } };
-      }
-      case 'conditional':
-        return { id, rule: { type: 'conditional', condition: { button: pick(others(id)), state: rng() < 0.5 } } };
-      case 'lock':
-        return { id, rule: { type: 'lock', locks: [pick(others(id))] } };
-      case 'copy':
-        return { id, rule: { type: 'copy', source: pick(others(id)) } };
-      case 'inverse':
-        return { id, rule: { type: 'inverse', targets: others(id) } };
-      case 'swap':
-        return { id, rule: { type: 'swap', target: pick(others(id)) } };
-      case 'oneshot':
-        return { id, rule: { type: 'oneshot' } };
-      case 'chain':
-        return { id, rule: { type: 'chain', target: null } };
-      case 'delay':
-        return { id, rule: { type: 'delay', target: pick(others(id)), delayMs: 1200 + Math.floor(rng() * 1200) } };
-      default:
-        return { id, rule: { type: 'toggle' } };
-    }
-  });
-  // Resolve chains: each fires a non-chain neighbour's rule (snapshot, so no cycles).
-  for (const b of buttons) {
-    if (b.rule.type !== 'chain') continue;
-    const cands = buttons.filter((x) => x.id !== b.id && x.rule.type !== 'chain');
-    if (!cands.length) { b.rule = { type: 'toggle' }; continue; }
-    const t = cands[Math.floor(rng() * cands.length)];
-    b.rule = { type: 'chain', target: t.id, targetRule: t.rule };
-  }
-  return buttons;
-}
-
-// BFS from the start state, recording the first depth each button-state pattern
-// appears at (= true minimum moves). Returns a target at the deepest reachable
-// depth up to targetMoves, or null if the system is too trivial.
-function findTarget(buttons, ids, start, targetMoves, rng) {
-  const sKey = (s) => ids.map((id) => (s[id] ? 1 : 0)).join('');
+// BFS from the start state, recording the first depth each goal key appears at
+// (= true minimum moves) plus the path that reached it. Returns a goal at the
+// deepest reachable depth up to targetMoves, or null if the system is too trivial.
+// keyFn decides what "the goal" is: exact pattern, ON-count, or per-island counts.
+function findGoal(buttons, ids, start, targetMoves, rng, keyFn) {
   const fullKey = (s, l) => ids.map((id) => `${s[id] ? 1 : 0}${l[id] ? 1 : 0}`).join('');
-  const patternDepth = new Map([[sKey(start), 0]]);
-  const patternState = new Map();
+  const goalDepth = new Map([[keyFn(start), 0]]);
+  const goalNode = new Map();
   const visited = new Set([fullKey(start, {})]);
-  let frontier = [{ s: start, l: {} }];
+  let frontier = [{ s: start, l: {}, parent: null, press: null }];
 
   for (let d = 1; d <= targetMoves && frontier.length; d++) {
     const next = [];
@@ -98,63 +57,46 @@ function findTarget(buttons, ids, start, targetMoves, rng) {
         const fk = fullKey(r.states, r.locks);
         if (visited.has(fk)) continue;
         visited.add(fk);
-        const pk = sKey(r.states);
-        if (!patternDepth.has(pk)) {
-          patternDepth.set(pk, d);
-          patternState.set(pk, r.states);
+        const child = { s: r.states, l: r.locks, parent: node, press: b.id };
+        const gk = keyFn(r.states);
+        if (!goalDepth.has(gk)) {
+          goalDepth.set(gk, d);
+          goalNode.set(gk, child);
         }
-        next.push({ s: r.states, l: r.locks });
+        next.push(child);
       }
     }
     frontier = next;
   }
 
   let best = 0;
-  for (const d of patternDepth.values()) best = Math.max(best, d);
+  for (const d of goalDepth.values()) best = Math.max(best, d);
   if (best < Math.min(2, targetMoves)) return null;
-  const candidates = [...patternDepth.entries()].filter(([, d]) => d === best).map(([k]) => k);
-  const pickKey = candidates[Math.floor(rng() * candidates.length)];
-  return { target: { ...patternState.get(pickKey) }, depth: best };
+  const candidates = [...goalDepth.entries()].filter(([, d]) => d === best).map(([k]) => k);
+  const key = candidates[Math.floor(rng() * candidates.length)];
+  const path = [];
+  for (let n = goalNode.get(key); n.parent; n = n.parent) path.unshift(n.press);
+  return { target: { ...goalNode.get(key).s }, depth: best, path, key };
 }
 
-// Same BFS shape as findTarget, but keyed by ON-count instead of exact pattern —
-// backs the 'count' objective ("turn ON exactly N switches") without adding any
-// new dimension to the solver's state space: it's still states+locks, just a
-// different predicate over the same reachable set.
-function findCountGoal(buttons, ids, start, targetMoves, rng) {
-  const countKey = (s) => String(ids.reduce((n, id) => n + (s[id] ? 1 : 0), 0));
-  const fullKey = (s, l) => ids.map((id) => `${s[id] ? 1 : 0}${l[id] ? 1 : 0}`).join('');
-  const countDepth = new Map([[countKey(start), 0]]);
-  const countState = new Map();
-  const visited = new Set([fullKey(start, {})]);
-  let frontier = [{ s: start, l: {} }];
+const onCount = (s, ids) => ids.reduce((n, id) => n + (s[id] ? 1 : 0), 0);
 
-  for (let d = 1; d <= targetMoves && frontier.length; d++) {
-    const next = [];
-    for (const node of frontier) {
-      for (const b of buttons) {
-        if (!canPress(node.s, node.l, b)) continue;
-        const r = applyPress(node.s, node.l, b);
-        const fk = fullKey(r.states, r.locks);
-        if (visited.has(fk)) continue;
-        visited.add(fk);
-        const ck = countKey(r.states);
-        if (!countDepth.has(ck)) {
-          countDepth.set(ck, d);
-          countState.set(ck, r.states);
-        }
-        next.push({ s: r.states, l: r.locks });
-      }
-    }
-    frontier = next;
+function goalKeyFn(mode, ids, groups) {
+  if (mode === 'count') return (s) => String(onCount(s, ids));
+  if (mode === 'islands') return (s) => groups.map((g) => onCount(s, g)).join(',');
+  return (s) => ids.map((id) => (s[id] ? 1 : 0)).join('');
+}
+
+// Does the optimal path only work in its exact order? (Replayed backwards.)
+function isOrderSensitive(buttons, start, path, goalKey, keyFn) {
+  let s = start;
+  let l = {};
+  for (const id of [...path].reverse()) {
+    const b = buttons.find((x) => x.id === id);
+    if (!canPress(s, l, b)) return true;
+    ({ states: s, locks: l } = applyPress(s, l, b));
   }
-
-  let best = 0;
-  for (const d of countDepth.values()) best = Math.max(best, d);
-  if (best < Math.min(2, targetMoves)) return null;
-  const candidates = [...countDepth.entries()].filter(([, d]) => d === best).map(([k]) => k);
-  const pickKey = candidates[Math.floor(rng() * candidates.length)];
-  return { target: { ...countState.get(pickKey) }, depth: best };
+  return keyFn(s) !== goalKey;
 }
 
 // Player-selectable difficulty presets for Custom Play.
@@ -165,41 +107,60 @@ export const DIFFICULTIES = {
   expert: { label: 'Expert', desc: 'All rules, deep solutions', buttonCount: 8, types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'], targetMoves: 9, undoAllowed: false },
 };
 
-function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, generousLimit, mysteryCount = 0, objectiveMode = 'match') {
+// Builds candidates in the requested shape and keeps the first one whose optimal
+// solution actually plays like that shape (falls back to the first solvable one).
+function generateFrom(seedBase, { buttonCount, types, targetMoves, undoAllowed }, meta, opts = {}) {
+  const { generous = false, mystery = 0, objective = 'match', shape = 'freeform' } = opts;
   const ids = IDS.slice(0, buttonCount);
   const base = { ...meta, undoAllowed };
+  const def = SHAPES[shape] || SHAPES.freeform;
+  const maxCandidates = buttonCount >= 10 ? 3 : 8;
+  let fallback = null;
+  let tried = 0;
   for (let attempt = 0; attempt < 80; attempt++) {
     const rng = mulberry32(seedBase + attempt * 104729 + 1);
-    const buttons = buildButtons(rng, ids, types);
-    const start = Object.fromEntries(ids.map((id) => [id, rng() < 0.35]));
-    const found = objectiveMode === 'count'
-      ? findCountGoal(buttons, ids, start, targetMoves, rng)
-      : findTarget(buttons, ids, start, targetMoves, rng);
-    if (found) {
-      // Mystery switches: hide the rule of a non-trivial button until first pressed.
-      if (mysteryCount > 0 && rng() < 0.6) {
-        const cands = buttons.filter((b) => b.rule.type !== 'toggle');
-        for (let i = 0; i < mysteryCount && cands.length; i++) {
-          cands.splice(Math.floor(rng() * cands.length), 1)[0].mystery = true;
-        }
+    const built = def.build(rng, ids, types) || { ...buildFreeform(rng, ids, types), plain: true };
+    const { buttons, groups } = built;
+    const start = built.start || Object.fromEntries(ids.map((id) => [id, rng() < 0.35]));
+    const mode = objective === 'islands' && (shape !== 'islands' || built.plain) ? 'match' : objective;
+    const keyFn = goalKeyFn(mode, ids, groups);
+    const found = findGoal(buttons, ids, start, targetMoves, rng, keyFn);
+    if (!found) continue;
+    // Mystery switches: hide the rule of a non-trivial button until first pressed.
+    if (mystery > 0 && rng() < 0.6) {
+      const cands = buttons.filter((b) => b.rule.type !== 'toggle');
+      for (let i = 0; i < mystery && cands.length; i++) {
+        cands.splice(Math.floor(rng() * cands.length), 1)[0].mystery = true;
       }
-      const objective = objectiveMode === 'count'
-        ? { type: 'count', count: ids.filter((id) => found.target[id]).length }
-        : { type: 'match' };
-      return {
-        ...base, buttons, start, target: found.target, objective,
-        optimalMoves: found.depth, moveLimit: found.depth + (generousLimit ? 2 : 1),
-      };
     }
+    const goal = mode === 'count' ? { type: 'count', count: onCount(found.target, ids) }
+      : mode === 'islands' ? { type: 'islands', groups: groups.map((g) => ({ ids: g, count: onCount(found.target, g) })) }
+      : { type: 'match' };
+    const level = {
+      ...base, buttons, start, target: found.target, objective: goal,
+      optimalMoves: found.depth, moveLimit: found.depth + (generous ? 2 : 1),
+      shape: built.plain ? 'freeform' : shape,
+      shapeLabel: built.plain ? null : def.label,
+      groups: built.plain ? undefined : groups,
+      hub: built.hub,
+    };
+    const fits = built.plain || def.fits({
+      ...built, path: found.path,
+      orderSensitive: isOrderSensitive(buttons, start, found.path, found.key, keyFn),
+    });
+    if (fits) return level;
+    fallback = fallback || level;
+    if (++tried >= maxCandidates) return fallback;
   }
+  if (fallback) return fallback;
   // Guaranteed-solvable fallback (practically unreachable).
   return {
     ...base,
-    objective: objectiveMode === 'count' ? { type: 'count', count: ids.length } : { type: 'match' },
+    objective: objective === 'count' ? { type: 'count', count: ids.length } : { type: 'match' },
     buttons: ids.map((id) => ({ id, rule: { type: 'toggle' } })),
     start: Object.fromEntries(ids.map((id) => [id, false])),
     target: Object.fromEntries(ids.map((id) => [id, true])),
-    optimalMoves: ids.length, moveLimit: ids.length + 2,
+    optimalMoves: ids.length, moveLimit: ids.length + 2, shape: 'freeform',
   };
 }
 
@@ -213,17 +174,30 @@ export function generateLevel(n) {
       targetMoves: Math.min(d.targetMoves + 2, 12),
     }, {
       id: `E${n}`, name: `Milestone ${String(n).padStart(3, '0')}`, tier: 'Milestone', endless: n, milestone: true,
-    }, false, 1);
+    }, { mystery: 1, shape: 'trapdoor' });
   }
   return generateFrom(n * 7919, difficultyFor(n), {
     id: `E${n}`, name: `Sequence ${String(n).padStart(3, '0')}`, tier: 'Endless', endless: n,
-  }, n < 10);
+  }, { generous: n < 10, shape: n < 6 ? 'freeform' : SHAPE_ORDER[n % SHAPE_ORDER.length] });
 }
 
 // Infinite campaign continuation (levels 31+). Sawtooth rhythm:
 // easy → easy+ → medium → hard → relief, ramping slowly overall so
 // momentum builds without exhaustion.
 const SAW = [0, 1, 2, 3, -3];
+
+// Each 5-level block plays four different shapes, ending on a peak shape
+// (Trapdoor / Islands alternate), then a freeform breather.
+function continuationShape(m) {
+  const pos = (m - 1) % 5;
+  if (SAW[pos] < 0) return 'freeform';
+  const block = Math.floor((m - 1) / 5);
+  const rng = mulberry32(block * 7757 + 3);
+  const peak = PEAK_SHAPES[block % PEAK_SHAPES.length];
+  const rest = SHAPE_ORDER.filter((s) => s !== peak)
+    .map((s) => [rng(), s]).sort((a, b) => a[0] - b[0]).map(([, s]) => s);
+  return [...rest.slice(0, 3), peak][pos];
+}
 
 // Rotating modifiers keep late-game levels feeling distinct even after
 // every rule type has been unlocked.
@@ -246,6 +220,8 @@ export function generateContinuationLevel(n) {
     d.buttonCount = Math.min(d.buttonCount + 1, 12);
     d.targetMoves = Math.min(d.targetMoves + 1, 12);
   }
+  const shape = continuationShape(m);
+  const objective = mod?.objective === 'count' ? 'count' : shape === 'islands' && n % 2 === 0 ? 'islands' : 'match';
   // Board size and solution depth max out around level 460. Past that, pressure
   // keeps rising instead: zero spare moves (460+), then an extra hidden rule (700+).
   const lateExact = !relief && n > 460;
@@ -254,14 +230,15 @@ export function generateContinuationLevel(n) {
     id: n,
     name: `Level ${n}`,
     tier: relief ? 'Breather' : mod ? mod.label : 'Challenge',
-  }, relief, relief ? 0 : (mod?.mystery ?? 1) + lateMystery, mod?.objective === 'count' ? 'count' : 'match');
+  }, { generous: relief, mystery: relief ? 0 : (mod?.mystery ?? 1) + lateMystery, objective, shape });
   if (mod?.exact || lateExact) level.moveLimit = level.optimalMoves;
   return level;
 }
 
-// Same puzzle for every player on a given date.
+// Same puzzle for every player on a given date; the shape rotates daily.
 export function generateDailyLevel(dateKey) {
   const seed = parseInt(dateKey.replace(/-/g, ''), 10);
+  const day = Math.floor(new Date(dateKey).getTime() / 86400000);
   return generateFrom(seed, {
     buttonCount: 8,
     types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'],
@@ -269,12 +246,12 @@ export function generateDailyLevel(dateKey) {
     undoAllowed: true,
   }, {
     id: `D${dateKey}`, name: 'Daily Challenge', tier: 'Daily', daily: dateKey,
-  }, false, 1);
+  }, { mystery: 1, shape: SHAPE_ORDER[((day % SHAPE_ORDER.length) + SHAPE_ORDER.length) % SHAPE_ORDER.length] });
 }
 
 export function generateCustomLevel(tierKey, seed) {
   const d = DIFFICULTIES[tierKey] || DIFFICULTIES.beginner;
   return generateFrom(seed * 6151 + 13, d, {
     id: `C-${tierKey}-${seed}`, name: `${d.label} Run ${seed}`, tier: d.label, custom: { tier: tierKey, seed },
-  }, tierKey === 'beginner' || tierKey === 'skilled');
+  }, { generous: tierKey === 'beginner' || tierKey === 'skilled' });
 }

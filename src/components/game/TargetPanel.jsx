@@ -1,8 +1,10 @@
 import React from 'react';
 import { Check } from 'lucide-react';
 import { countOn, describeObjective } from '@/lib/game/objective';
+import IslandTarget from '@/components/game/IslandTarget';
 
 export default function TargetPanel({ level, buttons, target, states }) {
+  if (level?.objective?.type === 'islands') return <IslandTarget level={level} states={states} />;
   if (level?.objective?.type === 'count') {
     const current = countOn(states, level);
     const need = level.objective.count;

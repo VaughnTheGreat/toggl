@@ -13,7 +13,7 @@ import { usePuzzle } from '@/lib/game/usePuzzle';
 import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
-import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
+import { isSolved, progress, isCountObjective } from '@/lib/game/objective';
 import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, addBonusStars, BADGE_BONUS } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import LevelCoach from '@/components/game/LevelCoach';
@@ -59,10 +59,7 @@ export default function PuzzleBoard({ level }) {
   const countMode = isCountObjective(level);
   // Wait for delayed switches to visibly land before declaring the win.
   const won = moves > 0 && isSolved(states, level) && Object.keys(pendingVisual).length === 0;
-  const matched = countMode
-    ? countOn(states, level)
-    : level.buttons.filter((b) => !!states[b.id] === !!level.target[b.id]).length;
-  const total = countMode ? level.objective.count : level.buttons.length;
+  const { matched, total } = progress(states, level);
   const limit = level.moveLimit + extraMoves;
   const outOfMoves = !settings.zen && !completed && moves >= limit && !isSolved(states, level);
   const buyCost = 2 * 2 ** buysRef.current;
@@ -207,7 +204,7 @@ export default function PuzzleBoard({ level }) {
         </button>
         <div className="flex-1 min-w-0">
           <div className="text-base font-extrabold truncate">{level.daily || level.endless || level.custom ? level.name : `Level ${level.id}`}</div>
-          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground truncate">{level.tier}{!level.undoAllowed && ' · no undo'}</div>
+          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground truncate">{level.tier}{level.shapeLabel && ` · ${level.shapeLabel}`}{!level.undoAllowed && ' · no undo'}</div>
         </div>
         <RuleGuide buttons={level.buttons} revealed={revealed} />
         <div className="bg-card rounded-full shadow-sm px-3 sm:px-4 py-2 text-right shrink-0">
@@ -228,6 +225,7 @@ export default function PuzzleBoard({ level }) {
           highlightId={highlightId} deniedId={deniedId} settings={settings}
           revealed={revealed}
           pendingIds={Object.keys(pendingVisual)}
+          layout={{ shape: level.shape, groups: level.groups, hub: level.hub }}
         />
       </div>
 

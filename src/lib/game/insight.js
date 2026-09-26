@@ -19,6 +19,9 @@ export function deadEndReason(states, locks, level) {
   if (level.objective?.type === 'count') {
     return 'No sequence of presses from here reaches the required count.';
   }
+  if (level.objective?.type === 'islands') {
+    return 'No sequence of presses from here hits every island\u2019s count.';
+  }
   const wrong = level.buttons.filter((b) => locks[b.id] && !!states[b.id] !== !!level.target[b.id]);
   if (wrong.length) {
     const ids = wrong.map((b) => b.id).join(' and ');

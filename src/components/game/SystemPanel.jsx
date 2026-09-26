@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import SwitchRow from '@/components/game/SwitchRow';
+import BoardLayout from '@/components/game/BoardLayout';
 import { canPress } from '@/lib/game/ruleEngine';
 
-export default function SystemPanel({ buttons, states, locks, onPress, onPreview, onPreviewEnd, lastEffect, highlightId, deniedId, settings, revealed = {}, pendingIds = [] }) {
+export default function SystemPanel({ buttons, states, locks, onPress, onPreview, onPreviewEnd, lastEffect, highlightId, deniedId, settings, revealed = {}, pendingIds = [], layout }) {
   const rowRefs = useRef({});
   const containerRef = useRef(null);
   const [lines, setLines] = useState([]);
@@ -44,14 +45,9 @@ export default function SystemPanel({ buttons, states, locks, onPress, onPreview
           ))}
         </svg>
       )}
-      <div className={
-        buttons.length >= 10 ? 'grid grid-cols-3 md:grid-cols-4 gap-2'
-        : buttons.length >= 7 ? 'grid grid-cols-2 md:grid-cols-3 gap-2'
-        : 'flex flex-col gap-2'
-      }>
-        {buttons.map((b) => (
+      <BoardLayout buttons={buttons} layout={layout} renderRow={(b, compact) => (
           <SwitchRow
-            compact={buttons.length >= 7}
+            compact={compact}
             key={b.id}
             innerRef={(el) => (rowRefs.current[b.id] = el)}
             button={b}
@@ -70,8 +66,7 @@ export default function SystemPanel({ buttons, states, locks, onPress, onPreview
             colorblind={settings.colorblind}
             reducedMotion={settings.reducedMotion}
           />
-        ))}
-      </div>
+        )} />
     </div>
   );
 }
