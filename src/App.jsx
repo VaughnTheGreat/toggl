@@ -18,6 +18,7 @@ import Tutorial from './pages/Tutorial';
 import Profile from './pages/Profile';
 import Store from './pages/Store';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Support from './pages/Support';
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
@@ -57,6 +58,7 @@ const AuthenticatedApp = () => {
       <Route path="/settings" element={<Profile />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/store" element={<Store />} />
+      <Route path="/support" element={<Support />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
