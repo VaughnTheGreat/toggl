@@ -8,7 +8,7 @@ export function loadSave() {
 
 let changeListener = null;
 
-// cloudSync registers here to push the save to the player's account after every write.
+// Optional listener notified after every local save write.
 export function onSaveChange(fn) {
   changeListener = fn;
 }

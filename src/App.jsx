@@ -11,12 +11,13 @@ import ScrollToTop from './components/ScrollToTop';
 import SaveGate from './components/SaveGate';
 // Add page imports here
 const PageNotFound = lazy(() => import('./lib/PageNotFound'));
-const Home = lazy(() => import('./pages/Home'));
-const Puzzle = lazy(() => import('./pages/Puzzle'));
-const Tutorial = lazy(() => import('./pages/Tutorial'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Store = lazy(() => import('./pages/Store'));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+// Core game screens load up front so the whole game keeps working if the connection drops.
+import Home from './pages/Home';
+import Puzzle from './pages/Puzzle';
+import Tutorial from './pages/Tutorial';
+import Profile from './pages/Profile';
+import Store from './pages/Store';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
