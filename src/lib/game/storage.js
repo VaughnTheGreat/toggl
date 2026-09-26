@@ -69,9 +69,9 @@ export function addBonusStars(n) {
 const STREAK_MILESTONES = { 7: 50, 30: 200, 100: 500 };
 export const BADGE_BONUS = 10;
 
-// Daily Challenge reward: 5 stars, +2 per streak day (max +20), plus milestone bonuses.
-export function dailyBonus(streak) {
-  return 5 + 2 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
+// Daily Challenge reward: 20 stars per star earned, +5 per streak day (max +50), plus milestone bonuses.
+export function dailyBonus(streak, stars = 3) {
+  return 20 * stars + 5 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
 }
 
 export function spendStars(n) {
@@ -154,7 +154,7 @@ export function isDailyDone() {
   return getDaily().lastDate === todayKey();
 }
 
-export function recordDaily() {
+export function recordDaily(stars) {
   const d = getDaily();
   const today = todayKey();
   if (d.lastDate === today) return { ...d, bonus: 0 };
@@ -162,7 +162,7 @@ export function recordDaily() {
   const streak = consecutive ? d.streak + 1 : 1;
   const next = { lastDate: today, streak, best: Math.max(d.best || 0, streak) };
   writeSave({ daily: next });
-  const bonus = dailyBonus(streak);
+  const bonus = dailyBonus(streak, stars);
   addBonusStars(bonus);
   return { ...next, bonus };
 }

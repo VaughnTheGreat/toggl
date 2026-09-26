@@ -8,20 +8,22 @@ export default function DailyCard() {
   const { streak, lastDate } = getDaily();
   const alive = lastDate && Math.round((new Date(todayKey()) - new Date(lastDate)) / 86400000) === 1;
   const nextStreak = alive ? streak + 1 : 1;
+  const Wrap = done ? 'div' : Link;
 
   return (
-    <Link to="/play?daily=1" className="flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
+    <Wrap {...(done ? {} : { to: '/play?daily=1' })}
+      className={`flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 ${done ? 'opacity-70' : 'active:scale-[0.98] transition-transform'}`}>
       <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-500/15 flex items-center justify-center">
         <Flame className="w-6 h-6 text-orange-500" />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 text-left">
         <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Challenge</div>
         <div className="text-base font-extrabold">
-          {done ? 'Completed today' : 'Today\u2019s puzzle awaits'}
+          {done ? 'Done · new puzzle tomorrow' : 'One shot at today\u2019s puzzle'}
         </div>
         <div className="text-xs font-semibold text-muted-foreground">
           {streak > 0 ? `${streak}-day streak` : 'Start your streak'}
-          {!done && <span className="text-[#F5B21B] font-extrabold"> · +{dailyBonus(nextStreak)} ★</span>}
+          {!done && <span className="text-[#F5B21B] font-extrabold"> · up to +{dailyBonus(nextStreak)} ★</span>}
         </div>
       </div>
       {done ? (
@@ -29,6 +31,6 @@ export default function DailyCard() {
       ) : (
         <ChevronRight className="w-5 h-5 text-[#B4BACA]" />
       )}
-    </Link>
+    </Wrap>
   );
 }

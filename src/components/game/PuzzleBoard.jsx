@@ -92,7 +92,7 @@ export default function PuzzleBoard({ level }) {
       const rank = solveRank({ moves, undos: undosUsed, hints: hintLevel, resets: resetsRef.current }, level);
       const isCampaign = !level.custom && !level.daily && !level.endless;
       const skipped = false; // levels are never skipped — always advance one at a time
-      const daily = level.daily ? recordDaily() : null;
+      const daily = level.daily ? recordDaily(stars) : null;
       const streak = daily ? daily.streak : null;
       if (level.endless) recordEndless(level.endless);
       else if (isCampaign) recordResult(level.id, stars, skipped, !!settings.zen);

@@ -2,14 +2,18 @@ import React, { useMemo } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
 import { getPathLevel } from '@/lib/game/levelPath';
 import { generateLevel, generateCustomLevel, generateDailyLevel } from '@/lib/game/generator';
-import { todayKey, getUnlocked, getEndlessLevel } from '@/lib/game/storage';
+import { todayKey, isDailyDone, getUnlocked, getEndlessLevel } from '@/lib/game/storage';
 import PuzzleBoard from '@/components/game/PuzzleBoard';
 
 export default function Puzzle() {
   const location = useLocation();
   const result = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('daily')) return { level: generateDailyLevel(todayKey()) };
+    if (params.get('daily')) {
+      // One completed run per day.
+      if (isDailyDone()) return { redirect: '/' };
+      return { level: generateDailyLevel(todayKey()) };
+    }
     const endless = params.get('endless');
     if (endless) {
       const n = Math.max(1, parseInt(endless, 10) || 1);

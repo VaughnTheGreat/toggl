@@ -263,13 +263,13 @@ export function generateContinuationLevel(n) {
 export function generateDailyLevel(dateKey) {
   const seed = parseInt(dateKey.replace(/-/g, ''), 10);
   return generateFrom(seed, {
-    buttonCount: 6,
+    buttonCount: 8,
     types: ['toggle', 'linked', 'conditional', 'lock', 'copy', 'inverse', 'swap', 'oneshot', 'chain'],
-    targetMoves: 6,
+    targetMoves: 8,
     undoAllowed: true,
   }, {
     id: `D${dateKey}`, name: 'Daily Challenge', tier: 'Daily', daily: dateKey,
-  }, true);
+  }, false, 1);
 }
 
 export function generateCustomLevel(tierKey, seed) {
