@@ -1,5 +1,6 @@
-import React from 'react';
-import { Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Star, ChevronRight } from 'lucide-react';
+import RankLadderSheet from '@/components/profile/RankLadderSheet';
 import { rankFor, BADGES } from '@/lib/game/ranks';
 import { getBadges, getRankedClears } from '@/lib/game/storage';
 
@@ -7,13 +8,18 @@ export default function RankProgress() {
   const cleared = getRankedClears();
   const rank = rankFor(cleared);
   const owned = getBadges();
+  const [showAll, setShowAll] = useState(false);
   const pct = rank.next
     ? Math.min(100, Math.round(((cleared - rank.min) / (rank.next.min - rank.min)) * 100))
     : 100;
 
   return (
     <div className="bg-card rounded-3xl shadow-sm p-5 mb-4">
-      <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">Rank</div>
+      <RankLadderSheet open={showAll} onOpenChange={setShowAll} currentIndex={rank.index} />
+      <button onClick={() => setShowAll(true)} className="w-full text-left active:opacity-70 transition-opacity">
+      <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1.5">
+        Rank <span className="flex items-center gap-0.5 normal-case tracking-normal">All ranks <ChevronRight className="w-3.5 h-3.5" /></span>
+      </div>
       <div className="flex items-center justify-between gap-2 mb-3">
         <span className="text-2xl font-extrabold text-[#00A38C]">{rank.title}</span>
         {rank.next && (
@@ -30,6 +36,7 @@ export default function RankProgress() {
           {rank.next.min - cleared} level{rank.next.min - cleared === 1 ? '' : 's'} to {rank.next.title} · rank-up reward
         </div>
       )}
+      </button>
       <div className="flex flex-wrap gap-1.5">
         {Object.entries(BADGES).map(([id, b]) => (
           <span
