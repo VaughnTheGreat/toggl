@@ -4,7 +4,7 @@ import Screen from '@/components/game/Screen';
 import BottomNav from '@/components/game/BottomNav';
 import StoreSection from '@/components/store/StoreSection';
 import { getStarBalance } from '@/lib/game/storage';
-import { COLORS, KNOBS, getSkinState, getEquippedSkin, buySkin, equipSkin } from '@/lib/game/skins';
+import { COLORS, KNOBS, PATTERNS, TRACKS, getSkinState, getEquippedSkin, buySkin, equipSkin } from '@/lib/game/skins';
 import { playClick, vibrate } from '@/lib/game/feedback';
 import { getSettings } from '@/lib/game/storage';
 
@@ -40,7 +40,11 @@ export default function Store() {
       </p>
       <StoreSection title="Switch colors" kind="color" items={COLORS} state={state}
         equippedSkin={equippedSkin} balance={balance} onBuy={onBuy} onEquip={onEquip} />
+      <StoreSection title="Patterns" kind="color" items={PATTERNS} state={state}
+        equippedSkin={equippedSkin} balance={balance} onBuy={onBuy} onEquip={onEquip} />
       <StoreSection title="Knob styles" kind="knob" items={KNOBS} state={state}
+        equippedSkin={equippedSkin} balance={balance} onBuy={onBuy} onEquip={onEquip} />
+      <StoreSection title="Switch shapes" kind="track" items={TRACKS} state={state}
         equippedSkin={equippedSkin} balance={balance} onBuy={onBuy} onEquip={onEquip} />
       <BottomNav active="store" />
     </Screen>

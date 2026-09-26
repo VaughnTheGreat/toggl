@@ -3,7 +3,7 @@ import Knob from '@/components/game/Knob';
 import { getEquippedSkin } from '@/lib/game/skins';
 
 export default function Toggle({ on, locked, dim, colorblind, reducedMotion, skin }) {
-  const { color, knob } = skin || getEquippedSkin();
+  const { color, knob, track } = skin || getEquippedSkin();
   const spring = reducedMotion ? '' : 'transition-all duration-300 [transition-timing-function:cubic-bezier(0.34,1.8,0.64,1)]';
   const bgDur = reducedMotion ? '' : 'transition-all duration-200';
   const onStyle = on && !locked
@@ -13,12 +13,12 @@ export default function Toggle({ on, locked, dim, colorblind, reducedMotion, ski
     : undefined;
   return (
     <div
-      className={`relative w-14 h-8 rounded-full flex items-center px-1 shrink-0 ${bgDur} ${
+      className={`relative w-14 h-8 flex items-center px-1 shrink-0 ${bgDur} ${
         locked
           ? 'bg-amber-100 dark:bg-amber-500/15 border border-amber-300 dark:border-amber-500/40'
           : on ? '' : 'bg-[#E3E7EF] dark:bg-[#0E1330]'
       } ${dim ? 'opacity-40' : ''}`}
-      style={onStyle}
+      style={{ borderRadius: track.radius, ...onStyle }}
     >
       <Knob knob={knob} className={`w-6 h-6 ${spring} ${on ? 'translate-x-[24px]' : 'translate-x-0'}`} />
     </div>
