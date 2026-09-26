@@ -14,7 +14,7 @@ import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, countOn, isCountObjective } from '@/lib/game/objective';
-import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, addBonusStars, BADGE_BONUS } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import LevelCoach from '@/components/game/LevelCoach';
 import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
@@ -92,13 +92,16 @@ export default function PuzzleBoard({ level }) {
       const rank = solveRank({ moves, undos: undosUsed, hints: hintLevel, resets: resetsRef.current }, level);
       const isCampaign = !level.custom && !level.daily && !level.endless;
       const skipped = false; // levels are never skipped — always advance one at a time
-      const streak = level.daily ? recordDaily().streak : null;
+      const daily = level.daily ? recordDaily() : null;
+      const streak = daily ? daily.streak : null;
       if (level.endless) recordEndless(level.endless);
       else if (isCampaign) recordResult(level.id, stars, skipped, !!settings.zen);
       const result = { stars, rank, skipped, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);
-      setCompleted({ ...result, newBadges });
+      const bonusStars = (daily?.bonus || 0) + newBadges.length * BADGE_BONUS;
+      addBonusStars(newBadges.length * BADGE_BONUS);
+      setCompleted({ ...result, newBadges, bonusStars });
     }, 550);
     return () => clearTimeout(t);
   }, [won]); // eslint-disable-line react-hooks/exhaustive-deps

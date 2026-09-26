@@ -63,6 +63,11 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
               <Flame className="w-3.5 h-3.5" /> {result.streak}-day streak
             </div>
           )}
+          {result.bonusStars > 0 && (
+            <div className="flex items-center justify-center gap-1 mt-2 text-xs font-extrabold text-[#F5B21B]">
+              <Star className="w-3.5 h-3.5 fill-[#F5B21B]" /> +{result.bonusStars} bonus stars
+            </div>
+          )}
           {result.newBadges?.length > 0 && (
             <div className="flex flex-wrap justify-center gap-1.5 mt-2">
               {result.newBadges.map((id) => (

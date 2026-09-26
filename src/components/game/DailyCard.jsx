@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, CheckCircle2, ChevronRight } from 'lucide-react';
-import { getDaily, isDailyDone } from '@/lib/game/storage';
+import { getDaily, isDailyDone, dailyBonus, todayKey } from '@/lib/game/storage';
 
 export default function DailyCard() {
   const done = isDailyDone();
-  const { streak } = getDaily();
+  const { streak, lastDate } = getDaily();
+  const alive = lastDate && Math.round((new Date(todayKey()) - new Date(lastDate)) / 86400000) === 1;
+  const nextStreak = alive ? streak + 1 : 1;
 
   return (
     <Link to="/play?daily=1" className="flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 mb-4 active:scale-[0.98] transition-transform">
@@ -19,6 +21,7 @@ export default function DailyCard() {
         </div>
         <div className="text-xs font-semibold text-muted-foreground">
           {streak > 0 ? `${streak}-day streak` : 'Start your streak'}
+          {!done && <span className="text-[#F5B21B] font-extrabold"> · +{dailyBonus(nextStreak)} ★</span>}
         </div>
       </div>
       {done ? (

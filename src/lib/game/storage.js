@@ -58,7 +58,20 @@ export function getRankedClears() {
 export function getStarBalance() {
   const s = loadSave();
   const total = Object.values(s.stars || {}).reduce((a, b) => a + b, 0);
-  return Math.max(0, total - (s.starsSpent || 0));
+  return Math.max(0, total + (s.bonusStars || 0) - (s.starsSpent || 0));
+}
+
+// Extra spendable stars from streaks and badges (not counted toward level stars).
+export function addBonusStars(n) {
+  if (n > 0) writeSave({ bonusStars: (loadSave().bonusStars || 0) + n });
+}
+
+const STREAK_MILESTONES = { 7: 50, 30: 200, 100: 500 };
+export const BADGE_BONUS = 10;
+
+// Daily Challenge reward: 5 stars, +2 per streak day (max +20), plus milestone bonuses.
+export function dailyBonus(streak) {
+  return 5 + 2 * Math.min(streak - 1, 10) + (STREAK_MILESTONES[streak] || 0);
 }
 
 export function spendStars(n) {
@@ -144,12 +157,14 @@ export function isDailyDone() {
 export function recordDaily() {
   const d = getDaily();
   const today = todayKey();
-  if (d.lastDate === today) return d;
-  const consecutive = d.lastDate && new Date(today) - new Date(d.lastDate) === 86400000;
+  if (d.lastDate === today) return { ...d, bonus: 0 };
+  const consecutive = d.lastDate && Math.round((new Date(today) - new Date(d.lastDate)) / 86400000) === 1;
   const streak = consecutive ? d.streak + 1 : 1;
   const next = { lastDate: today, streak, best: Math.max(d.best || 0, streak) };
   writeSave({ daily: next });
-  return next;
+  const bonus = dailyBonus(streak);
+  addBonusStars(bonus);
+  return { ...next, bonus };
 }
 
 // --- Badges ---
