@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSettings } from '@/lib/game/storage';
 import { playClick, vibrate } from '@/lib/game/feedback';
+import { getEquippedSkin } from '@/lib/game/skins';
+import Knob from '@/components/game/Knob';
 
 export default function PlaySwitch({ to }) {
   const navigate = useNavigate();
   const [on, setOn] = useState(false);
   const settings = getSettings();
+  const { color, knob } = getEquippedSkin();
 
   const flip = () => {
     if (on) return;
@@ -18,10 +21,9 @@ export default function PlaySwitch({ to }) {
 
   return (
     <button onClick={flip} aria-label="Play" className="mx-auto flex flex-col items-center gap-3 group">
-      <span className={`relative block w-32 h-16 rounded-full transition-colors duration-300 ${
-        on ? 'bg-[#00C2A8] shadow-[0_8px_24px_rgba(0,194,168,0.45)]' : 'bg-muted-foreground/25'
-      }`}>
-        <span className={`absolute top-1.5 left-1.5 w-[3.25rem] h-[3.25rem] rounded-full bg-white shadow-md transition-transform duration-300 ${
+      <span className={`relative block w-32 h-16 rounded-full transition-colors duration-300 ${on ? '' : 'bg-muted-foreground/25'}`}
+        style={on ? { background: color.bg, boxShadow: `0 8px 24px ${color.glow}73` } : undefined}>
+        <Knob knob={knob} className={`absolute top-1.5 left-1.5 w-[3.25rem] h-[3.25rem] transition-transform duration-300 ${
           on ? 'translate-x-16' : ''
         }`} />
       </span>

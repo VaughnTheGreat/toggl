@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home as HomeIcon, User } from 'lucide-react';
+import { Home as HomeIcon, User, Store as StoreIcon } from 'lucide-react';
 
 const ITEMS = [
   { key: 'home', to: '/', label: 'Home', Icon: HomeIcon },
+  { key: 'store', to: '/store', label: 'Store', Icon: StoreIcon },
   { key: 'profile', to: '/profile', label: 'Profile', Icon: User },
 ];
 
@@ -11,7 +12,7 @@ const ITEMS = [
 const scrollPositions = { current: {} };
 
 const tabForPath = (pathname) =>
-  pathname === '/profile' || pathname === '/settings' ? 'profile' : 'home';
+  pathname === '/profile' || pathname === '/settings' ? 'profile' : pathname === '/store' ? 'store' : 'home';
 
 export default function BottomNav({ active }) {
   const { pathname } = useLocation();
