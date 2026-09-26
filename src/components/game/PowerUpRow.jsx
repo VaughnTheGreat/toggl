@@ -13,7 +13,7 @@ export default function PowerUpRow({ Icon, iconClass, title, desc, cost, disable
       </div>
       <button onClick={onBuy} disabled={disabled}
         className="flex items-center gap-1 px-3.5 py-2 rounded-full bg-[#00A38C] text-white text-xs font-extrabold tabular-nums disabled:opacity-35 active:scale-95 transition-transform shrink-0">
-        {cost} <Star className="w-3 h-3 fill-current" />
+        {cost} <Star className="w-3.5 h-3.5 text-[#F5B21B] fill-[#F5B21B]" />
       </button>
     </div>
   );

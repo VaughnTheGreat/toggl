@@ -48,8 +48,15 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
           <span className={`inline-block px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-[0.2em] ${RANK_STYLES[result.rank] || RANK_STYLES.Solved}`}>
             {result.rank}
           </span>
-          <div className="text-[11px] font-semibold text-muted-foreground mt-2">
-            {result.moves} moves · optimal {level.optimalMoves}{result.skipped && ' · next level skipped'}
+          <div className="flex justify-center gap-2 mt-3">
+            <div className="px-4 py-2 rounded-2xl bg-muted min-w-[88px]">
+              <div className="text-xl font-extrabold tabular-nums">{result.moves}</div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Moves used</div>
+            </div>
+            <div className="px-4 py-2 rounded-2xl bg-muted min-w-[88px]">
+              <div className="text-xl font-extrabold tabular-nums text-[#00A38C]">{level.optimalMoves}</div>
+              <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Optimal</div>
+            </div>
           </div>
           {result.streak != null && (
             <div className="flex items-center justify-center gap-1 mt-2 text-xs font-extrabold text-orange-600 dark:text-orange-400">
