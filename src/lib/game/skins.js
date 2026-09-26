@@ -51,16 +51,16 @@ export const PATTERNS = [
 export const TRACKS = [
   { id: 'pill', name: 'Pill', cost: 0, radius: '9999px' },
   { id: 'soft', name: 'Soft Square', cost: 100, radius: '10px' },
-  { id: 'block', name: 'Block', cost: 200, radius: '3px' },
-  { id: 'leaf', name: 'Leaf', cost: 350, radius: '9999px 4px', big: '9999px 8px' },
-  { id: 'drop', name: 'Teardrop', cost: 450, radius: '9999px 9999px 9999px 3px', big: '9999px 9999px 9999px 6px' },
-  { id: 'shard', name: 'Shard', cost: 550, radius: '14px 2px', big: '28px 4px' },
-  { id: 'slant', name: 'Slant', cost: 700, radius: '0', clip: 'polygon(12% 0,100% 0,88% 100%,0 100%)' },
-  { id: 'hex', name: 'Hex', cost: 850, radius: '0', clip: 'polygon(12% 0,88% 0,100% 50%,88% 100%,12% 100%,0 50%)' },
-  { id: 'octa', name: 'Octagon', cost: 1000, radius: '0', clip: 'polygon(9% 0,91% 0,100% 28%,100% 72%,91% 100%,9% 100%,0 72%,0 28%)' },
-  { id: 'arrow', name: 'Arrow', cost: 1200, radius: '0', clip: 'polygon(0 0,86% 0,100% 50%,86% 100%,0 100%,9% 50%)' },
-  { id: 'bowtie', name: 'Bow Tie', cost: 1400, radius: '0', clip: 'polygon(0 0,50% 18%,100% 0,100% 100%,50% 82%,0 100%)' },
-  { id: 'crystal', name: 'Crystal', cost: 1700, radius: '0', clip: 'polygon(14% 0,86% 0,100% 30%,94% 100%,6% 100%,0 30%)' },
+  { id: 'block', name: 'Block', cost: 200, radius: '0' },
+  { id: 'leaf', name: 'Leaf', cost: 350, radius: '9999px 0', big: '9999px 0' },
+  { id: 'drop', name: 'Teardrop', cost: 450, radius: '9999px 9999px 9999px 0', big: '9999px 9999px 9999px 0' },
+  { id: 'shard', name: 'Shard', cost: 550, radius: '16px 0', big: '32px 0' },
+  { id: 'slant', name: 'Slant', cost: 700, radius: '0', clip: 'polygon(22% 0,100% 0,78% 100%,0 100%)' },
+  { id: 'hex', name: 'Hex', cost: 850, radius: '0', clip: 'polygon(22% 0,78% 0,100% 50%,78% 100%,22% 100%,0 50%)' },
+  { id: 'octa', name: 'Octagon', cost: 1000, radius: '0', clip: 'polygon(16% 0,84% 0,100% 32%,100% 68%,84% 100%,16% 100%,0 68%,0 32%)' },
+  { id: 'arrow', name: 'Arrow', cost: 1200, radius: '0', clip: 'polygon(0 0,74% 0,100% 50%,74% 100%,0 100%,12% 50%)' },
+  { id: 'bowtie', name: 'Bow Tie', cost: 1400, radius: '0', clip: 'polygon(0 0,50% 26%,100% 0,100% 100%,50% 74%,0 100%)' },
+  { id: 'crystal', name: 'Crystal', cost: 1700, radius: '0', clip: 'polygon(24% 0,76% 0,100% 40%,86% 100%,14% 100%,0 40%)' },
 ];
 
 // Knob (thumb) styles.
