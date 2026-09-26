@@ -61,6 +61,7 @@ export const TRACKS = [
   { id: 'arrow', name: 'Arrow', cost: 1200, radius: '0', clip: 'polygon(0 0,74% 0,100% 50%,74% 100%,0 100%,12% 50%)' },
   { id: 'bowtie', name: 'Bow Tie', cost: 1400, radius: '0', clip: 'polygon(0 0,50% 26%,100% 0,100% 100%,50% 74%,0 100%)' },
   { id: 'crystal', name: 'Crystal', cost: 1700, radius: '0', clip: 'polygon(24% 0,76% 0,100% 40%,86% 100%,14% 100%,0 40%)' },
+  { id: 'tri', name: 'Triangle', cost: 2000, radius: '0', clip: 'polygon(50% 0,100% 100%,0 100%)' },
 ];
 
 // Knob (thumb) styles.
