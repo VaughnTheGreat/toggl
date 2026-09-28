@@ -6,6 +6,7 @@ import StreakCard from '@/components/profile/StreakCard';
 import DailyCard from '@/components/game/DailyCard';
 import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
+import LevelHistory from '@/components/profile/LevelHistory';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
 import SettingsRows from '@/components/profile/SettingsRows';
 import DeleteMyData from '@/components/profile/DeleteMyData';
@@ -28,6 +29,7 @@ export default function Profile() {
         <div className="mb-4"><DailyCard /></div>
         <RankProgress />
         <StatTiles />
+        <LevelHistory />
         <AppearanceToggle />
         <SettingsRows />
         <DeleteMyData />

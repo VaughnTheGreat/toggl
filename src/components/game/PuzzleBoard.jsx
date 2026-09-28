@@ -14,7 +14,7 @@ import { canPress, applyPress, describeRule } from '@/lib/game/ruleEngine';
 import { solveFrom } from '@/lib/game/solver';
 import { previewPress, deadEndReason, solveRank } from '@/lib/game/insight';
 import { isSolved, progress, isCountObjective } from '@/lib/game/objective';
-import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, addBonusStars, BADGE_BONUS } from '@/lib/game/storage';
+import { getSettings, recordResult, recordEndless, recordDaily, addBadges, getBadges, addBonusStars, BADGE_BONUS, recordLevelStats } from '@/lib/game/storage';
 import NoUndoNotice from '@/components/game/NoUndoNotice';
 import LevelCoach from '@/components/game/LevelCoach';
 import OutOfMovesPanel from '@/components/game/OutOfMovesPanel';
@@ -93,6 +93,7 @@ export default function PuzzleBoard({ level }) {
       const streak = daily ? daily.streak : null;
       if (level.endless) recordEndless(level.endless);
       const rankUp = isCampaign ? recordResult(level.id, stars, skipped, !!settings.zen) : null;
+      recordLevelStats(level.id, moves);
       const result = { stars, rank, skipped, moves, time: Math.round((Date.now() - startRef.current) / 1000), hints: hintLevel, undos: undosUsed, denied: deniedRef.current, streak };
       const newBadges = evaluateBadges(result, level, getBadges());
       addBadges(newBadges);

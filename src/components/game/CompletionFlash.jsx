@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { Star, RotateCcw, Map, Flame } from 'lucide-react';
+import { Star, RotateCcw, Map, Flame, Share2 } from 'lucide-react';
 import { BADGES } from '@/lib/game/ranks';
 import { playWin } from '@/lib/game/feedback';
 import { getSettings } from '@/lib/game/storage';
@@ -27,6 +27,23 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
       });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const [copied, setCopied] = useState(false);
+  const handleShare = async (e) => {
+    e.stopPropagation();
+    const params = level.daily ? 'daily=1' : level.endless ? `endless=${level.endless}` : `level=${level.id}`;
+    const url = `${window.location.origin}/play?${params}`;
+    const label = level.daily ? "today's Toggl Daily Challenge" : level.endless ? `Toggl Sequence ${level.endless}` : `Toggl Level ${level.id}`;
+    const optimalNote = result.moves === level.optimalMoves ? ' — that\u2019s optimal!' : '';
+    const text = `I solved ${label} in ${result.moves} moves${optimalNote}. Can you beat me? ${url}`;
+    if (navigator.share) {
+      navigator.share({ title: 'Toggl', text, url });
+    } else {
+      try { await navigator.clipboard?.writeText(text); } catch {}
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <div
@@ -87,11 +104,18 @@ export default function CompletionFlash({ result, level, hasNext, onNext, onRetr
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform">
               <RotateCcw className="w-4 h-4" />
             </button>
+            <button onClick={handleShare} aria-label="Challenge a friend"
+              className="w-10 h-10 rounded-full bg-[#00C2A8] text-white flex items-center justify-center active:scale-95 transition-transform">
+              <Share2 className="w-4 h-4" />
+            </button>
             <button onClick={(e) => { e.stopPropagation(); onMenu(); }} aria-label="Level map"
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center active:scale-95 transition-transform">
               <Map className="w-4 h-4" />
             </button>
           </div>
+          {copied && (
+            <div className="text-center text-[11px] font-bold uppercase tracking-widest text-[#00A38C] mt-2">Link copied!</div>
+          )}
         </div>
         <div className="text-center text-[11px] font-bold uppercase tracking-[0.25em] text-muted-foreground mt-6 animate-pulse">
           {hasNext ? 'Tap anywhere to continue' : 'Tap anywhere to finish'}

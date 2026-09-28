@@ -194,6 +194,22 @@ export function addBadges(ids) {
   writeSave({ badges: b });
 }
 
+// --- Per-level stats (best moves, solve count) ---
+export function recordLevelStats(levelId, moves) {
+  const s = loadSave();
+  const stats = { ...(s.levelStats || {}) };
+  const prev = stats[levelId] || { bestMoves: null, solves: 0 };
+  stats[levelId] = {
+    bestMoves: prev.bestMoves == null ? moves : Math.min(prev.bestMoves, moves),
+    solves: prev.solves + 1,
+  };
+  writeSave({ levelStats: stats });
+}
+
+export function getLevelStats() {
+  return loadSave().levelStats || {};
+}
+
 const DEFAULT_SETTINGS = { sound: true, haptics: true, reducedMotion: false, colorblind: false, zen: false, theme: 'dark' };
 
 export function getSettings() {
