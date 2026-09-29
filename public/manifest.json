@@ -9,7 +9,19 @@
   "theme_color": "#00C2A8",
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/6a5ee3e55b797137eb42e644/8b5ee05ac_generated_image.png",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-1024.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"

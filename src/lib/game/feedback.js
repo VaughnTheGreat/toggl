@@ -1,3 +1,6 @@
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+
 let audioCtx;
 const ctx = () => (audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)());
 
@@ -62,6 +65,28 @@ export function playClick(enabled, denied = false) {
   else playFlip(enabled);
 }
 
+// iOS has no navigator.vibrate, so the native app plays the same pattern as Taptic Engine taps:
+// one tap at the start of each "on" segment, stronger for longer segments.
+const isNative = Capacitor.isNativePlatform();
+
+function impactFor(ms) {
+  return ms <= 20 ? ImpactStyle.Light : ms <= 35 ? ImpactStyle.Medium : ImpactStyle.Heavy;
+}
+
+function nativeVibrate(pattern) {
+  const steps = Array.isArray(pattern) ? pattern : [pattern];
+  let at = 0;
+  steps.forEach((ms, i) => {
+    if (i % 2 === 0 && ms > 0) {
+      const tap = () => Haptics.impact({ style: impactFor(ms) }).catch(() => {});
+      if (at === 0) tap(); else setTimeout(tap, at);
+    }
+    at += ms;
+  });
+}
+
 export function vibrate(enabled, pattern = 15) {
-  if (enabled && navigator.vibrate) navigator.vibrate(pattern);
+  if (!enabled) return;
+  if (isNative) nativeVibrate(pattern);
+  else if (navigator.vibrate) navigator.vibrate(pattern);
 }
