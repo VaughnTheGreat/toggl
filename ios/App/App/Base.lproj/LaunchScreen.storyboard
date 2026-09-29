@@ -16,15 +16,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LaunchMark" translatesAutoresizingMaskIntoConstraints="NO" id="Tgl-Mk-Img" userLabel="Toggl Mark">
-                                <rect key="frame" x="107.5" y="253.5" width="160" height="160"/>
+                                <rect key="frame" x="57.5" y="203.5" width="260" height="260"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="160" id="Tgl-Mk-Wd"/>
-                                    <constraint firstAttribute="height" constant="160" id="Tgl-Mk-Ht"/>
+                                    <constraint firstAttribute="width" constant="260" id="Tgl-Mk-Wd"/>
+                                    <constraint firstAttribute="height" constant="260" id="Tgl-Mk-Ht"/>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <!-- Toggl navy #1C2439, identical to the app icon background -->
-                        <color key="backgroundColor" red="0.10980392156862745" green="0.14117647058823529" blue="0.22352941176470589" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <!-- Toggl navy #0E1327, identical to the app icon background -->
+                        <color key="backgroundColor" red="0.054901960784313725" green="0.074509803921568626" blue="0.15294117647058825" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Tgl-Mk-Img" firstAttribute="centerX" secondItem="Tgl-Vw-Bg1" secondAttribute="centerX" id="Tgl-Mk-Cx"/>
                             <constraint firstItem="Tgl-Mk-Img" firstAttribute="centerY" secondItem="Tgl-Vw-Bg1" secondAttribute="centerY" id="Tgl-Mk-Cy"/>
@@ -37,6 +37,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchMark" width="160" height="160"/>
+        <image name="LaunchMark" width="260" height="260"/>
     </resources>
 </document>

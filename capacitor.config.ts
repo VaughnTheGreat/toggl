@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     // Shown behind the web view until the game paints — matches the launch screen (no white flash).
-    backgroundColor: '#1C2439',
+    backgroundColor: '#0E1327',
   },
 };
 
