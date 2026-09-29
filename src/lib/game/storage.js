@@ -1,9 +1,8 @@
 import { rankFor, rankUpReward } from '@/lib/game/ranks';
-
-const KEY = 'logicgrid_save';
+import { saveStore } from '@/lib/game/persist';
 
 export function loadSave() {
-  try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
+  try { return JSON.parse(saveStore.read()) || {}; } catch { return {}; }
 }
 
 let changeListener = null;
@@ -15,12 +14,12 @@ export function onSaveChange(fn) {
 
 // Replaces the whole local save (used after merging in the cloud save).
 export function replaceSave(save) {
-  localStorage.setItem(KEY, JSON.stringify(save));
+  saveStore.write(JSON.stringify(save));
 }
 
 function writeSave(patch) {
   const s = { ...loadSave(), ...patch };
-  localStorage.setItem(KEY, JSON.stringify(s));
+  saveStore.write(JSON.stringify(s));
   changeListener?.(s);
   return s;
 }

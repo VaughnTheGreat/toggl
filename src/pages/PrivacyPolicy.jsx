@@ -27,7 +27,7 @@ export default function PrivacyPolicy() {
         <h2 className="text-base font-extrabold text-foreground pt-2">Children's Privacy</h2>
         <p>Toggl does not knowingly collect personal information from anyone, including children.</p>
         <h2 className="text-base font-extrabold text-foreground pt-2">Contact</h2>
-        <p>For privacy questions, contact Base44 support.</p>
+        <p>For privacy questions, visit the <Link to="/support" className="font-bold text-primary">Toggl Support</Link> page.</p>
       </div>
     </Screen>
   );

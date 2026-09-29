@@ -1,6 +1,4 @@
-import { loadSave, spendStars } from '@/lib/game/storage';
-
-const KEY = 'logicgrid_save';
+import { loadSave, replaceSave, spendStars } from '@/lib/game/storage';
 
 // Prices scale steeply by tier — a level awards at most 3 stars.
 
@@ -94,7 +92,7 @@ function getSkinSave() {
 }
 
 function writeSkins(skins) {
-  localStorage.setItem(KEY, JSON.stringify({ ...loadSave(), skins }));
+  replaceSave({ ...loadSave(), skins });
 }
 
 export function getSkinState() {
