@@ -27,6 +27,8 @@ export default function Support() {
             <p>{a}</p>
           </div>
         ))}
+        <h2 className="text-base font-extrabold text-foreground pt-2">Contact</h2>
+        <p>Need more help? Contact us at <a href="mailto:humartventures@gmail.com" className="font-bold text-primary">humartventures@gmail.com</a>.</p>
         <h2 className="text-base font-extrabold text-foreground pt-2">Privacy</h2>
         <p>Read our <Link to="/privacy" className="font-bold text-primary">Privacy Policy</Link>.</p>
       </div>

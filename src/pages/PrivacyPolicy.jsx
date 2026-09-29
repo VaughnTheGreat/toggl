@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
         <h2 className="text-base font-extrabold text-foreground pt-2">Children's Privacy</h2>
         <p>Toggl does not knowingly collect personal information from children. The optional account uses only what Apple provides when you choose to sign in.</p>
         <h2 className="text-base font-extrabold text-foreground pt-2">Contact</h2>
-        <p>For privacy questions, visit the <Link to="/support" className="font-bold text-primary">Toggl Support</Link> page.</p>
+        <p>For privacy questions or requests, contact us at <a href="mailto:humartventures@gmail.com" className="font-bold text-primary">humartventures@gmail.com</a>.</p>
       </div>
     </Screen>
   );
