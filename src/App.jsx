@@ -7,6 +7,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import SaveGate from './components/SaveGate';
+import HumartIntro from './components/HumartIntro';
 // Add page imports here
 const PageNotFound = lazy(() => import('./lib/PageNotFound'));
 // Core game screens load up front so the whole game keeps working if the connection drops.
@@ -58,6 +59,8 @@ function App() {
         <AppRoutes />
       </Router>
       <Toaster />
+      {/* Outside the routes, so navigating can never replay it. */}
+      <HumartIntro />
     </QueryClientProvider>
   )
 }
