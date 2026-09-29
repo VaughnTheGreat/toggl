@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { resetSave } from '@/lib/game/storage';
+import { cloudAvailable, loadCloud } from '@/lib/cloud';
 import {
   AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
   AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
@@ -7,8 +8,28 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export default function DeleteMyData() {
-  const handleDelete = () => {
+  const [signedIn, setSignedIn] = useState(false);
+
+  useEffect(() => {
+    if (!cloudAvailable) return undefined;
+    let off = () => {};
+    let alive = true;
+    loadCloud().then((c) => {
+      if (!alive || !c) return;
+      setSignedIn(c.getState().signedIn);
+      off = c.onChange((s) => setSignedIn(s.signedIn));
+    });
+    return () => { alive = false; off(); };
+  }, []);
+
+  const handleDelete = async () => {
     resetSave();
+    // Signed in: the reset must reach the cloud too, or the next sync would bring the progress back.
+    // If this doesn't finish (offline, app closed), it's completed automatically on the next launch.
+    if (signedIn) {
+      const cloud = await loadCloud();
+      await cloud?.resetEverywhere();
+    }
     window.location.href = '/';
   };
 
@@ -23,7 +44,9 @@ export default function DeleteMyData() {
         <AlertDialogHeader>
           <AlertDialogTitle>Reset your progress?</AlertDialogTitle>
           <AlertDialogDescription>
-            This erases all progress saved on this device and starts you back at level 1. This cannot be undone.
+            {signedIn
+              ? 'This erases all progress on this device and in your cloud backup, on every device signed in to your account, and starts you back at level 1. This cannot be undone.'
+              : 'This erases all progress saved on this device and starts you back at level 1. This cannot be undone.'}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -70,10 +70,15 @@ export function createSaveStore({ local, prefs, native, timeoutMs = 1500, log = 
     return cache;
   };
 
+  // Notified after every save write (cloud sync uses this to schedule a background push).
+  const listeners = new Set();
+  const subscribe = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
+
   const write = (raw) => {
     cache = raw;
     localSet(SAVE_KEY, raw);
     if (native) pushToPrefs(raw);
+    for (const fn of listeners) { try { fn(raw); } catch (e) { log.warn?.('[save] listener failed', e); } }
   };
 
   // Web: another tab saved — pick it up, as the old read-through-localStorage code did.
@@ -139,7 +144,7 @@ export function createSaveStore({ local, prefs, native, timeoutMs = 1500, log = 
   // Resolves once every queued Preferences write has finished.
   const flush = () => inFlight || Promise.resolve();
 
-  return { init, read, write, flush, onStorageEvent };
+  return { init, read, write, flush, subscribe, onStorageEvent };
 }
 
 const hasWindow = typeof window !== 'undefined';

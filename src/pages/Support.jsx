@@ -6,8 +6,10 @@ const FAQ = [
   { q: 'How do I play?', a: 'Each switch follows a rule. Press switches to make the system match the target pattern shown above the board, within the move limit. Tap the rule guide at the top of a level to see what each switch does.' },
   { q: 'I am stuck on a level.', a: 'Use Reset to start over, or open the power-ups menu for a hint. Hints cost stars and cap the stars you can earn on that level.' },
   { q: 'How do I earn stars?', a: 'Stars come from completing levels, daily challenges, badges, and rank-ups. Spend them in the Store on switch skins or on power-ups during play.' },
-  { q: 'Where is my progress saved?', a: 'All progress is stored only on your device. There are no accounts, so progress cannot be restored if you delete the app or reset it.' },
-  { q: 'How do I reset my progress?', a: 'Go to Profile and choose Reset progress. This cannot be undone.' },
+  { q: 'Where is my progress saved?', a: 'Progress is always saved on your device, and Toggl works fully offline. In the iOS app you can optionally sign in with Apple (Profile → Account & Sync) to back up your progress and sync it across your devices. Without an account, progress cannot be restored if you delete the app.' },
+  { q: 'How does sync work?', a: 'When you’re signed in, Toggl syncs in the background whenever you have a connection. Progress from all your devices is combined, so you never lose levels or stars. You can also tap Sync now in Profile → Account & Sync.' },
+  { q: 'How do I reset my progress?', a: 'Go to Profile and choose Reset progress. If you’re signed in, this also resets your cloud backup and every device signed in to your account. This cannot be undone.' },
+  { q: 'How do I delete my account?', a: 'Go to Profile → Account & Sync → Delete account. This permanently deletes your account and cloud backup and disconnects Sign in with Apple. Progress on your device stays.' },
 ];
 
 export default function Support() {

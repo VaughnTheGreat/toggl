@@ -8,6 +8,7 @@ import RankProgress from '@/components/profile/RankProgress';
 import StatTiles from '@/components/profile/StatTiles';
 import LevelHistory from '@/components/profile/LevelHistory';
 import AppearanceToggle from '@/components/profile/AppearanceToggle';
+import AccountSyncCard from '@/components/profile/AccountSyncCard';
 import SettingsRows from '@/components/profile/SettingsRows';
 import DeleteMyData from '@/components/profile/DeleteMyData';
 
@@ -31,6 +32,7 @@ export default function Profile() {
         <StatTiles />
         <LevelHistory />
         <AppearanceToggle />
+        <AccountSyncCard />
         <SettingsRows />
         <DeleteMyData />
       </div>
