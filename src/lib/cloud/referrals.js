@@ -35,15 +35,15 @@ export const inviteLink = (code) => `${INVITE_BASE_URL}/i/${code}`;
 export const inviteMessage = (code) =>
   `Try Toggl — a logic puzzle game. Use my invite link to join: ${inviteLink(code)}`;
 
-// What the friend sees after trying to redeem.
+// What the friend sees after trying to redeem. `stars` (optional) is shown as a star reward.
 const REDEEM_MESSAGES = {
-  redeemed: { kind: 'success', text: `Invite accepted! +${WELCOME_BONUS} ★ welcome bonus.` },
-  already_redeemed: { kind: 'info', text: 'Your invite was already applied.' },
-  invalid_code: { kind: 'error', text: 'That invite code wasn’t found. Check it and try again.' },
-  own_code: { kind: 'error', text: 'You can’t use your own invite code.' },
+  redeemed: { kind: 'success', text: 'Invite accepted! Welcome bonus added.', stars: WELCOME_BONUS },
+  already_redeemed: { kind: 'info', text: 'Your invite has already been applied.' },
+  invalid_code: { kind: 'error', text: 'That invite code didn’t work. Check it with your friend and try again.' },
+  own_code: { kind: 'error', text: 'That’s your own invite code. Share it with a friend instead!' },
   not_new_account: { kind: 'error', text: 'Invite codes only work when you first create your account.' },
-  apple_sign_in_required: { kind: 'error', text: 'Invite codes need Sign in with Apple.' },
-  apple_id_already_referred: { kind: 'error', text: 'This Apple ID has already used an invite.' },
+  apple_sign_in_required: { kind: 'error', text: 'Sign in with Apple to use an invite code.' },
+  apple_id_already_referred: { kind: 'error', text: 'An invite has already been used with this account.' },
 };
 
 const withTimeout = (promise, ms) => Promise.race([
@@ -60,7 +60,7 @@ export function createReferrals({ backend, kv, applyGrants, isSignedIn, timeoutM
     rewardedFriends: 0,
     maxRewardedFriends: MAX_REWARDED_FRIENDS,
     redeemedInvite: false,
-    notice: null,               // { kind: 'success' | 'info' | 'error', text }
+    notice: null,               // { kind: 'success' | 'info' | 'error', text, stars? }
     busy: false,
   };
   const listeners = new Set();
@@ -109,7 +109,8 @@ export function createReferrals({ backend, kv, applyGrants, isSignedIn, timeoutM
       setState({ ...summary, maxRewardedFriends: s.max_rewarded_friends || MAX_REWARDED_FRIENDS });
       await cacheStatus(summary);
       if (inviterAdded > 0 && !state.notice) {
-        setState({ notice: { kind: 'success', text: `Referral reward added: +${inviterAdded} ★` } });
+        const text = inviterAdded > REFERRAL_REWARD ? 'Friends joined with your invite!' : 'A friend joined with your invite!';
+        setState({ notice: { kind: 'success', text, stars: inviterAdded } });
       }
     } catch (e) { log.warn?.('[invite] status refresh failed', e); }
     return state;
@@ -125,14 +126,14 @@ export function createReferrals({ backend, kv, applyGrants, isSignedIn, timeoutM
       if ((r.status === 'redeemed' || r.status === 'already_redeemed') && r.grantId) {
         applyGrants([{ id: r.grantId, stars: r.stars }]);
       }
-      setState({ notice: REDEEM_MESSAGES[r.status] || { kind: 'error', text: 'Couldn’t apply that invite.' } });
+      setState({ notice: REDEEM_MESSAGES[r.status] || { kind: 'error', text: 'That invite couldn’t be applied. Please try again later.' } });
       await clearPendingCode();               // definite answer: never retry
       return r.status;
     } catch (e) {
       // Network trouble: keep the code and retry on the next launch (the server's 60-minute
       // new-account window decides whether it still counts).
       log.warn?.('[invite] redeem failed; will retry', e);
-      setState({ notice: { kind: 'info', text: 'Couldn’t reach Toggl to apply your invite. We’ll try again.' } });
+      setState({ notice: { kind: 'info', text: 'Your invite is saved. We’ll apply it as soon as you’re back online.' } });
       return null;
     } finally {
       setState({ busy: false });
@@ -175,7 +176,9 @@ export function createReferrals({ backend, kv, applyGrants, isSignedIn, timeoutM
         return code;
       } catch (e) {
         log.warn?.('[invite] could not get invite code', e);
-        setState({ notice: { kind: 'error', text: 'Couldn’t get your invite link. Check your connection and try again.' } });
+        // Offline with the code already known from the last visit: nothing to report.
+        if (state.code) return state.code;
+        setState({ notice: { kind: 'error', text: 'Couldn’t load your invite code. Check your connection and try again.' } });
         return null;
       }
     },
