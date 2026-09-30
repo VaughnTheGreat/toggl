@@ -6,15 +6,22 @@ import { Capacitor } from '@capacitor/core';
 export const cloudAvailable = Capacitor.isNativePlatform();
 
 let loading = null;
-
-// Resolves the started sync engine, or null on the web.
-export function loadCloud() {
-  if (!cloudAvailable) return Promise.resolve(null);
+const loadRuntime = () => {
   if (!loading) {
     loading = import('./runtime').then(async (m) => {
       await m.startCloudSync();
-      return m.cloud;
+      return m;
     });
   }
   return loading;
+};
+
+// Resolves the started sync engine, or null on the web.
+export function loadCloud() {
+  return cloudAvailable ? loadRuntime().then((m) => m.cloud) : Promise.resolve(null);
+}
+
+// Resolves the invite-friends controller, or null on the web.
+export function loadReferrals() {
+  return cloudAvailable ? loadRuntime().then((m) => m.referrals) : Promise.resolve(null);
 }

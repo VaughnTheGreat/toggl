@@ -1,0 +1,3 @@
+# Cloudflare Pages headers. Apple fetches this file to verify Universal Links (invite links).
+/.well-known/apple-app-site-association
+  Content-Type: application/json

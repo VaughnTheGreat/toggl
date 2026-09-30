@@ -73,5 +73,25 @@ export function createSupabaseBackend({ url, key }) {
     },
 
     checkAppleCredential: (appleUserId) => getAppleCredentialState(appleUserId),
+
+    // Referrals (see supabase/migrations/*_referrals.sql). The server decides every reward.
+    async getMyReferralCode() {
+      const { data, error } = await supabase.rpc('get_my_referral_code');
+      if (error) fail(error, 'Could not get invite code');
+      return data;
+    },
+
+    async redeemReferral(code) {
+      const { data, error } = await supabase.rpc('redeem_referral', { p_code: code });
+      if (error) fail(error, 'Could not apply invite');
+      const row = Array.isArray(data) ? data[0] : data;
+      return { status: row?.status, grantId: row?.grant_id ?? null, stars: Number(row?.stars) || 0 };
+    },
+
+    async getReferralStatus() {
+      const { data, error } = await supabase.rpc('get_my_referral_status');
+      if (error) fail(error, 'Could not load invite status');
+      return data;
+    },
   };
 }

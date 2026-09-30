@@ -9,6 +9,7 @@ const FAQ = [
   { q: 'Where is my progress saved?', a: 'Progress is always saved on your device, and Toggl works fully offline. In the iOS app you can optionally sign in with Apple (Profile → Account & Sync) to back up your progress and sync it across your devices. Without an account, progress cannot be restored if you delete the app.' },
   { q: 'How does sync work?', a: 'When you’re signed in, Toggl syncs in the background whenever you have a connection. Progress from all your devices is combined, so you never lose levels or stars. You can also tap Sync now in Profile → Account & Sync.' },
   { q: 'How do I reset my progress?', a: 'Go to Profile and choose Reset progress. If you’re signed in, this also resets your cloud backup and every device signed in to your account. This cannot be undone.' },
+  { q: 'How do invites work?', a: 'In the iOS app, go to Profile → Invite Friends and tap Share Invite. When a friend installs Toggl, enters your code (or opens your link), and signs in with Apple for the first time, you get 150 ★ and they get a 50 ★ welcome bonus. You can earn rewards for up to 3 friends (450 ★). Sharing alone does not earn stars, and invite codes only work when creating a new account.' },
   { q: 'How do I delete my account?', a: 'Go to Profile → Account & Sync → Delete account. This permanently deletes your account and cloud backup and disconnects Sign in with Apple. Progress on your device stays.' },
 ];
 

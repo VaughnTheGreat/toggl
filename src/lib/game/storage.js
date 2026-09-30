@@ -68,7 +68,26 @@ export function getRankedClears() {
 export function getStarBalance() {
   const s = loadSave();
   const total = Object.values(s.stars || {}).reduce((a, b) => a + b, 0);
-  return Math.max(0, Math.floor(total + (s.bonusStars || 0) - (s.starsSpent || 0)));
+  return Math.max(0, Math.floor(total + (s.bonusStars || 0) + sumGrants(s.rewardGrants) - (s.starsSpent || 0)));
+}
+
+// Server-verified star grants (referral rewards), keyed by grant id so the same grant can never
+// count twice — whether it arrives again on a retry, a re-sync, or from another device.
+const sumGrants = (grants) => Object.values(grants || {}).reduce((a, v) => a + (Number.isFinite(v) && v > 0 ? v : 0), 0);
+
+export function getRewardGrants() {
+  return loadSave().rewardGrants || {};
+}
+
+// Adds grants the save doesn't have yet; returns how many stars were newly added.
+export function applyRewardGrants(grants = []) {
+  const current = getRewardGrants();
+  const added = grants.filter((g) => g && typeof g.id === 'string' && Number.isFinite(g.stars) && g.stars > 0 && !(g.id in current));
+  if (!added.length) return 0;
+  const next = { ...current };
+  for (const g of added) next[g.id] = g.stars;
+  writeSave({ rewardGrants: next });
+  return added.reduce((a, g) => a + g.stars, 0);
 }
 
 // Extra spendable stars from streaks, badges and rank boosts (not counted toward level stars).

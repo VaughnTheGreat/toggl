@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "3FKM6258J6.com.base6a5ee3e55b797137eb42e644.app"
+        ],
+        "components": [
+          {
+            "/": "/i/*",
+            "comment": "Toggl invite links open the app"
+          }
+        ]
+      }
+    ]
+  }
+}

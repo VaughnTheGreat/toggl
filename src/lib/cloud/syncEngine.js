@@ -31,8 +31,13 @@ const randomId = () => {
   return [...a].map((b) => b.toString(16).padStart(2, '0')).join('');
 };
 
-export function createSyncEngine({ backend, saves, kv, now = () => Date.now(), debounceMs = 3000, log = console }) {
+// hooks (optional): { onSignedIn, afterSync, onSignedOut } — e.g. referrals. onSignedIn runs before
+// the first sync after sign-in; a failing hook is logged and never breaks sign-in or sync.
+export function createSyncEngine({ backend, saves, kv, hooks = {}, now = () => Date.now(), debounceMs = 3000, log = console }) {
   const configured = !!backend;
+  const runHook = async (name) => {
+    try { await hooks[name]?.(); } catch (e) { log.warn?.(`[sync] ${name} hook failed`, e); }
+  };
   let state = { configured, ready: false, signedIn: false, status: 'idle', lastSyncedAt: null, error: null, busy: null };
   const listeners = new Set();
   const setState = (patch) => { state = { ...state, ...patch }; for (const fn of listeners) { try { fn(state); } catch { /* listener */ } } };
@@ -136,12 +141,14 @@ export function createSyncEngine({ backend, saves, kv, now = () => Date.now(), d
     if (!state.signedIn) return Promise.resolve();
     if (running) { rerun = true; return running; }
     running = (async () => {
+      let synced = false;
       do {
         rerun = false;
         setState({ status: 'syncing', error: null });
         try {
           const dirty = await syncOnce();
           setState({ status: 'synced', lastSyncedAt: userMeta().lastSyncedAt, error: null });
+          synced = true;
           if (dirty) rerun = true;
         } catch (e) {
           const offline = isOfflineError(e);
@@ -152,6 +159,7 @@ export function createSyncEngine({ backend, saves, kv, now = () => Date.now(), d
           rerun = false;
         }
       } while (rerun && state.signedIn);
+      if (synced && state.signedIn) runHook('afterSync');   // not awaited: never holds up syncing
     })().finally(() => { running = null; });
     return running;
   };
@@ -172,9 +180,13 @@ export function createSyncEngine({ backend, saves, kv, now = () => Date.now(), d
 
   const becomeSignedOut = () => {
     clearTimeout(timer); timer = null;
+    // Includes sign-outs at launch (revoked Apple credential, rejected session) for an account
+    // that was never marked signed in during this run.
+    const wasSignedIn = state.signedIn || userId !== null || !!meta?.currentUserId;
     userId = null;
     if (meta) delete meta.currentUserId;
     setState({ signedIn: false, status: 'idle', lastSyncedAt: null, error: null });
+    if (wasSignedIn) runHook('onSignedOut');
   };
 
   let unsubscribe = null;
@@ -211,7 +223,8 @@ export function createSyncEngine({ backend, saves, kv, now = () => Date.now(), d
     }
     await saveMeta();
     setState({ ready: true });
-    if (state.signedIn) runSync();
+    // In the background: finish any pending invite first, then sync.
+    if (state.signedIn) runHook('onSignedIn').then(() => runSync());
     return state;
   };
 
@@ -223,6 +236,7 @@ export function createSyncEngine({ backend, saves, kv, now = () => Date.now(), d
       becomeSignedIn(id, appleUserId);
       await saveMeta();
       setState({ busy: null });
+      await runHook('onSignedIn');              // e.g. redeem an invite before the first sync
       await runSync();
       return true;
     } catch (e) {
