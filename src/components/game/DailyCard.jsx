@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Flame, CheckCircle2, ChevronRight } from 'lucide-react';
+import { CheckCircle2, ChevronRight } from 'lucide-react';
+import FlameIcon from '@/components/game/FlameIcon';
+import StarAmount from '@/components/profile/StarAmount';
 import { getDaily, isDailyDone, dailyBonus, todayKey } from '@/lib/game/storage';
 
 export default function DailyCard() {
@@ -14,7 +16,7 @@ export default function DailyCard() {
     <Wrap {...(done ? {} : { to: '/play?daily=1' })}
       className={`flex items-center gap-4 bg-card rounded-3xl shadow-sm p-4 ${done ? 'opacity-70' : 'active:scale-[0.98] transition-transform'}`}>
       <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-500/15 flex items-center justify-center">
-        <Flame className="w-6 h-6 text-orange-500" />
+        <FlameIcon className="w-6 h-6" />
       </div>
       <div className="flex-1 text-left">
         <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Challenge</div>
@@ -23,7 +25,7 @@ export default function DailyCard() {
         </div>
         <div className="text-xs font-semibold text-muted-foreground">
           {streak > 0 ? `${streak}-day streak` : 'Start your streak'}
-          {!done && <span className="text-[#F5B21B] font-extrabold"> · up to +{dailyBonus(nextStreak)} ★</span>}
+          {!done && <> · up to <StarAmount value={dailyBonus(nextStreak)} plus /></>}
         </div>
       </div>
       {done ? (

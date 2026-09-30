@@ -23,8 +23,8 @@ export default function RankProgress() {
       <div className="flex items-center justify-between gap-2 mb-3">
         <span className="text-2xl font-extrabold text-[#00A38C]">{rank.title}</span>
         {rank.next && (
-          <span className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F5B21B]/15 text-sm font-extrabold text-[#B7791F] dark:text-[#F5B21B] tabular-nums">
-            +{rank.next.reward} <Star className="w-3.5 h-3.5 fill-current" />
+          <span className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F5B21B]/15 text-sm font-extrabold text-foreground tabular-nums">
+            +{rank.next.reward} <Star className="w-3.5 h-3.5 text-[#F5B21B] fill-[#F5B21B]" />
           </span>
         )}
       </div>
