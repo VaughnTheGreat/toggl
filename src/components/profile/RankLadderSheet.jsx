@@ -40,8 +40,8 @@ export default function RankLadderSheet({ open, onOpenChange, currentIndex }) {
                   </div>
                 </div>
                 {i > 0 && (
-                  <span className="flex items-center gap-1 text-xs font-extrabold text-[#B7791F] dark:text-[#F5B21B] tabular-nums">
-                    +{i * 25} <Star className="w-3 h-3 fill-current" />
+                  <span className="flex items-center gap-1 text-xs font-extrabold text-foreground tabular-nums">
+                    +{i * 25} <Star className="w-3.5 h-3.5 text-[#F5B21B] fill-[#F5B21B]" />
                   </span>
                 )}
               </div>

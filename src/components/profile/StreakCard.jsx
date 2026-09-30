@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flame } from 'lucide-react';
+import FlameIcon from '@/components/game/FlameIcon';
 import { getDaily, isDailyDone } from '@/lib/game/storage';
 
 export default function StreakCard() {
@@ -14,7 +14,7 @@ export default function StreakCard() {
   return (
     <div className="flex items-center gap-4 bg-card rounded-3xl shadow-sm p-5 mb-4 border-2 border-[#00C2A8]/20">
       <div className="w-14 h-14 rounded-2xl bg-orange-100 dark:bg-orange-500/15 flex items-center justify-center shrink-0">
-        <Flame className="w-7 h-7 text-orange-500" />
+        <FlameIcon className="w-7 h-7" />
       </div>
       <div>
         <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Daily Streak</div>
