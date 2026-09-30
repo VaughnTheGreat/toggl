@@ -103,7 +103,7 @@ function mergeSkins(b = {}, l, c) {
 // Fields with explicit rules. Anything else (e.g. a field added in a future version) keeps
 // this device's value, or the cloud's if this device doesn't have it.
 const HANDLED = new Set(['stars', 'unlocked', 'endless', 'rankClaimed', 'zenOnly', 'bonusStars', 'starsSpent',
-  'levelStats', 'daily', 'badges', 'seenRules', 'tutorialDone', 'seenNoUndo', 'settings', 'skins']);
+  'levelStats', 'daily', 'badges', 'seenRules', 'tutorialDone', 'seenNoUndo', 'settings', 'skins', 'rewardGrants']);
 
 export function mergeSaves(base, local, cloud) {
   const b = isObj(base) ? base : {};
@@ -127,6 +127,8 @@ export function mergeSaves(base, local, cloud) {
   if (has('levelStats')) out.levelStats = mergeLevelStats(b.levelStats, l.levelStats, c.levelStats);
   if (has('daily')) out.daily = mergeDaily(l.daily, c.daily);
   if (has('badges')) out.badges = unionObj(l.badges, c.badges);
+  // Server grants keyed by grant id: a union, so a grant present on both sides counts once.
+  if (has('rewardGrants')) out.rewardGrants = unionObj(l.rewardGrants, c.rewardGrants);
   if (has('seenRules')) out.seenRules = unionArr(l.seenRules, c.seenRules);
   if (has('tutorialDone')) out.tutorialDone = !!(l.tutorialDone || c.tutorialDone);
   if (has('seenNoUndo')) out.seenNoUndo = !!(l.seenNoUndo || c.seenNoUndo);

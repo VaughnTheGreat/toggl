@@ -28,6 +28,7 @@ export default function PrivacyPolicy() {
           <li><span className="font-semibold text-foreground">Your Apple account identifier</span> and the email address Apple shares with us. You can choose Hide My Email, in which case we only receive a private relay address.</li>
           <li><span className="font-semibold text-foreground">Your game progress and settings</span> (the same data listed above), and when they were last synced.</li>
           <li><span className="font-semibold text-foreground">A sign-in token from Apple,</span> used only to disconnect Sign in with Apple when you delete your account.</li>
+          <li><span className="font-semibold text-foreground">Invite records,</span> if you invite friends or use an invite: which account invited which, the star rewards granted, and a one-way fingerprint of the invited Apple ID so each Apple ID can only use one invite. We never store the Apple ID itself for this.</li>
         </ul>
         <p>
           This data is stored securely with our cloud provider, Supabase, and is used only to back up and sync your progress. We never receive your Apple password.

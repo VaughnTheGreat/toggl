@@ -18,6 +18,7 @@ import Profile from './pages/Profile';
 import Store from './pages/Store';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
+import Invite from './pages/Invite';
 
 // Leftover session keys from the old hosted-backend bootstrap (including a stored access token).
 const LEGACY_KEYS = ['base44_app_id', 'base44_access_token', 'base44_from_url', 'base44_functions_version', 'base44_app_base_url', 'token'];
@@ -39,6 +40,7 @@ const AppRoutes = () => (
     <Route path="/privacy" element={<PrivacyPolicy />} />
     <Route path="/store" element={<Store />} />
     <Route path="/support" element={<Support />} />
+    <Route path="/i/:code" element={<Invite />} />
     <Route path="*" element={<PageNotFound />} />
   </Routes>
   </Suspense>
